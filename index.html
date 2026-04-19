@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>leotrax3d</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #0d0e0f;
+      --bg2:     #141618;
+      --bg3:     #1a1d20;
+      --border:  rgba(255,255,255,0.07);
+      --border2: rgba(255,255,255,0.13);
+      --text:    #e8e6e0;
+      --muted:   #56595e;
+      --accent:  #c5f13e;
+      --accent2: #3ef1d0;
+      --mono:    'JetBrains Mono', monospace;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 1.75;
+      overflow-x: hidden;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 72px 72px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.1rem 2.5rem;
+      border-bottom: 1px solid var(--border);
+      background: rgba(13,14,15,0.88);
+      backdrop-filter: blur(12px);
+    }
+
+    .nav-logo {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+      align-items: center;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      transition: color 0.15s;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+
+    .nav-gh {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 11px;
+      color: var(--text) !important;
+      border: 1px solid var(--border2);
+      padding: 5px 13px;
+      border-radius: 3px;
+      transition: border-color 0.15s, color 0.15s !important;
+    }
+
+    .nav-gh:hover { border-color: var(--accent) !important; color: var(--accent) !important; }
+
+    section, header { position: relative; z-index: 1; }
+
+    .wrap {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 2.5rem;
+    }
+
+    /* ── HERO ── */
+    header {
+      min-height: 100svh;
+      display: flex;
+      align-items: center;
+      padding-top: 60px;
+    }
+
+    .hero-inner {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 2.5rem;
+      width: 100%;
+    }
+
+    .hero-eyebrow {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .hero-eyebrow::before {
+      content: '';
+      display: inline-block;
+      width: 28px;
+      height: 1px;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .hero-eyebrow span { color: var(--accent); }
+
+    h1 {
+      font-size: clamp(3rem, 9vw, 6.5rem);
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 0.97;
+      margin-bottom: 2rem;
+    }
+
+    h1 .dim  { color: var(--muted); font-weight: 300; font-style: italic; }
+    h1 .hi   { color: var(--accent); }
+
+    .hero-body {
+      max-width: 440px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.9;
+      margin-bottom: 2.5rem;
+      border-left: 2px solid var(--accent);
+      padding-left: 1rem;
+    }
+
+    .hero-body strong { color: var(--text); font-weight: 400; }
+
+    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.05em;
+      text-decoration: none;
+      border-radius: 3px;
+      transition: all 0.15s;
+      cursor: pointer;
+    }
+
+    .btn-fill { background: var(--accent); color: #0d0e0f; font-weight: 700; }
+    .btn-fill:hover { background: #d4ff55; }
+    .btn-ghost { color: var(--muted); border: 1px solid var(--border2); }
+    .btn-ghost:hover { color: var(--text); border-color: var(--border2); }
+
+    /* ── DIVIDER ── */
+    hr { border: none; border-top: 1px solid var(--border); position: relative; z-index: 1; }
+
+    /* ── SECTION ── */
+    .sec { padding: 5.5rem 0; }
+
+    .sec-head {
+      display: flex;
+      align-items: baseline;
+      gap: 0.75rem;
+      margin-bottom: 3rem;
+    }
+
+    .sec-num {
+      font-size: 10px;
+      color: var(--accent);
+      letter-spacing: 0.12em;
+      font-weight: 500;
+      flex-shrink: 0;
+    }
+
+    h2 {
+      font-size: clamp(1.4rem, 3vw, 1.9rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      color: var(--text);
+    }
+
+    /* ── ABOUT ── */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 3fr 2fr;
+      gap: 4rem;
+      align-items: start;
+    }
+
+    .about-text p {
+      color: var(--muted);
+      margin-bottom: 1rem;
+      font-size: 12px;
+      line-height: 1.9;
+    }
+
+    .about-text p b { color: var(--text); font-weight: 500; }
+
+    .info-list {
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 9px 14px;
+      font-size: 11px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .info-row:last-child { border-bottom: none; }
+    .info-row .k { color: var(--muted); }
+    .info-row .v { color: var(--text); text-align: right; }
+    .info-row .v.on { color: var(--accent); }
+    .info-row .v a { color: var(--text); text-decoration: none; transition: color 0.15s; }
+    .info-row .v a:hover { color: var(--accent); }
+
+    .blink {
+      display: inline-block;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      margin-right: 5px;
+      animation: bl 1.6s step-end infinite;
+      vertical-align: middle;
+    }
+
+    @keyframes bl { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    /* ── SKILLS ── */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .skill {
+      background: var(--bg2);
+      padding: 1.5rem;
+      transition: background 0.15s;
+    }
+
+    .skill:hover { background: var(--bg3); }
+
+    .skill-name {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+    }
+
+    .skill-tags {
+      font-size: 10px;
+      color: var(--muted);
+      line-height: 1.9;
+    }
+
+    /* ── PROJECTS ── */
+    .project-list {
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .project {
+      display: grid;
+      grid-template-columns: 170px 1fr 90px;
+      align-items: center;
+      gap: 2rem;
+      padding: 1.2rem 1.5rem;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      text-decoration: none;
+      color: inherit;
+      transition: background 0.15s;
+    }
+
+    .project:last-child { border-bottom: none; }
+    .project:hover { background: var(--bg3); }
+
+    .project-name {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .project-desc {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .project-tag {
+      font-size: 10px;
+      color: var(--accent2);
+      text-align: right;
+      letter-spacing: 0.04em;
+      border: 1px solid rgba(62,241,208,0.18);
+      padding: 3px 9px;
+      border-radius: 3px;
+      justify-self: end;
+      white-space: nowrap;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 1.6rem 2.5rem;
+      max-width: 1000px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    footer a { color: var(--muted); text-decoration: none; transition: color 0.15s; }
+    footer a:hover { color: var(--accent); }
+
+    /* ── FADE ── */
+    .fade {
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.55s ease, transform 0.55s ease;
+    }
+    .fade.on { opacity: 1; transform: none; }
+
+    /* ── MOBILE ── */
+    @media (max-width: 680px) {
+      nav { padding: 1rem 1.2rem; }
+      .nav-links li:not(:last-child) { display: none; }
+
+      .hero-inner, .wrap { padding: 0 1.25rem; }
+
+      h1 { font-size: clamp(2.6rem, 13vw, 3.8rem); }
+
+      .hero-body { max-width: 100%; }
+
+      .about-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+
+      .skills-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .project {
+        grid-template-columns: 1fr auto;
+        grid-template-rows: auto auto;
+        gap: 0.3rem 1rem;
+        padding: 1rem 1.2rem;
+      }
+
+      .project-name { grid-column: 1; grid-row: 1; }
+      .project-tag  { grid-column: 2; grid-row: 1; justify-self: end; }
+      .project-desc { grid-column: 1 / -1; grid-row: 2; }
+
+      footer {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+        padding: 1.4rem 1.25rem;
+      }
+
+      .sec { padding: 3.5rem 0; }
+    }
+
+    @media (max-width: 420px) {
+      .skills-grid { grid-template-columns: 1fr; }
+      h1 { font-size: clamp(2.2rem, 14vw, 3rem); }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="nav-logo">leotrax3d</a>
+  <ul class="nav-links">
+    <li><a href="#about">about</a></li>
+    <li><a href="#skills">skills</a></li>
+    <li><a href="#projects">projects</a></li>
+    <li>
+      <a href="https://github.com/leotrax3d" target="_blank" class="nav-gh">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        github
+      </a>
+    </li>
+  </ul>
+</nav>
+
+<header>
+  <div class="hero-inner">
+    <div class="hero-eyebrow">maker &nbsp;·&nbsp; <span>leotrax3d</span> &nbsp;·&nbsp; dev</div>
+    <h1>
+      build things.<br>
+      <span class="dim">break things.</span><br>
+      <span class="hi">repeat.</span>
+    </h1>
+    <p class="hero-body">
+      i make stuff — <strong>robots, web apps, physics simulations, home servers.</strong>
+      mostly just for fun. sometimes it even works on the first try.
+    </p>
+    <div class="hero-actions">
+      <a href="https://github.com/leotrax3d" target="_blank" class="btn btn-fill">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        github.com/leotrax3d
+      </a>
+      <a href="#projects" class="btn btn-ghost">see projects</a>
+    </div>
+  </div>
+</header>
+
+<hr />
+
+<section id="about">
+  <div class="wrap">
+    <div class="sec fade">
+      <div class="sec-head">
+        <span class="sec-num">01</span>
+        <h2>about</h2>
+      </div>
+      <div class="about-grid">
+        <div class="about-text">
+          <p>
+            hey, i'm <b>leotrax3d</b>. i like building things — hardware, software, doesn't really matter. if it involves a soldering iron or a terminal, i'm probably already interested.
+          </p>
+          <p>
+            right now i'm working on a <b>robot arm</b> from scratch, managing a homelab that's gotten a bit out of hand, and occasionally rendering marble runs in Blender for no reason other than that it's satisfying.
+          </p>
+          <p>
+            i contribute to the <b>3D printing open-source community</b> and try to actually document things properly — so other people don't have to figure it out the hard way like i did.
+          </p>
+          <p>
+            most of what i build starts as "this probably won't work" and ends up running in Docker somewhere.
+          </p>
+        </div>
+        <div>
+          <div class="info-list">
+            <div class="info-row"><span class="k">handle</span><span class="v">leotrax3d</span></div>
+            <div class="info-row"><span class="k">status</span><span class="v on"><span class="blink"></span>building</span></div>
+            <div class="info-row"><span class="k">current thing</span><span class="v">robot arm</span></div>
+            <div class="info-row"><span class="k">daily driver</span><span class="v">Linux / Arch</span></div>
+            <div class="info-row"><span class="k">editor</span><span class="v">VS Code</span></div>
+            <div class="info-row"><span class="k">open source</span><span class="v">yes</span></div>
+            <div class="info-row"><span class="k">github</span><span class="v"><a href="https://github.com/leotrax3d" target="_blank">github.com/leotrax3d</a></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr />
+
+<section id="skills">
+  <div class="wrap">
+    <div class="sec fade">
+      <div class="sec-head">
+        <span class="sec-num">02</span>
+        <h2>skills</h2>
+      </div>
+      <div class="skills-grid">
+        <div class="skill">
+          <div class="skill-name">Electronics</div>
+          <div class="skill-tags">Arduino · ATmega · UART / I2C<br>stepper & servo drivers<br>power supplies · soldering</div>
+        </div>
+        <div class="skill">
+          <div class="skill-name">3D Printing</div>
+          <div class="skill-tags">FDM · slicer tuning<br>hardware mods<br>open source contributions</div>
+        </div>
+        <div class="skill">
+          <div class="skill-name">Blender</div>
+          <div class="skill-tags">rigid body physics · Cycles<br>EEVEE · VSE editing<br>YouTube Shorts</div>
+        </div>
+        <div class="skill">
+          <div class="skill-name">Web Dev</div>
+          <div class="skill-tags">SvelteKit · React · Hono.js<br>SQLite · Docker · Vite<br>full stack from scratch</div>
+        </div>
+        <div class="skill">
+          <div class="skill-name">Self-Hosting</div>
+          <div class="skill-tags">Home Assistant · Pi-hole<br>Nextcloud · n8n · Coolify<br>Raspberry Pi homelab</div>
+        </div>
+        <div class="skill">
+          <div class="skill-name">AI / Generative</div>
+          <div class="skill-tags">ComfyUI · FLUX · LoRA<br>PyTorch / ROCm<br>local models</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr />
+
+<section id="projects">
+  <div class="wrap">
+    <div class="sec fade">
+      <div class="sec-head">
+        <span class="sec-num">03</span>
+        <h2>projects</h2>
+      </div>
+      <div class="project-list">
+        <a href="https://github.com/leotrax3d" target="_blank" class="project">
+          <div class="project-name">robot arm</div>
+          <div class="project-desc">building a multi-DOF arm from scratch — NEMA steppers, servo joints, firmware in C. very much in progress.</div>
+          <div class="project-tag">hardware</div>
+        </a>
+        <a href="https://github.com/leotrax3d" target="_blank" class="project">
+          <div class="project-name">WordSwap</div>
+          <div class="project-desc">Chrome extension that replaces words and images on any page in real time. Manifest v3, vanilla JS, actually published.</div>
+          <div class="project-tag">extension</div>
+        </a>
+        <a href="https://github.com/leotrax3d" target="_blank" class="project">
+          <div class="project-name">Statify</div>
+          <div class="project-desc">self-hosted Spotify stats app. Hono.js + React + SQLite + Docker Compose. runs on a Pi.</div>
+          <div class="project-tag">web app</div>
+        </a>
+        <a href="https://github.com/leotrax3d" target="_blank" class="project">
+          <div class="project-name">Voidkit</div>
+          <div class="project-desc">dark-themed SvelteKit dev utility site. nothing fancy, just useful.</div>
+          <div class="project-tag">web app</div>
+        </a>
+        <a href="https://github.com/leotrax3d" target="_blank" class="project">
+          <div class="project-name">Tipp·Trainer</div>
+          <div class="project-desc">single-file typing trainer on GitHub Pages. no dependencies, no build step.</div>
+          <div class="project-tag">tool</div>
+        </a>
+        <a href="https://github.com/leotrax3d" target="_blank" class="project">
+          <div class="project-name">cloud chamber</div>
+          <div class="project-desc">DIY Peltier-cooled cloud chamber with Pi temperature monitoring via DS18B20 and Python. built for a physics class.</div>
+          <div class="project-tag">hardware</div>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>leotrax3d</span>
+  <a href="https://github.com/leotrax3d" target="_blank">github.com/leotrax3d</a>
+</footer>
+
+<script>
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('on'); });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.fade').forEach(el => io.observe(el));
+</script>
+</body>
+</html>
