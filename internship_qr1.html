@@ -1,1 +1,532 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>internship — leotrax3d</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
 
+      :root {
+        --bg: #0d0e0f;
+        --bg2: #141618;
+        --bg3: #1a1d20;
+        --border: rgba(255, 255, 255, 0.07);
+        --border2: rgba(255, 255, 255, 0.13);
+        --text: #e8e6e0;
+        --muted: #56595e;
+        --accent: #c5f13e;
+        --accent2: #3ef1d0;
+        --mono: "JetBrains Mono", monospace;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--mono);
+        font-size: 13px;
+        line-height: 1.75;
+        overflow-x: hidden;
+      }
+
+      body::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image:
+          linear-gradient(var(--border) 1px, transparent 1px),
+          linear-gradient(90deg, var(--border) 1px, transparent 1px);
+        background-size: 72px 72px;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      /* ── NAV ── */
+      nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.1rem 2.5rem;
+        border-bottom: 1px solid var(--border);
+        background: rgba(13, 14, 15, 0.88);
+        backdrop-filter: blur(12px);
+      }
+
+      .nav-logo {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--accent);
+        text-decoration: none;
+        letter-spacing: 0.02em;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 2rem;
+        list-style: none;
+        align-items: center;
+      }
+
+      .nav-links a {
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 11px;
+        letter-spacing: 0.06em;
+        transition: color 0.15s;
+      }
+
+      .nav-links a:hover {
+        color: var(--text);
+      }
+      .nav-links a.active {
+        color: var(--text);
+      }
+
+      .nav-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 11px;
+        color: var(--text);
+        text-decoration: none;
+        border: 1px solid var(--border2);
+        padding: 5px 13px;
+        border-radius: 3px;
+        transition:
+          border-color 0.15s,
+          color 0.15s;
+      }
+
+      .nav-back:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      section,
+      header {
+        position: relative;
+        z-index: 1;
+      }
+
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 0 2.5rem;
+      }
+
+      /* ── PAGE HEADER ── */
+      .page-header {
+        padding-top: 120px;
+        padding-bottom: 4rem;
+        position: relative;
+        z-index: 1;
+      }
+
+      .page-header .wrap {
+      }
+
+      .page-eyebrow {
+        font-size: 11px;
+        color: var(--muted);
+        letter-spacing: 0.1em;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .page-eyebrow::before {
+        content: "";
+        display: inline-block;
+        width: 28px;
+        height: 1px;
+        background: var(--accent);
+        flex-shrink: 0;
+      }
+
+      .page-eyebrow span {
+        color: var(--accent);
+      }
+
+      h1 {
+        font-size: clamp(2.4rem, 6vw, 4.5rem);
+        font-weight: 700;
+        letter-spacing: -0.04em;
+        line-height: 1;
+        margin-bottom: 1.5rem;
+      }
+
+      h1 .dim {
+        color: var(--muted);
+        font-weight: 300;
+        font-style: italic;
+      }
+
+      .page-sub {
+        max-width: 480px;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.9;
+        border-left: 2px solid var(--accent);
+        padding-left: 1rem;
+      }
+
+      /* ── DIVIDER ── */
+      hr {
+        border: none;
+        border-top: 1px solid var(--border);
+        position: relative;
+        z-index: 1;
+      }
+
+      /* ── SECTIONS ── */
+      .sec {
+        padding: 5rem 0;
+      }
+
+      .sec-head {
+        display: flex;
+        align-items: baseline;
+        gap: 0.75rem;
+        margin-bottom: 3rem;
+      }
+
+      .sec-num {
+        font-size: 10px;
+        color: var(--accent);
+        letter-spacing: 0.12em;
+        font-weight: 500;
+        flex-shrink: 0;
+      }
+
+      h2 {
+        font-size: clamp(1.4rem, 3vw, 1.9rem);
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        line-height: 1;
+        color: var(--text);
+      }
+
+      /* ── OVERVIEW GRID ── */
+      .overview-grid {
+        display: grid;
+        grid-template-columns: 3fr 2fr;
+        gap: 4rem;
+        align-items: start;
+      }
+
+      .body-text p {
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.95;
+        margin-bottom: 1rem;
+      }
+
+      .body-text p b {
+        color: var(--text);
+        font-weight: 500;
+      }
+
+      .info-list {
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        overflow: hidden;
+      }
+
+      .info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 9px 14px;
+        font-size: 11px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .info-row:last-child {
+        border-bottom: none;
+      }
+      .info-row .k {
+        color: var(--muted);
+      }
+      .info-row .v {
+        color: var(--text);
+        text-align: right;
+      }
+      .info-row .v.accent {
+        color: var(--accent);
+      }
+
+      /* ── TASKS ── */
+      .task-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        overflow: hidden;
+      }
+
+      .task {
+        background: var(--bg2);
+        border-bottom: 1px solid var(--border);
+        padding: 1.4rem 1.5rem;
+        transition: background 0.15s;
+      }
+
+      .task:last-child {
+        border-bottom: none;
+      }
+      .task:hover {
+        background: var(--bg3);
+      }
+
+      .task-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.6rem;
+      }
+
+      .task-title {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text);
+      }
+
+      .task-tag {
+        font-size: 10px;
+        color: var(--accent2);
+        border: 1px solid rgba(62, 241, 208, 0.18);
+        padding: 3px 9px;
+        border-radius: 3px;
+        white-space: nowrap;
+      }
+
+      .task-body {
+        font-size: 11px;
+        color: var(--muted);
+        line-height: 1.75;
+      }
+
+      /* ── LEARNINGS ── */
+      .learnings-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1px;
+        background: var(--border);
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        overflow: hidden;
+      }
+
+      .learning {
+        background: var(--bg2);
+        padding: 1.5rem;
+        transition: background 0.15s;
+      }
+
+      .learning:hover {
+        background: var(--bg3);
+      }
+
+      .learning-title {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 0.5rem;
+      }
+
+      .learning-body {
+        font-size: 11px;
+        color: var(--muted);
+        line-height: 1.8;
+      }
+
+      /* ── QUOTE ── */
+      .quote-block {
+        border-left: 2px solid var(--accent);
+        padding: 1.2rem 1.5rem;
+        background: var(--bg2);
+        border-radius: 0 4px 4px 0;
+        font-size: 12px;
+        color: var(--muted);
+        font-style: italic;
+        line-height: 1.9;
+      }
+
+      .quote-block strong {
+        color: var(--text);
+        font-style: normal;
+        font-weight: 500;
+      }
+
+      /* ── FOOTER ── */
+      footer {
+        position: relative;
+        z-index: 1;
+        border-top: 1px solid var(--border);
+        padding: 1.6rem 2.5rem;
+        max-width: 1000px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 11px;
+        color: var(--muted);
+      }
+
+      footer a {
+        color: var(--muted);
+        text-decoration: none;
+        transition: color 0.15s;
+      }
+      footer a:hover {
+        color: var(--accent);
+      }
+
+      /* ── FADE ── */
+      .fade {
+        opacity: 0;
+        transform: translateY(16px);
+        transition:
+          opacity 0.55s ease,
+          transform 0.55s ease;
+      }
+      .fade.on {
+        opacity: 1;
+        transform: none;
+      }
+
+      /* ── MOBILE ── */
+      @media (max-width: 680px) {
+        nav {
+          padding: 1rem 1.2rem;
+        }
+        .nav-links li:not(:last-child) {
+          display: none;
+        }
+
+        .wrap {
+          padding: 0 1.25rem;
+        }
+
+        h1 {
+          font-size: clamp(2rem, 11vw, 3rem);
+        }
+
+        .page-sub {
+          max-width: 100%;
+        }
+
+        .overview-grid {
+          grid-template-columns: 1fr;
+          gap: 2rem;
+        }
+
+        .learnings-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .task-head {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0.4rem;
+        }
+
+        footer {
+          flex-direction: column;
+          gap: 0.5rem;
+          text-align: center;
+          padding: 1.4rem 1.25rem;
+        }
+
+        .sec {
+          padding: 3.5rem 0;
+        }
+        .page-header {
+          padding-top: 100px;
+          padding-bottom: 2.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <a href="index.html" class="nav-logo">leotrax3d</a>
+      <ul class="nav-links">
+        <li><a href="index.html#about">about</a></li>
+        <li><a href="index.html#skills">skills</a></li>
+        <li><a href="index.html#projects">projects</a></li>
+        <li><a href="internship.html" class="active">internship</a></li>
+        <li>
+          <a href="index.html" class="nav-back"> ← back </a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="page-header">
+      <div class="wrap">
+        <h1>Baudrate<br /></h1>
+        <p>
+          Die Baudrate gibt die Anzahl der Symbole pro Sekunde an, also wie oft
+          sich ein Signalzustand pro Sekunde ändert. Einheit: Baud (Bd).
+          Zusammenhang mit Bitrate Die tatsächliche Datenrate hängt davon ab,
+          wie viele Bits ein Symbol trägt: Bitrate = Baudrate × Bits pro Symbol
+          Bei einfachen Systemen (z. B. klassische serielle Schnittstelle) gilt
+          oft: 1 Baud = 1 Bit/s Typische Standard-Baudraten Vor allem bei
+          serieller Kommunikation (z. B. RS-232 oder UART): 300 Bd 1200 Bd 2400
+          Bd 4800 Bd 9600 Bd 19200 Bd 38400 Bd 57600 Bd 115200 Bd (sehr häufig)
+          Diese Werte sind historisch gewachsen und basieren auf gut teilbaren
+          Taktfrequenzen. Warum diese Standards? Leichte Erzeugung durch
+          Quarzoszillatoren (z. B. 1,8432 MHz) Minimierung von
+          Übertragungsfehlern Kompatibilität zwischen Geräten Beispiel (UART)
+          Bei einer typischen Einstellung wie: 9600 Baud 8 Datenbits, 1 Stopbit,
+          kein Paritätsbit werden pro Zeichen mehr als 8 Bits übertragen (Start-
+          und Stopbits kommen dazu). → Effektive Nutzdatenrate ist geringer als
+          9600 Bit/s Kurz zusammengefasst Baudrate = Signalwechsel pro Sekunde
+          Bitrate = tatsächliche Datenmenge Standardwerte sorgen für stabile und
+          kompatible Kommunikation
+        </p>
+      </div>
+    </div>
+
+    <footer>
+      <a href="index.html">← back to leotrax3d</a>
+      <a href="https://github.com/leotrax3d" target="_blank"
+        >github.com/leotrax3d</a
+      >
+    </footer>
+
+    <script>
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) e.target.classList.add("on");
+          });
+        },
+        { threshold: 0.08 },
+      );
+      document.querySelectorAll(".fade").forEach((el) => io.observe(el));
+    </script>
+  </body>
+</html>
