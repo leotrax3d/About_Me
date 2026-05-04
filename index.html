@@ -9,7 +9,18 @@
       href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&display=swap"
       rel="stylesheet"
     />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=menu"
+    />
     <style>
+      .material-symbols-outlined {
+        font-variation-settings:
+          "FILL" 0,
+          "wght" 400,
+          "GRAD" 0,
+          "opsz" 24;
+      }
       *,
       *::before,
       *::after {
@@ -244,6 +255,22 @@
         gap: 2rem;
         list-style: none;
         align-items: center;
+      }
+
+      .nav-menu {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        border: 1px solid var(--border2);
+        border-radius: 4px;
+        background: transparent;
+        color: var(--accent);
+      }
+
+      .nav-menu .material-symbols-outlined {
+        font-size: 20px;
       }
       .author {
         position: absolute;
@@ -644,9 +671,6 @@
         nav {
           padding: 1rem 1.2rem;
         }
-        .nav-links li:not(:last-child) {
-          display: none;
-        }
 
         .hero-inner,
         .wrap {
@@ -703,6 +727,29 @@
         }
       }
 
+      @media (max-width: 600px) {
+        .nav-menu {
+          display: inline-flex;
+        }
+
+        .nav-links {
+          position: absolute;
+          top: calc(100% + 0.5rem);
+          right: 1.2rem;
+          flex-direction: column;
+          gap: 0.75rem;
+          background: rgba(13, 14, 15, 0.96);
+          border: 1px solid var(--border);
+          padding: 0.8rem 0.9rem;
+          border-radius: 6px;
+          display: none;
+        }
+
+        nav.nav-open .nav-links {
+          display: flex;
+        }
+      }
+
       @media (max-width: 420px) {
         .skills-grid {
           grid-template-columns: 1fr;
@@ -737,11 +784,14 @@
     </div>
     <nav>
       <a href="#" class="nav-logo">leotrax3d</a>
+      <button class="nav-menu" type="button" aria-label="Open menu">
+        <span class="material-symbols-outlined">menu</span>
+      </button>
       <ul class="nav-links">
-        <li><a href="#about">about</a></li>
-        <li><a href="#skills">skills</a></li>
-        <li><a href="#projects">projects</a></li>
-        <li><a href="internship.html">internship</a></li>
+        <li><a class="easter-trigger" href="#about">about</a></li>
+        <li><a class="easter-trigger" href="#skills">skills</a></li>
+        <li><a class="easter-trigger" href="#projects">projects</a></li>
+        <li><a class="easter-trigger" href="internship.html">internship</a></li>
         <li>
           <a href="https://github.com/leotrax3d" target="_blank" class="nav-gh">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
@@ -760,7 +810,7 @@
         <div class="hero-eyebrow">
           maker &nbsp;·&nbsp; <span>leotrax3d</span> &nbsp;·&nbsp; dev
         </div>
-        <h1 class="easter-trigger">
+        <h1>
           “Simplicity<br />
           <span class="dim">is prerequisite for</span><br />
           <span class="hi">reliability.”</span>
@@ -1010,7 +1060,10 @@
       const terminalBody = document.querySelector(".terminal-body");
       const terminalInput = document.querySelector(".terminal-input");
       const terminalClose = document.querySelector(".terminal-close");
-      const easterTrigger = document.querySelector(".easter-trigger");
+      const easterTriggers = document.querySelectorAll(".easter-trigger");
+      const nav = document.querySelector("nav");
+      const navMenu = document.querySelector(".nav-menu");
+      const navLinks = document.querySelectorAll(".nav-links a");
       let mouseX = 0;
       let mouseY = 0;
       let dotX = 0;
@@ -1261,6 +1314,21 @@
         if (event.target === terminalOverlay) closeTerminal();
       });
 
+      if (navMenu) {
+        navMenu.addEventListener("click", () => {
+          nav.classList.toggle("nav-open");
+          const isOpen = nav.classList.contains("nav-open");
+          navMenu.setAttribute("aria-expanded", isOpen ? "true" : "false");
+        });
+      }
+
+      navLinks.forEach((link) => {
+        link.addEventListener("click", () => {
+          nav.classList.remove("nav-open");
+          if (navMenu) navMenu.setAttribute("aria-expanded", "false");
+        });
+      });
+
       terminalInput.addEventListener("keydown", (event) => {
         if (event.key === "Enter") {
           runCommand(terminalInput.value);
@@ -1277,15 +1345,24 @@
         }
       });
 
-      if (easterTrigger) {
-        easterTrigger.addEventListener("click", () => {
-          openTerminal();
-        });
+      let easterCount = 0;
+      let easterTimer;
 
-        easterTrigger.addEventListener("touchend", () => {
+      const handleEasterClick = () => {
+        easterCount += 1;
+        if (easterCount >= 3) {
+          easterCount = 0;
           openTerminal();
-        });
-      }
+        }
+        clearTimeout(easterTimer);
+        easterTimer = setTimeout(() => {
+          easterCount = 0;
+        }, 1200);
+      };
+
+      easterTriggers.forEach((trigger) => {
+        trigger.addEventListener("click", handleEasterClick);
+      });
 
       window.addEventListener("scroll", () => {
         window.requestAnimationFrame(setDotShift);
