@@ -25,7 +25,7 @@
         --border: rgba(255, 255, 255, 0.07);
         --border2: rgba(255, 255, 255, 0.13);
         --text: #e8e6e0;
-        --muted: #56595e;
+        --muted: #8b9096;
         --accent: #c5f13e;
         --accent2: #3ef1d0;
         --mono: "JetBrains Mono", monospace;
@@ -39,21 +39,180 @@
         background: var(--bg);
         color: var(--text);
         font-family: var(--mono);
-        font-size: 13px;
-        line-height: 1.75;
+        font-size: 15px;
+        line-height: 1.85;
         overflow-x: hidden;
+        cursor: none;
       }
 
       body::after {
         content: "";
         position: fixed;
         inset: 0;
-        background-image:
-          linear-gradient(var(--border) 1px, transparent 1px),
-          linear-gradient(90deg, var(--border) 1px, transparent 1px);
-        background-size: 72px 72px;
+        background-image: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.22) 1.3px,
+          transparent 1.6px
+        );
+        background-size: 28px 28px;
+        background-position: 0 var(--dot-shift, 0px);
         pointer-events: none;
         z-index: 0;
+      }
+
+      a,
+      button,
+      .btn {
+        cursor: none;
+      }
+
+      .cursor,
+      .cursor-dot {
+        position: fixed;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+        z-index: 200;
+        transform: translate(-50%, -50%);
+        opacity: 0;
+        transition: opacity 0.2s ease;
+      }
+
+      .cursor {
+        width: 34px;
+        height: 34px;
+        border: 1px solid rgba(197, 241, 62, 0.7);
+        border-radius: 50%;
+        backdrop-filter: blur(2px);
+      }
+
+      .cursor-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--accent);
+      }
+
+      .cursor.is-on,
+      .cursor-dot.is-on {
+        opacity: 1;
+      }
+
+      .cursor.is-hover {
+        transform: translate(-50%, -50%) scale(1.3);
+        border-color: rgba(62, 241, 208, 0.8);
+      }
+
+      .terminal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(13, 14, 15, 0.82);
+        backdrop-filter: blur(8px);
+        z-index: 250;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s ease;
+      }
+
+      .terminal-overlay.is-open {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .terminal {
+        width: min(740px, 92vw);
+        background: #0d0e0f;
+        border: 1px solid var(--border2);
+        border-radius: 8px;
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .terminal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.7rem 1rem;
+        border-bottom: 1px solid var(--border);
+        font-size: 11px;
+        color: var(--muted);
+        letter-spacing: 0.06em;
+      }
+
+      .terminal-close {
+        background: transparent;
+        border: 1px solid var(--border2);
+        color: var(--muted);
+        font-family: var(--mono);
+        font-size: 10px;
+        padding: 4px 8px;
+        border-radius: 4px;
+      }
+
+      .terminal-body {
+        padding: 1rem;
+        min-height: 200px;
+        max-height: min(50vh, 360px);
+        overflow: auto;
+        font-size: 12px;
+        line-height: 1.7;
+      }
+
+      .terminal-line {
+        margin-bottom: 0.4rem;
+        color: var(--muted);
+      }
+
+      .terminal-line strong {
+        color: var(--text);
+        font-weight: 500;
+      }
+
+      .terminal-input-row {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.75rem 1rem 1rem;
+        border-top: 1px solid var(--border);
+      }
+
+      .terminal-prompt {
+        color: var(--accent);
+        font-size: 12px;
+      }
+
+      .terminal-input {
+        flex: 1;
+        background: transparent;
+        border: none;
+        outline: none;
+        color: var(--text);
+        font-family: var(--mono);
+        font-size: 12px;
+      }
+
+      body.terminal-open {
+        overflow: hidden;
+      }
+
+      @media (hover: none), (pointer: coarse) {
+        body {
+          cursor: auto;
+        }
+        a,
+        button,
+        .btn {
+          cursor: pointer;
+        }
+        .cursor,
+        .cursor-dot {
+          display: none;
+        }
       }
 
       /* ── NAV ── */
@@ -203,8 +362,8 @@
       .hero-body {
         max-width: 440px;
         color: var(--muted);
-        font-size: 12px;
-        line-height: 1.9;
+        font-size: 14px;
+        line-height: 2;
         margin-bottom: 2.5rem;
         border-left: 2px solid var(--accent);
         padding-left: 1rem;
@@ -291,8 +450,8 @@
       .about-text p {
         color: var(--muted);
         margin-bottom: 1rem;
-        font-size: 12px;
-        line-height: 1.9;
+        font-size: 14px;
+        line-height: 2;
       }
 
       .about-text p b {
@@ -387,7 +546,7 @@
       }
 
       .skill-tags {
-        font-size: 10px;
+        font-size: 11px;
         color: var(--muted);
         line-height: 1.9;
       }
@@ -426,9 +585,9 @@
       }
 
       .project-desc {
-        font-size: 11px;
+        font-size: 13px;
         color: var(--muted);
-        line-height: 1.65;
+        line-height: 1.8;
       }
 
       .project-tag {
@@ -555,6 +714,27 @@
     </style>
   </head>
   <body>
+    <div class="cursor"></div>
+    <div class="cursor-dot"></div>
+    <div class="terminal-overlay" aria-hidden="true">
+      <div class="terminal" role="dialog" aria-label="Secret terminal">
+        <div class="terminal-header">
+          <span>leotrax3d / terminal</span>
+          <button class="terminal-close" type="button">esc</button>
+        </div>
+        <div class="terminal-body" role="log" aria-live="polite"></div>
+        <div class="terminal-input-row">
+          <span class="terminal-prompt">&gt;</span>
+          <input
+            class="terminal-input"
+            type="text"
+            spellcheck="false"
+            autocomplete="off"
+            inputmode="text"
+          />
+        </div>
+      </div>
+    </div>
     <nav>
       <a href="#" class="nav-logo">leotrax3d</a>
       <ul class="nav-links">
@@ -580,7 +760,7 @@
         <div class="hero-eyebrow">
           maker &nbsp;·&nbsp; <span>leotrax3d</span> &nbsp;·&nbsp; dev
         </div>
-        <h1>
+        <h1 class="easter-trigger">
           “Simplicity<br />
           <span class="dim">is prerequisite for</span><br />
           <span class="hi">reliability.”</span>
@@ -824,6 +1004,295 @@
     </footer>
 
     <script>
+      const cursor = document.querySelector(".cursor");
+      const cursorDot = document.querySelector(".cursor-dot");
+      const terminalOverlay = document.querySelector(".terminal-overlay");
+      const terminalBody = document.querySelector(".terminal-body");
+      const terminalInput = document.querySelector(".terminal-input");
+      const terminalClose = document.querySelector(".terminal-close");
+      const easterTrigger = document.querySelector(".easter-trigger");
+      let mouseX = 0;
+      let mouseY = 0;
+      let dotX = 0;
+      let dotY = 0;
+      const bootTime = Date.now();
+      const guessGame = {
+        active: false,
+        target: 0,
+        tries: 0,
+      };
+
+      const setDotShift = () => {
+        const shift = window.scrollY * -0.25;
+        document.body.style.setProperty("--dot-shift", `${shift}px`);
+      };
+
+      const moveCursor = () => {
+        dotX += (mouseX - dotX) * 0.2;
+        dotY += (mouseY - dotY) * 0.2;
+        cursor.style.left = `${mouseX}px`;
+        cursor.style.top = `${mouseY}px`;
+        cursorDot.style.left = `${dotX}px`;
+        cursorDot.style.top = `${dotY}px`;
+        requestAnimationFrame(moveCursor);
+      };
+
+      window.addEventListener("mousemove", (event) => {
+        mouseX = event.clientX;
+        mouseY = event.clientY;
+        cursor.classList.add("is-on");
+        cursorDot.classList.add("is-on");
+      });
+
+      window.addEventListener("mouseleave", () => {
+        cursor.classList.remove("is-on");
+        cursorDot.classList.remove("is-on");
+      });
+
+      const addTerminalLine = (text, strong = false) => {
+        const line = document.createElement("div");
+        line.className = "terminal-line";
+        if (strong) {
+          const strongEl = document.createElement("strong");
+          strongEl.textContent = text;
+          line.appendChild(strongEl);
+        } else {
+          line.textContent = text;
+        }
+        terminalBody.appendChild(line);
+        terminalBody.scrollTop = terminalBody.scrollHeight;
+      };
+
+      const seedTerminal = () => {
+        if (terminalBody.childElementCount === 0) {
+          addTerminalLine("type 'help' for commands.");
+        }
+      };
+
+      const openTerminal = () => {
+        terminalOverlay.classList.add("is-open");
+        terminalOverlay.setAttribute("aria-hidden", "false");
+        document.body.classList.add("terminal-open");
+        seedTerminal();
+        setTimeout(() => terminalInput.focus(), 0);
+      };
+
+      const closeTerminal = () => {
+        terminalOverlay.classList.remove("is-open");
+        terminalOverlay.setAttribute("aria-hidden", "true");
+        document.body.classList.remove("terminal-open");
+      };
+
+      const runCommand = (raw) => {
+        const input = raw.trim();
+        if (!input) return;
+        addTerminalLine(`> ${input}`, true);
+        const normalized = input.toLowerCase();
+        const parts = normalized.split(/\s+/).filter(Boolean);
+        const command = parts[0];
+        const args = parts.slice(1);
+        if (command === "help") {
+          addTerminalLine(
+            "commands: help, about, skills, projects, github, internship, whoami, uptime, date, theme, ascii, echo, coin, rps, guess, clear, exit",
+          );
+          return;
+        }
+        if (command === "echo") {
+          if (args.length === 0) {
+            addTerminalLine("usage: echo <text>");
+            return;
+          }
+          addTerminalLine(input.slice(input.indexOf(" ") + 1));
+          return;
+        }
+        if (command === "about") {
+          addTerminalLine("jumping to about...");
+          closeTerminal();
+          location.hash = "#about";
+          return;
+        }
+        if (command === "skills") {
+          addTerminalLine("jumping to skills...");
+          closeTerminal();
+          location.hash = "#skills";
+          return;
+        }
+        if (command === "projects") {
+          addTerminalLine("jumping to projects...");
+          closeTerminal();
+          location.hash = "#projects";
+          return;
+        }
+        if (command === "github") {
+          addTerminalLine("opening github...");
+          window.open("https://github.com/leotrax3d", "_blank");
+          return;
+        }
+        if (command === "internship") {
+          addTerminalLine("opening internship...");
+          window.location.href = "internship.html";
+          return;
+        }
+        if (
+          command === "whoami" ||
+          command === "who am i" ||
+          command === "whoam i"
+        ) {
+          addTerminalLine("HARALD RITZ");
+          return;
+        }
+        if (command === "uptime") {
+          const seconds = Math.floor((Date.now() - bootTime) / 1000);
+          const mins = Math.floor(seconds / 60);
+          const hrs = Math.floor(mins / 60);
+          const days = Math.floor(hrs / 24);
+          const parts = [];
+          if (days) parts.push(`${days}d`);
+          if (hrs % 24 || days) parts.push(`${hrs % 24}h`);
+          if (mins % 60 || hrs) parts.push(`${mins % 60}m`);
+          parts.push(`${seconds % 60}s`);
+          addTerminalLine(`uptime: ${parts.join(" ")}`);
+          return;
+        }
+        if (command === "date") {
+          addTerminalLine(new Date().toLocaleString());
+          return;
+        }
+        if (command === "theme") {
+          addTerminalLine("theme: mono, accent #c5f13e, bg #0d0e0f");
+          return;
+        }
+        if (command === "ascii") {
+          addTerminalLine("  _            _     ");
+          addTerminalLine(" | | ___  __ _| |__  ");
+          addTerminalLine(" | |/ _ \\/ _` | '_ \\ ");
+          addTerminalLine(" | |  __/ (_| | |_) |");
+          addTerminalLine(" |_|\\___|\\__,_|_.__/ ");
+          return;
+        }
+        if (command === "coin") {
+          const result = Math.random() < 0.5 ? "heads" : "tails";
+          addTerminalLine(`coin: ${result}`);
+          return;
+        }
+        if (command === "rps") {
+          const pick = args[0];
+          if (!pick || !["rock", "paper", "scissors"].includes(pick)) {
+            addTerminalLine("usage: rps rock|paper|scissors");
+            return;
+          }
+          const options = ["rock", "paper", "scissors"];
+          const cpu = options[Math.floor(Math.random() * options.length)];
+          if (pick === cpu) {
+            addTerminalLine(`rps: ${pick} vs ${cpu} -> draw`);
+            return;
+          }
+          const win =
+            (pick === "rock" && cpu === "scissors") ||
+            (pick === "paper" && cpu === "rock") ||
+            (pick === "scissors" && cpu === "paper");
+          addTerminalLine(`rps: ${pick} vs ${cpu} -> ${win ? "win" : "lose"}`);
+          return;
+        }
+        if (
+          command === "guess" ||
+          (guessGame.active && /^\d+$/.test(command))
+        ) {
+          const arg = args[0];
+          const value = command === "guess" ? arg : command;
+          if (!value) {
+            guessGame.active = true;
+            guessGame.target = Math.floor(Math.random() * 20) + 1;
+            guessGame.tries = 0;
+            addTerminalLine("guess: pick a number 1-20");
+            return;
+          }
+          if (value === "stop") {
+            guessGame.active = false;
+            guessGame.tries = 0;
+            addTerminalLine("guess: stopped");
+            return;
+          }
+          if (!guessGame.active) {
+            addTerminalLine("guess: start a game with 'guess'");
+            return;
+          }
+          const num = Number(value);
+          if (!Number.isInteger(num)) {
+            addTerminalLine("guess: enter a number");
+            return;
+          }
+          guessGame.tries += 1;
+          if (num === guessGame.target) {
+            addTerminalLine(`guess: correct in ${guessGame.tries} tries`);
+            guessGame.active = false;
+            return;
+          }
+          addTerminalLine(
+            num < guessGame.target ? "guess: higher" : "guess: lower",
+          );
+          return;
+        }
+        if (command === "clear") {
+          terminalBody.innerHTML = "";
+          guessGame.active = false;
+          guessGame.tries = 0;
+          seedTerminal();
+          return;
+        }
+        if (command === "exit") {
+          closeTerminal();
+          return;
+        }
+        addTerminalLine("unknown command. type 'help'.");
+      };
+
+      document.querySelectorAll("a, button, .btn").forEach((el) => {
+        el.addEventListener("mouseenter", () =>
+          cursor.classList.add("is-hover"),
+        );
+        el.addEventListener("mouseleave", () =>
+          cursor.classList.remove("is-hover"),
+        );
+      });
+
+      terminalClose.addEventListener("click", closeTerminal);
+      terminalOverlay.addEventListener("click", (event) => {
+        if (event.target === terminalOverlay) closeTerminal();
+      });
+
+      terminalInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          runCommand(terminalInput.value);
+          terminalInput.value = "";
+        }
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (
+          event.key === "Escape" &&
+          terminalOverlay.classList.contains("is-open")
+        ) {
+          closeTerminal();
+        }
+      });
+
+      if (easterTrigger) {
+        easterTrigger.addEventListener("click", () => {
+          openTerminal();
+        });
+
+        easterTrigger.addEventListener("touchend", () => {
+          openTerminal();
+        });
+      }
+
+      window.addEventListener("scroll", () => {
+        window.requestAnimationFrame(setDotShift);
+      });
+
+      setDotShift();
+      moveCursor();
       const io = new IntersectionObserver(
         (entries) => {
           entries.forEach((e) => {
