@@ -42,6 +42,13 @@
         --mono: "JetBrains Mono", monospace;
       }
 
+      a:focus-visible,
+      button:focus-visible,
+      input:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 3px;
+      }
+
       html {
         scroll-behavior: smooth;
       }
@@ -226,6 +233,21 @@
         }
       }
 
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+
+        .cursor,
+        .cursor-dot {
+          display: none;
+        }
+
+        body {
+          cursor: auto;
+        }
+      }
+
       /* ── NAV ── */
       nav {
         position: fixed;
@@ -265,7 +287,7 @@
         height: 34px;
         border: 1px solid var(--border2);
         border-radius: 4px;
-        background: transparent;
+        background: var(--bg2);
         color: var(--accent);
       }
 
@@ -287,6 +309,7 @@
         font-size: 11px;
         letter-spacing: 0.06em;
         transition: color 0.15s;
+        padding: 0.25rem 0.2rem;
       }
 
       .nav-links a:hover {
@@ -318,6 +341,10 @@
         z-index: 1;
       }
 
+      section[id] {
+        scroll-margin-top: 96px;
+      }
+
       .wrap {
         max-width: 1000px;
         margin: 0 auto;
@@ -339,35 +366,13 @@
         width: 100%;
       }
 
-      .hero-eyebrow {
-        font-size: 11px;
-        color: var(--muted);
-        letter-spacing: 0.1em;
-        margin-bottom: 2rem;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-
-      .hero-eyebrow::before {
-        content: "";
-        display: inline-block;
-        width: 28px;
-        height: 1px;
-        background: var(--accent);
-        flex-shrink: 0;
-      }
-
-      .hero-eyebrow span {
-        color: var(--accent);
-      }
-
       h1 {
         font-size: clamp(3rem, 9vw, 6.5rem);
         font-weight: 700;
         letter-spacing: -0.04em;
         line-height: 0.97;
         margin-bottom: 2rem;
+        animation: hero-float 0.7s ease both;
       }
 
       h1 .dim {
@@ -377,6 +382,8 @@
       }
       h1 .hi {
         color: var(--accent);
+        text-shadow: 0 0 24px rgba(197, 241, 62, 0.2);
+        animation: hero-glow 2.6s ease-in-out infinite;
       }
 
       .hero-quote {
@@ -384,6 +391,8 @@
         font-size: 11px;
         letter-spacing: 0.04em;
         margin-bottom: 2.25rem;
+        animation: hero-float 0.7s ease both;
+        animation-delay: 0.1s;
       }
 
       .hero-body {
@@ -394,6 +403,8 @@
         margin-bottom: 2.5rem;
         border-left: 2px solid var(--accent);
         padding-left: 1rem;
+        animation: hero-float 0.7s ease both;
+        animation-delay: 0.2s;
       }
 
       .hero-body strong {
@@ -405,6 +416,29 @@
         display: flex;
         gap: 12px;
         flex-wrap: wrap;
+        animation: hero-float 0.7s ease both;
+        animation-delay: 0.3s;
+      }
+
+      @keyframes hero-float {
+        0% {
+          opacity: 0;
+          transform: translateY(14px);
+        }
+        100% {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes hero-glow {
+        0%,
+        100% {
+          text-shadow: 0 0 24px rgba(197, 241, 62, 0.2);
+        }
+        50% {
+          text-shadow: 0 0 36px rgba(197, 241, 62, 0.35);
+        }
       }
 
       .btn {
@@ -743,6 +777,7 @@
           padding: 0.8rem 0.9rem;
           border-radius: 6px;
           display: none;
+          min-width: 180px;
         }
 
         nav.nav-open .nav-links {
@@ -784,10 +819,16 @@
     </div>
     <nav>
       <a href="#" class="nav-logo">leotrax3d</a>
-      <button class="nav-menu" type="button" aria-label="Open menu">
+      <button
+        class="nav-menu"
+        type="button"
+        aria-label="Open menu"
+        aria-expanded="false"
+        aria-controls="site-nav"
+      >
         <span class="material-symbols-outlined">menu</span>
       </button>
-      <ul class="nav-links">
+      <ul class="nav-links" id="site-nav">
         <li><a class="easter-trigger" href="#about">about</a></li>
         <li><a class="easter-trigger" href="#skills">skills</a></li>
         <li><a class="easter-trigger" href="#projects">projects</a></li>
@@ -807,10 +848,7 @@
 
     <header>
       <div class="hero-inner">
-        <div class="hero-eyebrow">
-          maker &nbsp;·&nbsp; <span>leotrax3d</span> &nbsp;·&nbsp; dev
-        </div>
-        <h1>
+        <h1 class="easter-trigger">
           “Simplicity<br />
           <span class="dim">is prerequisite for</span><br />
           <span class="hi">reliability.”</span>
@@ -819,7 +857,7 @@
         <p class="hero-body">
           i make stuff —
           <strong>robots, web apps, physics simulations, home servers.</strong>
-          mostly just for fun. sometimes it even works on the first try.
+          mostly for fun. sometimes it even works on the first try.
         </p>
         <div class="hero-actions">
           <a
@@ -849,20 +887,20 @@
           <div class="about-grid">
             <div class="about-text">
               <p>
-                hey, i'm <b>leotrax3d</b>. i like building things — hardware,
-                software, doesn't really matter. if it involves a soldering iron
-                or a terminal, i'm probably already interested.
+                hey, i'm <b>leotrax3d</b>. i like building things — hardware or
+                software. if it involves a soldering iron or a terminal, i'm
+                probably already interested.
               </p>
               <p>
                 right now i'm working on a <b>robot arm</b> from scratch,
                 managing a homelab that's gotten a bit out of hand, and
-                occasionally rendering marble runs in Blender for no reason
-                other than that it's satisfying.
+                occasionally rendering marble runs in Blender just because it is
+                satisfying.
               </p>
               <p>
                 i contribute to the <b>3D printing open-source community</b> and
-                try to actually document things properly — so other people don't
-                have to figure it out the hard way like i did.
+                try to document things properly — so other people do not have to
+                figure it out the hard way like i did.
               </p>
               <p>
                 most of what i build starts as "this probably won't work" and
@@ -1327,6 +1365,20 @@
           nav.classList.remove("nav-open");
           if (navMenu) navMenu.setAttribute("aria-expanded", "false");
         });
+      });
+
+      document.addEventListener("click", (event) => {
+        if (!nav.classList.contains("nav-open")) return;
+        if (nav.contains(event.target)) return;
+        nav.classList.remove("nav-open");
+        if (navMenu) navMenu.setAttribute("aria-expanded", "false");
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") return;
+        if (!nav.classList.contains("nav-open")) return;
+        nav.classList.remove("nav-open");
+        if (navMenu) navMenu.setAttribute("aria-expanded", "false");
       });
 
       terminalInput.addEventListener("keydown", (event) => {

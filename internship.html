@@ -42,6 +42,13 @@
         --mono: "JetBrains Mono", monospace;
       }
 
+      a:focus-visible,
+      button:focus-visible,
+      input:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 3px;
+      }
+
       html {
         scroll-behavior: smooth;
       }
@@ -226,6 +233,21 @@
         }
       }
 
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+
+        .cursor,
+        .cursor-dot {
+          display: none;
+        }
+
+        body {
+          cursor: auto;
+        }
+      }
+
       /* ── NAV ── */
       nav {
         position: fixed;
@@ -265,7 +287,7 @@
         height: 34px;
         border: 1px solid var(--border2);
         border-radius: 4px;
-        background: transparent;
+        background: var(--bg2);
         color: var(--accent);
       }
 
@@ -279,6 +301,7 @@
         font-size: 11px;
         letter-spacing: 0.06em;
         transition: color 0.15s;
+        padding: 0.25rem 0.2rem;
       }
 
       .nav-links a:hover {
@@ -312,6 +335,10 @@
       header {
         position: relative;
         z-index: 1;
+      }
+
+      section[id] {
+        scroll-margin-top: 96px;
       }
 
       .wrap {
@@ -660,6 +687,7 @@
           padding: 0.8rem 0.9rem;
           border-radius: 6px;
           display: none;
+          min-width: 180px;
         }
 
         nav.nav-open .nav-links {
@@ -692,10 +720,16 @@
     </div>
     <nav>
       <a href="index.html" class="nav-logo">leotrax3d</a>
-      <button class="nav-menu" type="button" aria-label="Open menu">
+      <button
+        class="nav-menu"
+        type="button"
+        aria-label="Open menu"
+        aria-expanded="false"
+        aria-controls="site-nav"
+      >
         <span class="material-symbols-outlined">menu</span>
       </button>
-      <ul class="nav-links">
+      <ul class="nav-links" id="site-nav">
         <li><a class="easter-trigger" href="index.html#about">about</a></li>
         <li><a class="easter-trigger" href="index.html#skills">skills</a></li>
         <li><a class="easter-trigger" href="index.html#projects">projects</a></li>
@@ -717,8 +751,7 @@
         </h1>
         <p class="page-sub">
           BOGY-Praktikum bei TRIA (Avnet) — Einblick in Embedded-Systeme,
-          Softwareentwicklung und reale technische Herausforderungen im
-          Arbeitsalltag.
+          Softwareentwicklung und technische Herausforderungen im Arbeitsalltag.
         </p>
       </div>
     </div>
@@ -737,9 +770,8 @@
                 <b>Warum dieses Praktikum?</b><br />
                 Ich habe dieses Praktikum bei TRIA gewählt, weil mich Elektronik
                 schon seit Längerem begeistert. Als Teil von Avnet, einem der
-                weltweit größten Elektronik-Distributoren, hatte ich die
-                Möglichkeit, mir sowohl die Herstellung als auch die
-                professionelle Entwicklung anzusehen.
+                weltweit größten Elektronik-Distributoren, konnte ich mir die
+                Herstellung und die professionelle Entwicklung ansehen.
               </p>
               <p>
                 <b>Fähigkeiten & Interessen</b><br />
@@ -757,7 +789,7 @@
               <p>
                 <b>Schwierigkeiten</b><br />
                 TRIA suchte ursprünglich keine Praktikanten, sondern
-                Auszubildende. Der Praktikumsplatz entstand daher erst durch
+                Auszubildende. Der Praktikumsplatz entstand deshalb erst durch
                 Eigeninitiative.
               </p>
             </div>
@@ -1101,6 +1133,20 @@
           nav.classList.remove("nav-open");
           if (navMenu) navMenu.setAttribute("aria-expanded", "false");
         });
+      });
+
+      document.addEventListener("click", (event) => {
+        if (!nav.classList.contains("nav-open")) return;
+        if (nav.contains(event.target)) return;
+        nav.classList.remove("nav-open");
+        if (navMenu) navMenu.setAttribute("aria-expanded", "false");
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") return;
+        if (!nav.classList.contains("nav-open")) return;
+        nav.classList.remove("nav-open");
+        if (navMenu) navMenu.setAttribute("aria-expanded", "false");
       });
 
       terminalInput.addEventListener("keydown", (event) => {
