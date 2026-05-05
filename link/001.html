@@ -14,8 +14,11 @@
       ...
     </p>
     <script>
-      const targetUrl = document.body.dataset.targetUrl;
+      const rawTargetUrl = document.body.dataset.targetUrl;
       const previewMode = window.location.href.endsWith("/?");
+      const targetUrl = /^(https?:)?\/\//i.test(rawTargetUrl)
+        ? rawTargetUrl
+        : `https://${rawTargetUrl}`;
 
       document.getElementById("canonical-link").setAttribute("href", targetUrl);
       const link = document.getElementById("target-link");
