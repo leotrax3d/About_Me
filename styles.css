@@ -130,6 +130,33 @@ body.custom-cursor .nav-back {
   transition: opacity 0.2s ease;
 }
 
+.name-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(13, 14, 15, 0.88);
+  backdrop-filter: blur(10px);
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.name-overlay.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.name-overlay-text {
+  font-size: clamp(2rem, 6vw, 4.5rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--accent);
+  text-align: center;
+}
+
 .terminal-overlay.is-open {
   opacity: 1;
   pointer-events: auto;
