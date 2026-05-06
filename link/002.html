@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Weiterleitung...</title>
+    <meta id="meta-refresh" http-equiv="refresh" content="0; url=" />
+    <link id="canonical-link" rel="canonical" href="" />
+  </head>
+  <body data-target-url="https://youtu.be/xvFZjo5PgG0?si=_Rl6u2Xl8YpMCBky">
+    <p id="status-text">
+      Weiterleitung zu
+      <a id="target-link" href="">harald ritz</a>
+      ...
+    </p>
+    <script>
+      const rawTargetUrl = document.body.dataset.targetUrl;
+      const previewMode = window.location.href.endsWith("/?");
+      const targetUrl = /^(https?:)?\/\//i.test(rawTargetUrl)
+        ? rawTargetUrl
+        : `https://${rawTargetUrl}`;
+
+      document.getElementById("canonical-link").setAttribute("href", targetUrl);
+      const link = document.getElementById("target-link");
+      link.setAttribute("href", targetUrl);
+      link.textContent = targetUrl;
+
+      if (previewMode) {
+        document.getElementById("status-text").firstChild.textContent =
+          "Vorschau (keine Weiterleitung). Ziel: ";
+      } else {
+        document
+          .getElementById("meta-refresh")
+          .setAttribute("content", `0; url=${targetUrl}`);
+        window.location.replace(targetUrl);
+      }
+    </script>
+  </body>
+</html>
