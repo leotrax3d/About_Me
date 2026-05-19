@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Privacy Policy / Datenschutzerklärung">
+    <title>Privacy Policy & Datenschutzerklärung</title>
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --container-bg: #ffffff;
+            --text-main: #333333;
+            --text-muted: #666666;
+            --accent-color: #007aff;
+            --highlight-bg: #e6f2ff;
+            --border-color: #eaeaea;
+            --btn-bg: #eaeaea;
+            --btn-text: #333333;
+        }
+
+        /* Automatischer Dark Mode */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #121212;
+                --container-bg: #1e1e1e;
+                --text-main: #e0e0e0;
+                --text-muted: #a0a0a0;
+                --accent-color: #4da3ff;
+                --highlight-bg: #2a3b4c;
+                --border-color: #333333;
+                --btn-bg: #333333;
+                --btn-text: #e0e0e0;
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            background: var(--container-bg);
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        header {
+            border-bottom: 2px solid var(--accent-color);
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        h2 {
+            font-size: 20px;
+            margin-top: 30px;
+            color: var(--text-main);
+        }
+
+        p, li {
+            font-size: 16px;
+            color: var(--text-main);
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        .highlight {
+            background-color: var(--highlight-bg);
+            padding: 20px;
+            border-left: 5px solid var(--accent-color);
+            margin: 25px 0;
+            border-radius: 4px;
+        }
+
+        .contact-box {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: transparent;
+        }
+
+        /* Language Switcher Button Styles */
+        .lang-switch {
+            display: flex;
+            gap: 10px;
+        }
+
+        .lang-btn {
+            background-color: var(--btn-bg);
+            color: var(--btn-text);
+            border: none;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .lang-btn.active {
+            background-color: var(--accent-color);
+            color: #ffffff;
+        }
+
+        /* Language Visibility Toggling */
+        .lang-section {
+            display: none;
+        }
+
+        .lang-section.active {
+            display: block;
+        }
+
+        footer {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 14px;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 24px;
+            }
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="container">
+        <header>
+            <h1 id="header-title">Privacy Policy</h1>
+            <div class="lang-switch">
+                <button class="lang-btn active" onclick="setLanguage('en')">English</button>
+                <button class="lang-btn" onclick="setLanguage('de')">Deutsch</button>
+            </div>
+        </header>
+        
+        <section id="lang-en" class="lang-section active">
+            <h2>1. Introduction and Overview</h2>
+            <p>We take the protection of your personal data very seriously. This privacy policy informs you about how we handle data when you use our Android application. We treat all information confidentially and in accordance with statutory data protection regulations, in particular the European General Data Protection Regulation (GDPR).</p>
+            
+            <h2>2. Data Controller</h2>
+            <p>Responsible for data processing within the meaning of the GDPR and other national data protection laws is:</p>
+            <div class="contact-box">
+                <strong>Email:</strong> <a href="mailto:leotrax3d@gmx.net" style="color: var(--accent-color); text-decoration: none;">leotrax3d@gmx.net</a>
+            </div>
+
+            <h2>3. No Collection of Personal Data</h2>
+            <div class="highlight">
+                <strong>Core Principle:</strong> This mobile application does <strong>not collect, store, process, or share any personal data</strong> of its users.
+            </div>
+            <p>For clarification, this means:</p>
+            <ul>
+                <li><strong>No Tracking or Analytics:</strong> No analysis tools (such as Google Analytics for Firebase, Crashlytics) are used to log user behavior.</li>
+                <li><strong>No Disclosure to Third Parties:</strong> Since we do not collect any data, no identifying characteristics (e.g., advertising IDs, IP addresses, or device IDs) are transmitted to third-party providers.</li>
+                <li><strong>No Advertising:</strong> The app does not display any personalized or non-personalized advertising via external ad networks.</li>
+                <li><strong>Full Local Storage:</strong> All data, settings, or progress resulting from the use of the app remain exclusively local on the storage of your respective device.</li>
+            </ul>
+
+            <h2>4. App Permissions</h2>
+            <p>For the proper functioning of the app, certain system permissions from Android may be requested (e.g., access to the internet or local storage). These permissions serve exclusively to provide the core technical functions of the application. At no time are private user data read out, uploaded to external servers, or otherwise viewed by us through these permissions.</p>
+
+            <h2>5. Data Security</h2>
+            <p>Even though we do not collect any personal data, we point out that data transmission over the Internet or storage on mobile devices can fundamentally have security vulnerabilities. Complete protection of data against access by unauthorized third parties (e.g., through malware on your own device) cannot be guaranteed.</p>
+
+            <h2>6. Links to Other Websites or Services</h2>
+            <p>Our app may contain links to external websites or services (e.g., to the Google Play Store). If you click on such a link, you leave our application. We have no control over and assume no responsibility for the content, privacy policies, or practices of any third-party websites or services.</p>
+
+            <h2>7. Your Rights as a User (Data Subject Rights)</h2>
+            <p>According to the GDPR, users fundamentally have various rights regarding their personal data, including the right to information (Art. 15 GDPR), rectification (Art. 16 GDPR), erasure (Art. 17 GDPR), restriction of processing (Art. 18 GDPR), data portability (Art. 20 GDPR), and objection (Art. 21 GDPR).</p>
+            <p><strong>Note:</strong> However, since no personal data is collected or processed by us when using this app, these rights cannot be exercised in practice and have no effect. If you still have questions about this, you can contact the email address mentioned above at any time.</p>
+
+            <h2>8. Changes to This Privacy Policy</h2>
+            <p>We reserve the right to adapt this privacy policy occasionally so that it always complies with current legal requirements or to implement changes to our app (e.g., the introduction of new functions) in the privacy policy. The new privacy policy will then apply to your next visit.</p>
+        </section>
+
+        <section id="lang-de" class="lang-section">
+            <h2>1. Einleitung und Überblick</h2>
+            <p>Wir nehmen den Schutz Ihrer persönlichen Daten sehr ernst. Diese Datenschutzerklärung informiert Sie darüber, wie wir mit Daten umgehen, wenn Sie unsere Android-App nutzen. Wir behandeln alle Informationen vertraulich und entsprechend der gesetzlichen Datenschutzvorschriften, insbesondere der Europäischen Datenschutz-Grundverordnung (DSGVO).</p>
+            
+            <h2>2. Verantwortliche Stelle</h2>
+            <p>Verantwortlich für die Datenverarbeitung im Sinne der DSGVO und anderer nationaler Datenschutzgesetze ist:</p>
+            <div class="contact-box">
+                <strong>E-Mail:</strong> <a href="mailto:leotrax3d@gmx.net" style="color: var(--accent-color); text-decoration: none;">leotrax3d@gmx.net</a>
+            </div>
+
+            <h2>3. Keine Erhebung personenbezogener Daten</h2>
+            <div class="highlight">
+                <strong>Kernprinzip:</strong> Diese mobile Anwendung sammelt, speichert, verarbeitet oder teilt <strong>keinerlei personenbezogene Daten</strong> ihrer Nutzer.
+            </div>
+            <p>Zur Klarstellung bedeutet dies:</p>
+            <ul>
+                <li><strong>Kein Tracking oder Analytics:</strong> Es werden keine Analyse-Tools (wie z.B. Google Analytics for Firebase, Crashlytics) eingesetzt, um das Nutzerverhalten zu protokollieren.</li>
+                <li><strong>Keine Weitergabe an Dritte:</strong> Da wir keine Daten erheben, werden auch keine Identifikationsmerkmale (z.B. Werbe-IDs, IP-Adressen oder Geräte-IDs) an Drittanbieter übermittelt.</li>
+                <li><strong>Keine Werbung:</strong> Die App blendet keine personalisierte oder unpersonalisierte Werbung über externe Werbenetzwerke ein.</li>
+                <li><strong>Vollständige lokale Speicherung:</strong> Alle Daten, Einstellungen oder Fortschritte, die durch die Nutzung der App entstehen, verbleiben ausschließlich lokal auf dem Speicher Ihres jeweiligen Endgeräts.</li>
+            </ul>
+
+            <h2>4. App-Berechtigungen (Permissions)</h2>
+            <p>Für die ordnungsgemäße Funktion der App können bestimmte Systemberechtigungen von Android angefordert werden (z. B. der Zugriff auf das Internet oder den lokalen Speicher). Diese Berechtigungen dienen ausschließlich der Bereitstellung der technischen Kernfunktionen der App. Zu keinem Zeitpunkt werden durch diese Berechtigungen private Nutzerdaten ausgelesen, auf externe Server hochgeladen oder anderweitig von uns eingesehen.</p>
+
+            <h2>5. Datensicherheit</h2>
+            <p>Auch wenn wir keine personenbezogenen Daten erheben, weisen wir darauf hin, dass die Datenübertragung im Internet oder die Speicherung auf mobilen Endgeräten grundsätzlich Sicherheitslücken aufweisen kann. Ein lückenloser Schutz von Daten vor dem Zugriff durch unbefugte Dritte (z.B. durch Malware auf dem eigenen Gerät) kann nicht garantiert werden.</p>
+
+            <h2>6. Links zu anderen Websites oder Diensten</h2>
+            <p>Unsere App kann Links zu externen Websites oder Diensten (z.B. zum Google Play Store) enthalten. Wenn Sie auf einen solchen Link klicken, verlassen Sie unsere Anwendung. Wir haben keine Kontrolle darüber und übernehmen keine Verantwortung für die Inhalte, Datenschutzrichtlinien oder Praktiken von Websites oder Diensten Dritter.</p>
+
+            <h2>7. Ihre Rechte als Nutzer (Betroffenenrechte)</h2>
+            <p>Gemäß der DSGVO haben Nutzer grundsätzlich verschiedene Rechte bezüglich ihrer personenbezogenen Daten, darunter das Recht auf Auskunft (Art. 15 DSGVO), Berichtigung (Art. 16 DSGVO), Löschung (Art. 17 DSGVO), Einschränkung der Verarbeitung (Art. 18 DSGVO), Datenübertragbarkeit (Art. 20 DSGVO) und Widerspruch (Art. 21 DSGVO).</p>
+            <p><strong>Hinweis:</strong> Da bei der Nutzung dieser App jedoch gar keine personenbezogenen Daten von uns erhoben oder verarbeitet werden, können diese Rechte in der Praxis bei uns nicht ausgeübt werden bzw. laufen ins Leere. Sollten Sie dennoch Fragen hierzu haben, können Sie sich jederzeit an die oben genannte E-Mail-Adresse wenden.</p>
+
+            <h2>8. Änderungen dieser Datenschutzerklärung</h2>
+            <p>Wir behalten uns vor, diese Datenschutzerklärung gelegentlich anzupassen, damit sie stets den aktuellen rechtlichen Anforderungen entspricht oder um Änderungen unserer App (z.B. die Einführung neuer Funktionen) in der Datenschutzerklärung umzusetzen. Für Ihren erneuten Besuch gilt dann die neue Datenschutzerklärung.</p>
+        </section>
+
+        <footer>
+            <span id="footer-text">Last updated: May 2026</span>
+        </footer>
+    </main>
+
+    <script>
+        function setLanguage(lang) {
+            // Update active buttons
+            const buttons = document.querySelectorAll('.lang-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            // Update visible sections
+            const sections = document.querySelectorAll('.lang-section');
+            sections.forEach(sec => sec.classList.remove('active'));
+            
+            const title = document.getElementById('header-title');
+            const footerText = document.getElementById('footer-text');
+
+            if (lang === 'de') {
+                document.getElementById('lang-de').classList.add('active');
+                buttons[1].classList.add('active');
+                title.textContent = "Datenschutzerklärung";
+                footerText.textContent = "Zuletzt aktualisiert: Mai 2026";
+                document.documentElement.lang = "de";
+            } else {
+                document.getElementById('lang-en').classList.add('active');
+                buttons[0].classList.add('active');
+                title.textContent = "Privacy Policy";
+                footerText.textContent = "Last updated: May 2026";
+                document.documentElement.lang = "en";
+            }
+        }
+    </script>
+</body>
+</html>
