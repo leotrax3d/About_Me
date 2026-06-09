@@ -1301,3 +1301,142 @@ footer a:hover {
     font-size: clamp(2.2rem, 14vw, 3rem);
   }
 }
+
+/* Nav */
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.1rem 2.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(13, 14, 15, 0.62);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.32);
+}
+/* ==========================================================================
+   PROMO POPUP STYLES
+   ========================================================================== */
+
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7); /* Dunkler Overlay-Hintergrund */
+  backdrop-filter: blur(4px); /* Leichter Glas-Effekt */
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999; /* Ganz nach vorne holen */
+
+  /* Versteckt das Popup standardmäßig sanft */
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.4s ease,
+    visibility 0.4s ease;
+}
+
+.popup-overlay.is-visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.popup-content {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 2.5rem 2rem;
+  max-width: 450px;
+  width: 90%;
+  position: relative;
+  text-align: center;
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6);
+
+  /* Kleiner Slide-In Effekt */
+  transform: translateY(20px);
+  transition: transform 0.4s ease;
+}
+
+.popup-overlay.is-visible .popup-content {
+  transform: translateY(0);
+}
+
+.popup-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.popup-close:hover {
+  color: var(--accent);
+}
+
+.popup-content h2 {
+  color: var(--text);
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+}
+
+.popup-desc {
+  color: var(--text);
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+}
+
+.popup-links {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.popup-btn {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--border2);
+  padding: 0.8rem 1rem;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.popup-btn:hover {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+/* Der winzige Disclaimer ganz unten */
+.popup-disclaimer {
+  font-size: 0.7rem;
+  color: var(--muted);
+  line-height: 1.4;
+  text-align: left;
+  border-top: 1px solid var(--border);
+  padding-top: 1rem;
+  margin-bottom: 0;
+}
+/* --- FIX FÜR DEN MAUSZEIGER --- */
+.cursor,
+.cursor-dot {
+  z-index: 99999 !important; /* Muss höher sein als das Popup (welches 9999 hat) */
+  pointer-events: none !important; /* Sehr wichtig, damit du "durch" den Zeiger klicken kannst */
+}

@@ -14,6 +14,8 @@
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=menu"
     />
     <link rel="stylesheet" href="styles.css" />
+
+    <link rel="stylesheet" href="xp.css" id="xp-theme-link" disabled />
   </head>
   <body class="page-home custom-cursor">
     <div class="cursor"></div>
@@ -55,8 +57,9 @@
         <li><a class="easter-trigger" href="internship.html">internship</a></li>
         <li><a class="easter-trigger" href="qr.html">qr</a></li>
         <li><a class="easter-trigger" href="ClassChat.html">ClassChat</a></li>
-        <li><a class="easter-trigger" href="tipptrainer.html">Tipp Trainer</a></li>
-
+        <li>
+          <a class="easter-trigger" href="tipptrainer.html">Tipp Trainer</a>
+        </li>
 
         <li>
           <a href="https://github.com/leotrax3d" target="_blank" class="nav-gh">
@@ -314,6 +317,9 @@
       <a href="https://github.com/leotrax3d" target="_blank"
         >github.com/leotrax3d</a
       >
+      <button id="xp-toggle" class="xp-toggle-btn" type="button">
+        <span>Old UI</span>
+      </button>
     </footer>
 
     <div class="hit-counter">
@@ -322,12 +328,137 @@
         alt="hit counter"
       />
     </div>
+
+    <!-- === WICHTIGES PROMO-POPUP === -->
+    <div id="promo-popup" class="popup-overlay" aria-hidden="true">
+      <div
+        class="popup-content"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="popup-title"
+      >
+        <button id="popup-close" class="popup-close" aria-label="Close popup">
+          &times;
+        </button>
+
+        <h2 id="popup-title">A quick moment of your time!</h2>
+        <p class="popup-desc">
+          Hey there! While you are browsing, I would highly appreciate it if you
+          could check out these important initiatives:
+        </p>
+
+        <div class="popup-links">
+          <a
+            href="https://keepandroidopen.org/de/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="popup-btn"
+          >
+            Keep Android Open
+          </a>
+          <a
+            href="https://quitgpt.org/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="popup-btn"
+          >
+            QuitGPT
+          </a>
+
+          <a
+            href="https://publiccode.eu/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="popup-btn"
+          >
+            PublicCode
+          </a>
+        </div>
+
+        <p class="popup-disclaimer">
+          <strong>Disclaimer:</strong>
+
+This website may contain links to third-party websites or external resources (“External Sites”) provided for informational and convenience purposes only.
+
+The inclusion of links does not imply endorsement, affiliation, or approval unless expressly stated. The operator has no control over and assumes no responsibility for the content, accuracy, availability, legality, or policies of External Sites.
+
+External content may change over time. Links may be removed if unlawful or inappropriate content becomes known.
+
+All trademarks and names remain the property of their respective owners.
+
+Users access External Sites at their own discretion and subject to their respective terms and privacy policies.
+
+Nothing on this website constitutes legal, financial, medical, or professional advice unless explicitly stated.
+
+Last updated: 09.06.2024
+
+        </p>
+      </div>
+    </div>
+          </a>
+        </div>
+
+        <p class="popup-disclaimer">
+          <strong>Disclaimer:</strong> I am not responsible for the content of
+          these external websites. Their privacy policies and terms of service
+          may differ from this site. Proceed at your own discretion.
+        </p>
+      </div>
+    </div>
+
     <script
       data-goatcounter="https://leotrax3daboutme.goatcounter.com/count"
       async
       src="//gc.zgo.at/count.js"
     ></script>
     <script>
+      // Warte, bis die Seite komplett geladen ist
+      document.addEventListener("DOMContentLoaded", () => {
+        const popupOverlay = document.getElementById("promo-popup");
+        const closeBtn = document.getElementById("popup-close");
+
+        // UX Check: Wurde das Popup in dieser Sitzung schon gezeigt?
+        const hasSeenPopup = sessionStorage.getItem("hasSeenPromoPopup");
+
+        if (!hasSeenPopup && popupOverlay) {
+          // 30 Sekunden Timer (30000 Millisekunden)
+          // TIPP: Ändere die 30000 zu 3000 (3 Sek) um es schneller testen zu können!
+          setTimeout(() => {
+            popupOverlay.classList.add("is-visible");
+            // Markiere das Popup als "gesehen" im Browser-Speicher
+            sessionStorage.setItem("hasSeenPromoPopup", "true");
+          }, 15000);
+        }
+
+        // Funktion zum Schließen des Popups
+        const closePopup = () => {
+          popupOverlay.classList.remove("is-visible");
+        };
+
+        // Popup schließen bei Klick auf das X
+        if (closeBtn) {
+          closeBtn.addEventListener("click", closePopup);
+        }
+
+        // Popup schließen bei Klick auf den abgedunkelten Hintergrund (außerhalb der Box)
+        if (popupOverlay) {
+          popupOverlay.addEventListener("click", (event) => {
+            if (event.target === popupOverlay) {
+              closePopup();
+            }
+          });
+        }
+
+        // Popup schließen, wenn der Nutzer die Escape-Taste drückt
+        document.addEventListener("keydown", (event) => {
+          if (
+            event.key === "Escape" &&
+            popupOverlay.classList.contains("is-visible")
+          ) {
+            closePopup();
+          }
+        });
+      });
       const cursor = document.querySelector(".cursor");
       const cursorDot = document.querySelector(".cursor-dot");
       const terminalOverlay = document.querySelector(".terminal-overlay");
@@ -667,6 +798,35 @@
         { threshold: 0.08 },
       );
       document.querySelectorAll(".fade").forEach((el) => io.observe(el));
+
+      const xpToggleBtn = document.getElementById("xp-toggle");
+      const xpThemeLink = document.getElementById("xp-theme-link");
+
+      // Funktion, um das Design zu setzen
+      function applyTheme(isXP) {
+        // Wenn isXP true ist, schalten wir "disabled" auf false (aktivieren es also)
+        xpThemeLink.disabled = !isXP;
+
+        // Zustand im lokalen Browser-Speicher merken
+        if (isXP) {
+          localStorage.setItem("theme", "xp");
+        } else {
+          localStorage.setItem("theme", "dark");
+        }
+      }
+
+      // Beim Laden der Seite prüfen, was vorher ausgewählt war
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme === "xp") {
+        applyTheme(true);
+      }
+
+      // Event-Listener für den Button-Klick
+      xpToggleBtn.addEventListener("click", () => {
+        // Wenn das XP-Stylesheet aktuell deaktiviert (disabled === true) ist, aktivieren wir es
+        const turnOnXP = xpThemeLink.disabled;
+        applyTheme(turnOnXP);
+      });
     </script>
   </body>
 </html>

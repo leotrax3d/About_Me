@@ -1,0 +1,197 @@
+/* ==========================================================================
+   WINDOWS XP THEME (Wird nur geladen, wenn aktiviert)
+   ========================================================================== */
+
+:root {
+  /* Globale Farbvariablen radikal überschreiben */
+  --bg: #ece9d8; /* Klassisches XP-Beige */
+  --bg2: #ffffff; /* Weiß für Karten-Hintergründe */
+  --bg3: #d4d0c8; /* Windows-Grau */
+  --border: #0053e1; /* Luna-Blau */
+  --border2: #0044b5;
+  --text: #000000; /* Schwarzer Text für perfekten Kontrast */
+  --muted: #555555;
+  --accent: #245edc;
+  --accent2: #31b22a; /* XP Start-Button Grün */
+  --mono: "Tahoma", "Verdana", sans-serif; /* XP Systemschrift */
+}
+
+/* Custom Cursor der Hauptseite deaktivieren */
+.cursor,
+.cursor-dot {
+  display: none !important;
+}
+body {
+  cursor: default !important;
+  background-image: none !important; /* Entfernt eventuelle moderne Hintergrundmuster */
+}
+
+/* Die Navbar wird zur XP-Titelzeile */
+header,
+nav {
+  background: linear-gradient(
+    to bottom,
+    #0058e6 0%,
+    #3a93ff 8%,
+    #288eff 40%,
+    #127dff 88%,
+    #036bfe 100%
+  ) !important;
+  border-bottom: 2px solid #0044b5 !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+header a,
+header span,
+.xp-toggle-btn {
+  color: white !important;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+}
+
+/* Aus modernen Glass-Listen werden eckige XP-Fenster */
+.info-list,
+.skills-grid,
+.project-list,
+.terminal {
+  background: #ffffff !important;
+  border: 2px solid #0053e1 !important;
+  border-radius: 3px 3px 0 0 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Die inneren Kacheln erhalten den klassischen 90er/2000er 3D-Look */
+.skill,
+.project {
+  background: #ece9d8 !important;
+  border: 2px outset #ffffff !important;
+  color: #000000 !important;
+}
+
+.skill:hover,
+.project:hover {
+  background: #e0dcc8 !important;
+  transform: none !important; /* Deaktiviert das moderne Schweben */
+}
+body.theme-frutiger {
+  /* Helle, luftige Farben */
+  --bg: #d9eaf7;
+  --text: #0f202e; /* Dunkelblau statt hartem Schwarz */
+  --muted: #4b6a88;
+  --accent: #2da132; /* Frutiger Aero Grün */
+  --border: rgba(255, 255, 255, 0.7);
+  --mono:
+    "Segoe UI", "Frutiger", "Helvetica Neue", Arial, sans-serif; /* Keine Monospace mehr! */
+
+  /* Nostalgischer Standard-Cursor erzwingen */
+  cursor: default !important;
+
+  /* Der legendäre organische Hintergrund (Wasser/Aurora-Vibe) */
+  background: radial-gradient(
+    circle at 10% 0%,
+    #b8f0c4 0%,
+    #d9eaf7 40%,
+    #87c4f0 100%
+  ) !important;
+  background-attachment: fixed !important;
+}
+
+/* 2. Modernen Custom-Cursor abschalten */
+body.theme-frutiger .cursor,
+body.theme-frutiger .cursor-dot {
+  display: none !important;
+}
+
+/* Standard-Zeigehände für Links */
+body.theme-frutiger a,
+body.theme-frutiger button,
+body.theme-frutiger .xp-toggle-btn {
+  cursor: pointer !important;
+}
+
+/* 3. AERO GLASS EFFEKT (Navbar, Karten-Container, Terminal) */
+/* Dieser Effekt simuliert das Windows 7 Fensterglas */
+body.theme-frutiger header,
+body.theme-frutiger .info-list,
+body.theme-frutiger .skills-grid,
+body.theme-frutiger .project-list,
+body.theme-frutiger .terminal {
+  /* Transparente weiße Basis */
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.45) 0%,
+    rgba(255, 255, 255, 0.15) 100%
+  ) !important;
+
+  /* Starke Unschärfe + Übersättigung (Typisch für Windows Aero) */
+  backdrop-filter: blur(16px) saturate(130%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(130%) !important;
+
+  /* Spekulares Highlight (Lichtkante oben) */
+  border: 1px solid rgba(255, 255, 255, 0.5) !important;
+  border-top: 2px solid rgba(255, 255, 255, 0.9) !important;
+
+  border-radius: 12px !important; /* Abgerundete Ecken waren ein Muss */
+  box-shadow:
+    0 8px 32px rgba(0, 50, 100, 0.1),
+    /* Weicher Drop-Shadow */ inset 0 0 0 1px rgba(255, 255, 255, 0.3) !important; /* Innerer Glanz */
+}
+
+/* Text in der Navbar und Headern anpassen */
+body.theme-frutiger header span,
+body.theme-frutiger .terminal-header {
+  color: #0f202e !important;
+  font-weight: 600;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) !important; /* "Eingeprägter" Text-Effekt */
+}
+
+/* 4. GLOSSY/GEL BUTTONS (Skills & Projekte) */
+/* Dies erzeugt den klassischen "Aqua"-Bonbon-Look durch harte Gradienten-Stopps */
+body.theme-frutiger .skill,
+body.theme-frutiger .project {
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.9) 0%,
+    /* Helle obere Rundung */ rgba(255, 255, 255, 0.4) 49%,
+    /* Mitte */ rgba(255, 255, 255, 0.15) 50%,
+    /* Harter Bruch (Spiegelung) */ rgba(255, 255, 255, 0.5) 100%
+      /* Unteres Highlight */
+  ) !important;
+
+  border: 1px solid rgba(255, 255, 255, 0.8) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1) !important;
+  color: var(--text) !important;
+  transition: all 0.2s ease !important;
+}
+
+/* Leuchtender Hover-Effekt (Wie ein Button-Klick in 2008) */
+body.theme-frutiger .skill:hover,
+body.theme-frutiger .project:hover {
+  background: linear-gradient(
+    to bottom,
+    rgba(220, 245, 255, 0.9) 0%,
+    rgba(180, 230, 255, 0.5) 49%,
+    rgba(150, 210, 255, 0.3) 50%,
+    rgba(200, 240, 255, 0.6) 100%
+  ) !important;
+  box-shadow: 0 0 12px rgba(135, 206, 250, 0.6) !important; /* Blauer Schein */
+  border-color: #87c4f0 !important;
+  transform: scale(1.02) !important;
+}
+
+/* 5. Terminal-Anpassungen (Sollte aussehen wie ein altes Windows-Programm) */
+body.theme-frutiger .terminal-body {
+  background: #ffffff !important; /* Weißer Inhalt */
+  color: #000000 !important;
+  border-radius: 0 0 12px 12px !important;
+  font-family:
+    "Courier New", Courier, monospace !important; /* Echte alte System-Monospace */
+}
+
+body.theme-frutiger .terminal-input {
+  color: #000000 !important;
+}
