@@ -26,6 +26,12 @@
   --accent: #c5f13e;
   --accent2: #c5f13e;
   --mono: "JetBrains Mono", monospace;
+  /* Glassmorphism: lightly translucent surfaces — the live background
+     dots stay visible through the frosted pane, only gently softened. */
+  --glass: rgba(18, 20, 22, 0.2);
+  --glass-strong: rgba(26, 29, 32, 0.34);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-blur: blur(4px) saturate(135%);
 }
 
 a:focus-visible,
@@ -578,9 +584,13 @@ h2 {
 }
 
 .info-list {
-  border: 1px solid var(--border);
-  border-radius: 4px;
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
   overflow: hidden;
+  background: var(--glass);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
 }
 
 .info-row {
@@ -646,20 +656,23 @@ h2 {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1px;
-  background: var(--border);
-  border: 1px solid var(--border);
-  border-radius: 4px;
+  background: var(--glass-border);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
   overflow: hidden;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
 }
 
 .skill {
-  background: var(--bg2);
+  background: var(--glass);
   padding: 1.5rem;
   transition: background 0.15s;
 }
 
 .skill:hover {
-  background: var(--bg3);
+  background: var(--glass-strong);
 }
 
 .skill-name {
@@ -677,9 +690,12 @@ h2 {
 
 /* Projects */
 .project-list {
-  border: 1px solid var(--border);
-  border-radius: 4px;
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
   overflow: hidden;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
 }
 
 .project {
@@ -688,8 +704,8 @@ h2 {
   align-items: center;
   gap: 2rem;
   padding: 1.2rem 1.5rem;
-  background: var(--bg2);
-  border-bottom: 1px solid var(--border);
+  background: var(--glass);
+  border-bottom: 1px solid var(--glass-border);
   text-decoration: none;
   color: inherit;
   transition: background 0.15s;
@@ -700,7 +716,7 @@ h2 {
 }
 
 .project:hover {
-  background: var(--bg3);
+  background: var(--glass-strong);
 }
 
 .project-name {
@@ -1136,6 +1152,41 @@ footer a:hover {
   color: var(--accent);
 }
 
+/* "Old UI" theme-toggle — a frosted glass pill matching the tables. */
+.xp-toggle-btn {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 999px;
+  padding: 7px 16px;
+  cursor: pointer;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  transition:
+    color 0.15s,
+    border-color 0.15s,
+    background 0.15s,
+    transform 0.15s;
+}
+
+.xp-toggle-btn:hover {
+  color: var(--text);
+  background: var(--glass-strong);
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.xp-toggle-btn:active {
+  transform: translateY(0);
+}
+
+body.custom-cursor .xp-toggle-btn {
+  cursor: none;
+}
+
 .hit-counter {
   display: flex;
   justify-content: center;
@@ -1261,10 +1312,6 @@ footer a:hover {
   .page-header {
     padding-top: 100px;
     padding-bottom: 2.5rem;
-  }
-
-  .page-qr .nav-links li:not(:last-child) {
-    display: none;
   }
 }
 

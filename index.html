@@ -83,10 +83,6 @@
         <li><a class="easter-trigger" href="ClassChat.html">ClassChat</a></li>
         <li><a class="easter-trigger" href="showcase.html">showcase</a></li>
         <li>
-          <a class="easter-trigger" href="tipptrainer.html">Tipp Trainer</a>
-        </li>
-
-        <li>
           <a href="https://github.com/leotrax3d" target="_blank" class="nav-gh">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
               <path
@@ -417,16 +413,6 @@ Nothing on this website constitutes legal, financial, medical, or professional a
 
 Last updated: 09.06.2024
 
-        </p>
-      </div>
-    </div>
-          </a>
-        </div>
-
-        <p class="popup-disclaimer">
-          <strong>Disclaimer:</strong> I am not responsible for the content of
-          these external websites. Their privacy policies and terms of service
-          may differ from this site. Proceed at your own discretion.
         </p>
       </div>
     </div>
@@ -880,6 +866,7 @@ Last updated: 09.06.2024
         const FLEE = 22; // cursor push strength
         const SPRING = 0.05; // pull back to rest
         const DAMP = 0.86; // velocity damping
+        const PARALLAX = 0.18; // dots drift opposite to scroll
         const COLOR = "rgba(255, 255, 255, 0.5)";
         // Dots near the cursor fade toward the site's accent (yellow-green).
         const HILITE = "197, 241, 62"; // --accent: #c5f13e
@@ -904,8 +891,10 @@ Last updated: 09.06.2024
           canvas.height = Math.round(height * dpr);
           ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-          const cols = Math.ceil(width / GAP) + 1;
-          const rows = Math.ceil(height / GAP) + 1;
+          // Two extra rows/cols of margin so the parallax shift (up to one
+          // GAP, wrapped) never exposes an empty edge.
+          const cols = Math.ceil(width / GAP) + 2;
+          const rows = Math.ceil(height / GAP) + 2;
           const offX = (width - (cols - 1) * GAP) / 2;
           const offY = (height - (rows - 1) * GAP) / 2;
 
@@ -942,7 +931,17 @@ Last updated: 09.06.2024
           if (!running) return;
           t += 0.016;
 
+          // Parallax: shift the whole field opposite to the scroll, wrapped
+          // to one GAP so the infinite grid never shows a seam. Reading
+          // scrollY does not force layout, so this stays thrash-free.
+          const scroll = window.scrollY || window.pageYOffset || 0;
+          let oy = (scroll * PARALLAX) % GAP;
+          if (oy < 0) oy += GAP;
+          const py = pointer.y - oy; // cursor in the shifted dot space
+
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
           ctx.clearRect(0, 0, width, height);
+          ctx.setTransform(dpr, 0, 0, dpr, 0, oy * dpr);
 
           // Dots within the cursor's influence are drawn separately, in
           // accent colour, bucketed by intensity to limit fillStyle changes.
@@ -957,7 +956,7 @@ Last updated: 09.06.2024
 
             if (pointer.active) {
               const dx = p.x - pointer.x;
-              const dy = p.y - pointer.y;
+              const dy = p.y - py;
               const d2 = dx * dx + dy * dy;
               if (d2 < FLEE_R * FLEE_R) {
                 const d = Math.sqrt(d2);
