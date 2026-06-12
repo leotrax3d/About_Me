@@ -1,5 +1,5 @@
 /* ==========================================================================
-   HARALD RITZ — "Eigenschaften"-Dialog im Windows-XP-Luna-Stil
+   RitzOS — Browser-„Betriebssystem" im klassischen Luna-Look
    Eigenständiges Stylesheet, unabhängig von styles.css / xp.css
    ========================================================================== */
 
@@ -11,25 +11,51 @@ html,
 body {
   margin: 0;
   padding: 0;
-  min-height: 100%;
+  height: 100%;
   font-family: "Tahoma", "Segoe UI", Verdana, Arial, sans-serif;
   font-size: 11px;
   color: #000000;
 }
 
 body {
-  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  user-select: none;
+}
+
+input,
+textarea,
+.ie-content,
+.editor-area,
+.mail-text {
+  user-select: text;
+}
+
+/* --------------------------------------------------------------------------
+   Hintergrundbilder (Systemsteuerung > Anzeige)
+   -------------------------------------------------------------------------- */
+
+body[data-wallpaper="bliss"] {
   background-image: url("assets/xp.webp"), url("assets/xp-bliss-wallpaper.svg");
   background-size: cover, cover;
   background-position: center, center bottom;
   background-repeat: no-repeat, no-repeat;
-  background-attachment: fixed, fixed;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 40px 16px 70px;
-  position: relative;
-  overflow: hidden;
+}
+
+body[data-wallpaper="azur"] {
+  background: linear-gradient(160deg, #1958c9 0%, #3a7bd5 50%, #7fb8f0 100%);
+}
+
+body[data-wallpaper="smaragd"] {
+  background: linear-gradient(160deg, #0e6b2e 0%, #2c9d52 55%, #7fd89a 100%);
+}
+
+body[data-wallpaper="silber"] {
+  background: linear-gradient(160deg, #8e9bac 0%, #c3ccd8 55%, #eef2f7 100%);
+}
+
+body[data-wallpaper="nacht"] {
+  background: linear-gradient(170deg, #060a18 0%, #14203f 60%, #25355e 100%);
 }
 
 /* ==========================================================================
@@ -38,11 +64,14 @@ body {
 
 .desktop-icons {
   position: fixed;
-  top: 16px;
-  left: 16px;
+  top: 12px;
+  left: 12px;
+  bottom: 44px;
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 14px 18px;
   z-index: 1;
 }
 
@@ -50,8 +79,11 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 72px;
+  width: 80px;
   gap: 4px;
+  padding: 4px 0;
+  border: 1px solid transparent;
+  border-radius: 3px;
   cursor: default;
 }
 
@@ -61,53 +93,69 @@ body {
   filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.5));
 }
 
-.desktop-icon span {
+.desktop-icon .icon-label {
   color: #ffffff;
   font-size: 11px;
   text-align: center;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
   padding: 1px 3px;
+  border-radius: 2px;
+}
+
+.desktop-icon.selected .icon-label {
+  background: #316ac5;
+}
+
+.desktop-icon.selected {
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(49, 106, 197, 0.25);
 }
 
 /* ==========================================================================
-   DIALOGFENSTER
+   FENSTER (generisch, vom Fenster-Manager verwaltet)
    ========================================================================== */
 
 .window {
-  position: relative;
-  z-index: 2;
-  width: 100%;
-  max-width: 640px;
-  display: flex;
+  position: fixed;
+  display: none;
   flex-direction: column;
+  width: 560px;
+  max-width: calc(100vw - 12px);
+  max-height: calc(100vh - 48px);
   background: #ece9d8;
   border: 1px solid #0831d9;
   border-radius: 8px 8px 4px 4px;
   box-shadow:
-    3px 3px 0 rgba(0, 0, 0, 0.3),
+    3px 3px 8px rgba(0, 0, 0, 0.35),
     0 0 0 1px #003c74;
   overflow: hidden;
+  z-index: 10;
 }
 
-.window.minimized,
-.window.closed {
+.window.open {
+  display: flex;
+}
+
+.window.minimized {
   display: none;
 }
 
 .window.maximized {
-  position: fixed;
-  inset: 0;
-  bottom: 34px;
-  z-index: 20;
-  width: 100%;
+  inset: 0 0 34px 0 !important;
+  left: 0 !important;
+  top: 0 !important;
+  width: 100% !important;
   max-width: none;
+  max-height: none;
   height: calc(100vh - 34px);
   border-radius: 0;
 }
 
-.window.maximized .window-body {
+.window-content {
+  display: flex;
+  flex-direction: column;
   flex: 1;
-  overflow: auto;
+  min-height: 0;
 }
 
 /* Titelleiste im Luna-Blau */
@@ -128,6 +176,13 @@ body {
   border-bottom: 1px solid #0044b5;
   touch-action: none;
   cursor: default;
+  flex: none;
+}
+
+/* Inaktive Fenster: ausgegraute Titelleiste */
+.window:not(.focused) .title-bar {
+  background: linear-gradient(to bottom, #7a96df 0%, #9db9ee 50%, #7a96df 100%);
+  border-bottom-color: #6f86c4;
 }
 
 .title-bar-text {
@@ -141,19 +196,27 @@ body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  min-width: 0;
 }
 
-/* Kleines "Visitenkarten"-Icon in der Titelleiste */
+.tb-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .title-bar-icon {
   display: inline-block;
   width: 16px;
   height: 16px;
+  font-size: 13px;
+  line-height: 16px;
   flex: none;
 }
 
 .title-bar-controls {
   display: flex;
   gap: 2px;
+  flex: none;
 }
 
 .title-bar-controls button {
@@ -168,6 +231,7 @@ body {
   line-height: 1;
   cursor: default;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+  padding: 0;
 }
 
 .title-bar-controls button:active {
@@ -179,7 +243,7 @@ body {
 }
 
 /* ==========================================================================
-   REITER (TABS) — wie bei klassischen Eigenschaften-Dialogen
+   REITER (TABS)
    ========================================================================== */
 
 .tab-strip {
@@ -187,6 +251,7 @@ body {
   gap: 3px;
   padding: 6px 6px 0;
   background: #ece9d8;
+  flex: none;
 }
 
 .tab {
@@ -194,7 +259,6 @@ body {
   top: 1px;
   padding: 4px 16px 5px;
   border: 1px solid #aca899;
-  border-bottom: 1px solid #aca899;
   border-radius: 3px 3px 0 0;
   background: #d8d5c8;
   color: #555555;
@@ -212,15 +276,16 @@ body {
   z-index: 1;
 }
 
-/* Inhalt des Fensters */
 .window-body {
   background: #ece9d8;
   padding: 12px 14px 14px;
   border-top: 1px solid #aca899;
+  overflow: auto;
+  flex: 1;
+  min-height: 0;
 }
 
 .tab-panel {
-  background: #ece9d8;
   display: none;
 }
 
@@ -255,11 +320,11 @@ body {
   grid-template-columns: 70px 1fr;
   gap: 6px 8px;
   align-items: center;
+  margin: 0;
 }
 
 .profile-fields dt {
   text-align: right;
-  color: #000000;
 }
 
 .profile-fields dd {
@@ -278,7 +343,6 @@ body {
   font-weight: bold;
 }
 
-/* Gruppenrahmen im klassischen XP-"Group Box"-Look */
 fieldset {
   border: 1px solid #aca899;
   border-radius: 3px;
@@ -295,14 +359,12 @@ fieldset legend {
 fieldset p {
   margin: 0 0 8px;
   line-height: 1.5;
-  text-align: justify;
 }
 
 fieldset p:last-child {
   margin-bottom: 0;
 }
 
-/* Details-Tabelle */
 .details-table {
   width: 100%;
   border-collapse: collapse;
@@ -324,7 +386,7 @@ fieldset p:last-child {
 }
 
 /* ==========================================================================
-   DIALOG-SCHALTFLÄCHEN (OK / Abbrechen / Übernehmen)
+   SCHALTFLÄCHEN & WERKZEUGLEISTEN
    ========================================================================== */
 
 .dialog-buttons {
@@ -361,13 +423,71 @@ fieldset p:last-child {
   font-weight: bold;
 }
 
-/* Statusleiste */
+.xp-toolbtn {
+  padding: 3px 8px;
+  font-family: inherit;
+  font-size: 11px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  cursor: default;
+  white-space: nowrap;
+}
+
+.xp-toolbtn:hover:not(:disabled) {
+  border-color: #aca899;
+  background: #f6f4ea;
+}
+
+.xp-toolbtn:active:not(:disabled) {
+  background: #e0ddd0;
+}
+
+.xp-toolbtn:disabled {
+  color: #9d9a8c;
+}
+
+.ie-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px 6px;
+  background: #ece9d8;
+  border-bottom: 1px solid #d4d0c8;
+  flex: none;
+}
+
+.ie-addressbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 6px;
+  background: #ece9d8;
+  border-bottom: 1px solid #aca899;
+  flex: none;
+}
+
+.ie-addressbar label {
+  color: #555555;
+}
+
+.ie-addressbar input {
+  flex: 1;
+  min-width: 0;
+  padding: 3px 6px;
+  border: 1px solid #7f9db9;
+  font-family: inherit;
+  font-size: 11px;
+  background: #ffffff;
+}
+
 .status-bar {
   display: flex;
   gap: 6px;
   padding: 3px 6px;
   background: #ece9d8;
   border-top: 1px solid #ffffff;
+  flex: none;
 }
 
 .status-bar span {
@@ -377,10 +497,737 @@ fieldset p:last-child {
   padding: 2px 8px;
   font-size: 11px;
   color: #333333;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .status-bar span:last-child {
   flex: 0 0 auto;
+}
+
+/* ==========================================================================
+   APP: INTERNET EXPLORER — Seiteninhalte
+   ========================================================================== */
+
+.ie-content {
+  flex: 1;
+  min-height: 280px;
+  max-height: 60vh;
+  overflow: auto;
+  background: #ffffff;
+  padding: 16px 20px;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.window.maximized .ie-content {
+  max-height: none;
+}
+
+.ie-content h1 {
+  font-size: 20px;
+  margin: 0 0 8px;
+}
+
+.ie-content h2 {
+  font-size: 14px;
+  margin: 0 0 4px;
+}
+
+.ie-content a {
+  color: #0000ee;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.ie-content a:hover {
+  color: #2a4fd8;
+}
+
+.web-portal {
+  text-align: center;
+}
+
+.web-tagline {
+  color: #666666;
+  font-style: italic;
+}
+
+.web-search {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin: 16px auto;
+  max-width: 380px;
+}
+
+.web-search input {
+  flex: 1;
+  padding: 5px 8px;
+  border: 1px solid #7f9db9;
+  font-family: inherit;
+  font-size: 12px;
+}
+
+.web-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin: 18px 0;
+}
+
+.web-links a {
+  display: inline-block;
+  padding: 8px 14px;
+  border: 1px solid #aac8ec;
+  border-radius: 4px;
+  background: #eaf3fd;
+  text-decoration: none;
+}
+
+.web-links a:hover {
+  background: #d3e5fa;
+}
+
+.web-footer,
+.web-small {
+  color: #888888;
+  font-size: 10px;
+  margin-top: 24px;
+}
+
+.web-retro {
+  font-family: "Comic Sans MS", "Trebuchet MS", cursive, sans-serif;
+}
+
+.web-banner {
+  background: #ffff00;
+  color: #cc0000;
+  font-weight: bold;
+  text-align: center;
+  padding: 6px;
+  margin-bottom: 14px;
+  border: 2px dashed #cc0000;
+}
+
+.blink {
+  animation: web-blink 1s steps(2, start) infinite;
+}
+
+@keyframes web-blink {
+  to { visibility: hidden; }
+}
+
+.web-construction {
+  background: repeating-linear-gradient(45deg, #ffd400 0 14px, #1a1a1a 14px 28px);
+  color: #ffffff;
+  text-shadow: 1px 1px 2px #000000;
+  font-weight: bold;
+  text-align: center;
+  padding: 8px;
+  margin: 14px 0;
+}
+
+.web-counter {
+  font-family: "Courier New", monospace;
+  background: #000000;
+  color: #33ff33;
+  padding: 2px 6px;
+  letter-spacing: 2px;
+}
+
+.web-article {
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #dddddd;
+}
+
+.web-table {
+  border-collapse: collapse;
+  margin: 10px 0;
+}
+
+.web-table th,
+.web-table td {
+  border: 1px solid #aac8ec;
+  padding: 5px 14px;
+  text-align: left;
+}
+
+.web-table th {
+  background: #d3e5fa;
+}
+
+.web-guestbook-entry {
+  background: #f6f6ee;
+  border: 1px solid #ddddcc;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+}
+
+.web-result {
+  margin-bottom: 12px;
+}
+
+.web-result .web-url {
+  display: block;
+  color: #008000;
+  font-size: 10px;
+}
+
+.web-error {
+  max-width: 460px;
+}
+
+.web-error h1 {
+  color: #cc3300;
+}
+
+.web-error ul {
+  margin: 6px 0 12px;
+  padding-left: 22px;
+}
+
+/* ==========================================================================
+   APP: SOLITAIRE
+   ========================================================================== */
+
+.sol-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 3px 6px;
+  background: #ece9d8;
+  border-bottom: 1px solid #aca899;
+  flex: none;
+}
+
+.sol-counter {
+  color: #333333;
+}
+
+.sol-table {
+  position: relative;
+  flex: 1;
+  min-height: 380px;
+  overflow: auto;
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.12), transparent 55%),
+    #0a7d33;
+  padding: 12px;
+}
+
+.sol-top {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.sol-cell {
+  width: 62px;
+  height: 86px;
+  flex: none;
+}
+
+.sol-spacer {
+  flex: 1;
+}
+
+.sol-tableau {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.sol-col {
+  position: relative;
+  width: 62px;
+  min-height: 86px;
+  flex: none;
+}
+
+.pcard {
+  position: relative;
+  width: 62px;
+  height: 86px;
+  border-radius: 5px;
+  border: 1px solid #2b2b2b;
+  background: #ffffff;
+  box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.35);
+  cursor: default;
+  overflow: hidden;
+}
+
+.sol-col .pcard {
+  position: absolute;
+  left: 0;
+}
+
+.pcard.back {
+  background:
+    repeating-linear-gradient(45deg, #1d4fa1 0 6px, #2861bd 6px 12px);
+  border-color: #11315f;
+}
+
+.pcard.empty {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px dashed rgba(255, 255, 255, 0.55);
+  box-shadow: none;
+  color: rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.pcard.red { color: #cc0000; }
+.pcard.black { color: #111111; }
+
+.pcard .pc-corner {
+  position: absolute;
+  top: 3px;
+  left: 5px;
+  font-size: 13px;
+  font-weight: bold;
+  line-height: 1.05;
+}
+
+.pcard .pc-big {
+  position: absolute;
+  right: 5px;
+  bottom: 2px;
+  font-size: 26px;
+  line-height: 1;
+}
+
+.pcard.sel {
+  outline: 3px solid #ffd400;
+  outline-offset: -2px;
+}
+
+.sol-win-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.sol-win-overlay.hidden {
+  display: none;
+}
+
+.sol-win-box {
+  background: #ece9d8;
+  border: 1px solid #003c74;
+  border-radius: 6px;
+  padding: 20px 32px;
+  text-align: center;
+  box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.4);
+}
+
+.sol-win-emoji {
+  font-size: 36px;
+}
+
+.sol-win-box p {
+  font-size: 13px;
+  font-weight: bold;
+  margin: 10px 0 14px;
+}
+
+/* ==========================================================================
+   APP: MINESWEEPER
+   ========================================================================== */
+
+.ms-panel {
+  background: #c0c0c0;
+  padding: 10px;
+  border: 2px outset #ffffff;
+  margin: 8px;
+}
+
+.ms-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 7px;
+  margin-bottom: 8px;
+  border: 2px inset #ffffff;
+}
+
+.ms-lcd {
+  font-family: "Courier New", monospace;
+  font-weight: bold;
+  font-size: 17px;
+  background: #000000;
+  color: #ff2020;
+  padding: 1px 5px;
+  letter-spacing: 2px;
+}
+
+.ms-face {
+  width: 30px;
+  height: 30px;
+  font-size: 17px;
+  line-height: 1;
+  border: 2px outset #ffffff;
+  background: #c0c0c0;
+  cursor: default;
+  padding: 0;
+}
+
+.ms-face:active {
+  border-style: inset;
+}
+
+.ms-grid {
+  display: grid;
+  gap: 0;
+  border: 2px inset #ffffff;
+  width: max-content;
+  margin: 0 auto;
+}
+
+.ms-cell {
+  width: 26px;
+  height: 26px;
+  font-size: 13px;
+  font-weight: bold;
+  font-family: inherit;
+  line-height: 1;
+  padding: 0;
+  border: 2px outset #ffffff;
+  background: #c0c0c0;
+  cursor: default;
+}
+
+.ms-cell.open {
+  border: 1px solid #808080;
+  background: #d4d4d4;
+}
+
+.ms-cell.boom {
+  background: #ff4444;
+}
+
+.ms-cell.n1 { color: #0000ff; }
+.ms-cell.n2 { color: #007b00; }
+.ms-cell.n3 { color: #ff0000; }
+.ms-cell.n4 { color: #00007b; }
+.ms-cell.n5 { color: #7b0000; }
+.ms-cell.n6 { color: #007b7b; }
+.ms-cell.n7 { color: #000000; }
+.ms-cell.n8 { color: #7b7b7b; }
+
+/* ==========================================================================
+   APP: TIC-TAC-TOE
+   ========================================================================== */
+
+.ttt-panel {
+  padding: 12px;
+  background: #ece9d8;
+  text-align: center;
+}
+
+.ttt-status {
+  margin: 0 0 10px;
+  font-weight: bold;
+}
+
+.ttt-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 64px);
+  gap: 4px;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.ttt-cell {
+  width: 64px;
+  height: 64px;
+  font-size: 30px;
+  font-family: inherit;
+  line-height: 1;
+  border: 1px solid #7f9db9;
+  background: #ffffff;
+  cursor: default;
+}
+
+.ttt-cell:hover {
+  background: #eaf3fd;
+}
+
+.ttt-cell.x { color: #cc3300; }
+.ttt-cell.o { color: #1f6fe5; }
+
+.ttt-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+/* ==========================================================================
+   APP: EXPLORER
+   ========================================================================== */
+
+.exp-body {
+  flex: 1;
+  min-height: 240px;
+  max-height: 55vh;
+  overflow: auto;
+  background: #ffffff;
+  padding: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 6px;
+}
+
+.window.maximized .exp-body {
+  max-height: none;
+}
+
+.exp-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 92px;
+  gap: 4px;
+  padding: 8px 4px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  text-align: center;
+  cursor: default;
+}
+
+.exp-item .icon-glyph {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.exp-item .exp-name {
+  font-size: 11px;
+  word-break: break-word;
+}
+
+.exp-item:hover {
+  background: #eaf3fd;
+  border-color: #aac8ec;
+}
+
+.exp-item.selected {
+  background: #316ac5;
+  border-color: #1d4fa1;
+}
+
+.exp-item.selected .exp-name {
+  color: #ffffff;
+}
+
+.exp-empty {
+  color: #888888;
+  margin: 12px;
+}
+
+/* ==========================================================================
+   APP: EDITOR & BILDANZEIGE
+   ========================================================================== */
+
+.editor-area {
+  flex: 1;
+  min-height: 260px;
+  max-height: 55vh;
+  resize: none;
+  border: none;
+  outline: none;
+  padding: 8px 10px;
+  font-family: "Courier New", "Lucida Console", monospace;
+  font-size: 13px;
+  line-height: 1.45;
+  background: #ffffff;
+}
+
+.window.maximized .editor-area {
+  max-height: none;
+}
+
+.viewer-body {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #6b6b6b;
+  padding: 14px;
+  min-height: 200px;
+}
+
+.viewer-body img {
+  max-width: 100%;
+  max-height: 55vh;
+  background: #ffffff;
+  border: 1px solid #333333;
+  padding: 3px;
+}
+
+/* ==========================================================================
+   APP: E-MAIL (Ritz Express)
+   ========================================================================== */
+
+.mail-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 300px;
+  max-height: 55vh;
+  background: #ffffff;
+}
+
+.window.maximized .mail-body {
+  max-height: none;
+}
+
+.mail-list {
+  flex: none;
+  max-height: 40%;
+  overflow: auto;
+  border-bottom: 1px solid #aca899;
+}
+
+.mail-item {
+  display: grid;
+  grid-template-columns: 130px 1fr 70px;
+  gap: 8px;
+  padding: 4px 8px;
+  border-bottom: 1px solid #f0eee4;
+  cursor: default;
+  white-space: nowrap;
+}
+
+.mail-item span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mail-item.unread {
+  font-weight: bold;
+}
+
+.mail-item:hover {
+  background: #eaf3fd;
+}
+
+.mail-item.selected {
+  background: #316ac5;
+  color: #ffffff;
+}
+
+.mail-date {
+  text-align: right;
+  color: #888888;
+}
+
+.mail-item.selected .mail-date {
+  color: #d8e6f8;
+}
+
+.mail-read {
+  flex: 1;
+  overflow: auto;
+  padding: 10px 14px;
+}
+
+.mail-read-hint {
+  color: #888888;
+}
+
+.mail-head {
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #e0ddd0;
+  line-height: 1.6;
+}
+
+.mail-text {
+  margin: 0;
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+/* ==========================================================================
+   APP: SYSTEMSTEUERUNG & AUSFÜHREN
+   ========================================================================== */
+
+.settings-body {
+  border-top: none;
+}
+
+.wallpaper-grid {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.wallpaper-swatch {
+  width: 84px;
+  height: 56px;
+  border: 2px solid #8c8c8c;
+  border-radius: 3px;
+  cursor: default;
+  padding: 0;
+}
+
+.wallpaper-swatch.active {
+  border-color: #0a246a;
+  outline: 2px solid #316ac5;
+}
+
+.wp-bliss {
+  background-image: url("assets/xp.webp");
+  background-size: cover;
+  background-position: center;
+}
+
+.wp-azur { background: linear-gradient(160deg, #1958c9, #7fb8f0); }
+.wp-smaragd { background: linear-gradient(160deg, #0e6b2e, #7fd89a); }
+.wp-silber { background: linear-gradient(160deg, #8e9bac, #eef2f7); }
+.wp-nacht { background: linear-gradient(170deg, #060a18, #25355e); }
+
+.settings-hint {
+  color: #666666;
+  margin: 8px 0 0;
+}
+
+.settings-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.run-hint {
+  margin: 0 0 12px;
+  line-height: 1.6;
+}
+
+.run-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.run-row input {
+  flex: 1;
+  padding: 4px 6px;
+  border: 1px solid #7f9db9;
+  font-family: inherit;
+  font-size: 11px;
 }
 
 /* ==========================================================================
@@ -395,32 +1242,38 @@ fieldset p:last-child {
   height: 34px;
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 0 4px;
+  gap: 6px;
+  padding: 0 4px 0 0;
   background: linear-gradient(to bottom, #2f71d4 0%, #1c4faa 4%, #1e5bc6 50%, #2f71d4 96%, #1c4faa 100%);
   border-top: 1px solid #1656c9;
   box-shadow: 0 -1px 0 rgba(255, 255, 255, 0.3) inset;
-  z-index: 3;
+  z-index: 1000;
 }
 
 .start-button {
   display: flex;
   align-items: center;
   gap: 6px;
-  height: 26px;
-  padding: 0 14px 0 8px;
+  height: 28px;
+  padding: 0 16px 0 8px;
   border: 1px solid #1a5d1a;
-  border-radius: 0 8px 8px 0;
+  border-radius: 0 10px 10px 0;
   background: linear-gradient(to bottom, #6fdc6f 0%, #3fae3f 45%, #2c8f2c 50%, #4cc24c 100%);
   color: #ffffff;
   font-weight: bold;
   font-style: italic;
-  font-size: 13px;
+  font-size: 14px;
+  font-family: inherit;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
   cursor: default;
+  flex: none;
 }
 
-/* Windows-Flagge im Start-Button */
+.start-button.pressed {
+  background: linear-gradient(to bottom, #2c8f2c 0%, #3fae3f 45%, #6fdc6f 50%, #4cc24c 100%);
+  box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.4);
+}
+
 .flag {
   display: inline-grid;
   grid-template-columns: repeat(2, 1fr);
@@ -436,22 +1289,63 @@ fieldset p:last-child {
 .flag span:nth-child(3) { background: #1f6fe5; border-radius: 0 0 0 2px; }
 .flag span:nth-child(4) { background: #ffc20e; border-radius: 0 0 2px 0; }
 
+.quick-launch {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 6px;
+  border-right: 1px solid rgba(255, 255, 255, 0.25);
+  flex: none;
+}
+
+.quick-btn {
+  width: 26px;
+  height: 26px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  background: transparent;
+  font-size: 14px;
+  line-height: 1;
+  padding: 0;
+  cursor: default;
+}
+
+.quick-btn:hover {
+  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.taskbar-items {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
 .taskbar-item {
   display: flex;
   align-items: center;
   gap: 6px;
-  height: 24px;
+  height: 25px;
   padding: 0 10px;
-  flex: 0 1 220px;
+  flex: 0 1 180px;
   min-width: 0;
   overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
   border: 1px outset #6c9bd1;
   border-radius: 2px;
   background: #3a7fd5;
   color: #ffffff;
-  font-size: 12px;
+  font-size: 11px;
+  font-family: inherit;
+  cursor: default;
+}
+
+.taskbar-item .ti-label {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .taskbar-item.active {
@@ -463,22 +1357,32 @@ fieldset p:last-child {
   margin-left: auto;
   display: flex;
   align-items: center;
+  gap: 4px;
   height: 26px;
   padding: 0 10px;
   border-left: 1px solid #0c3a8f;
   background: linear-gradient(to bottom, #1c4faa 0%, #163f8a 100%);
   box-shadow: inset 1px 0 0 rgba(255, 255, 255, 0.15);
+  flex: none;
+}
+
+.tray-btn {
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  line-height: 1;
+  padding: 2px;
+  cursor: default;
+}
+
+.tray-btn:hover {
+  filter: brightness(1.3);
 }
 
 .clock {
   color: #ffffff;
   font-size: 12px;
-}
-
-/* Start-Button im "gedrückten" Zustand, wenn das Startmenü offen ist */
-.start-button.pressed {
-  background: linear-gradient(to bottom, #2c8f2c 0%, #3fae3f 45%, #6fdc6f 50%, #4cc24c 100%);
-  box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.4);
+  margin-left: 4px;
 }
 
 /* ==========================================================================
@@ -489,8 +1393,8 @@ fieldset p:last-child {
   position: fixed;
   left: 4px;
   bottom: 38px;
-  z-index: 30;
-  width: 320px;
+  z-index: 1100;
+  width: 340px;
   background: #ffffff;
   border: 1px solid #0c3a8f;
   border-radius: 8px 8px 8px 0;
@@ -544,7 +1448,7 @@ fieldset p:last-child {
 }
 
 .start-menu-col.left {
-  flex: 1.3;
+  flex: 1.2;
   background: #ffffff;
 }
 
@@ -572,6 +1476,12 @@ fieldset p:last-child {
 .start-menu-item:hover {
   background: #316ac5;
   color: #ffffff;
+}
+
+.start-menu-sep {
+  height: 1px;
+  margin: 3px 6px;
+  background: #d8d5c8;
 }
 
 .start-menu-footer {
@@ -606,13 +1516,67 @@ fieldset p:last-child {
 }
 
 /* ==========================================================================
+   KONTEXTMENÜ (Rechtsklick)
+   ========================================================================== */
+
+.context-menu {
+  position: fixed;
+  z-index: 1200;
+  min-width: 190px;
+  background: #ffffff;
+  border: 1px solid #aca899;
+  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.3);
+  padding: 2px;
+  display: none;
+}
+
+.context-menu.open {
+  display: block;
+}
+
+.ctx-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 18px 4px 6px;
+  font-size: 11px;
+  cursor: default;
+  white-space: nowrap;
+}
+
+.ctx-item .ctx-icon {
+  width: 18px;
+  text-align: center;
+  flex: none;
+}
+
+.ctx-item:hover:not(.disabled) {
+  background: #316ac5;
+  color: #ffffff;
+}
+
+.ctx-item.bold {
+  font-weight: bold;
+}
+
+.ctx-item.disabled {
+  color: #9d9a8c;
+}
+
+.ctx-sep {
+  height: 1px;
+  margin: 3px 6px;
+  background: #d8d5c8;
+}
+
+/* ==========================================================================
    VOLLBILD-SCREENS (Boot / Anmeldung / Herunterfahren / Hinweis)
    ========================================================================== */
 
 .screen {
   position: fixed;
   inset: 0;
-  z-index: 200;
+  z-index: 2000;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -627,7 +1591,6 @@ fieldset p:last-child {
   pointer-events: none;
 }
 
-/* Windows-Flagge, größere Variante für die Vollbild-Screens */
 .flag.big {
   width: 64px;
   height: 64px;
@@ -661,7 +1624,7 @@ fieldset p:last-child {
 
 .boot-text-sub {
   align-self: flex-end;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: bold;
   font-style: italic;
   color: #ff8c0e;
@@ -776,14 +1739,15 @@ fieldset p:last-child {
   font-size: 13px;
 }
 
-/* Hinweis-Dialog (Doppelklick auf Desktop-Icons) */
+/* Hinweis-Dialog */
 .dialog-overlay {
   background: rgba(0, 0, 0, 0.35);
-  z-index: 300;
+  z-index: 2500;
 }
 
 .info-window {
-  width: 300px;
+  width: 320px;
+  max-width: calc(100vw - 24px);
   background: #ece9d8;
   border: 1px solid #0831d9;
   border-radius: 6px;
@@ -808,6 +1772,7 @@ fieldset p:last-child {
   margin: 0;
   font-size: 12px;
   line-height: 1.5;
+  white-space: pre-line;
 }
 
 .info-window .dialog-buttons {

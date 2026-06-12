@@ -3,29 +3,31 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Harald Ritz</title>
+  <title>RitzOS – Harald Ritz</title>
   <link rel="stylesheet" href="haraldritz.css">
 </head>
-<body>
-  <!-- Boot-Screen -->
+<body data-wallpaper="bliss">
+
+  <!-- ====================================================================
+       VOLLBILD-SCREENS: Boot / Anmeldung / Herunterfahren
+       ==================================================================== -->
   <div id="boot-screen" class="screen boot-screen">
     <div class="boot-logo">
       <div class="flag big"><span></span><span></span><span></span><span></span></div>
       <div class="boot-text">
-        <span class="boot-text-main">Harald Ritz</span>
-        <span class="boot-text-sub">xp</span>
+        <span class="boot-text-main">RitzOS</span>
+        <span class="boot-text-sub">Professional</span>
       </div>
     </div>
     <div class="boot-progress"><div class="boot-progress-fill"></div></div>
-    <p class="boot-caption">Wird gestartet …</p>
+    <p class="boot-caption">RitzOS wird gestartet …</p>
   </div>
 
-  <!-- Anmeldebildschirm -->
   <div id="welcome-screen" class="screen welcome-screen hidden">
     <div class="welcome-inner">
       <div class="welcome-banner">
         <div class="flag"><span></span><span></span><span></span><span></span></div>
-        <div class="welcome-title">Harald Ritz <em>xp</em></div>
+        <div class="welcome-title">RitzOS <em>Professional</em></div>
       </div>
       <button class="user-tile" id="login-btn" type="button">
         <span class="user-avatar">🧑‍💻</span>
@@ -35,20 +37,19 @@
     </div>
   </div>
 
-  <!-- Herunterfahren-Screen -->
   <div id="shutdown-screen" class="screen shutdown-screen hidden">
     <div class="flag big"><span></span><span></span><span></span><span></span></div>
-    <p id="shutdown-text">Windows wird heruntergefahren …</p>
+    <p id="shutdown-text">RitzOS wird heruntergefahren …</p>
     <button class="xp-btn" id="restart-btn" type="button" hidden>Neu starten</button>
   </div>
 
-  <!-- Hinweis-Dialog für Desktop-Icons -->
+  <!-- Hinweis-Dialog -->
   <div id="info-dialog" class="screen dialog-overlay hidden">
     <div class="info-window">
       <div class="title-bar">
         <div class="title-bar-text">
           <span class="title-bar-icon icon-glyph">ℹ️</span>
-          Hinweis
+          <span id="info-dialog-title">Hinweis</span>
         </div>
         <div class="title-bar-controls">
           <button aria-label="Schließen" class="close-btn" id="info-dialog-close" type="button">×</button>
@@ -56,7 +57,7 @@
       </div>
       <div class="info-body">
         <span class="icon-glyph">🛈</span>
-        <p id="info-dialog-text">Diese Funktion ist in dieser Demo nicht verfügbar.</p>
+        <p id="info-dialog-text">Diese Funktion ist nicht verfügbar.</p>
       </div>
       <div class="dialog-buttons">
         <button class="xp-btn default-btn" id="info-dialog-ok" type="button">OK</button>
@@ -64,153 +65,359 @@
     </div>
   </div>
 
-  <div class="desktop-icons">
-    <div class="desktop-icon" id="computer-icon">
-      <span class="icon-glyph">🖥️</span>
-      <span>Arbeitsplatz</span>
-    </div>
-    <div class="desktop-icon" id="bin-icon">
-      <span class="icon-glyph">🗑️</span>
-      <span>Papierkorb</span>
-    </div>
-    <div class="desktop-icon" id="ie-icon">
-      <span class="icon-glyph">🌐</span>
-      <span>Internet Explorer</span>
-    </div>
-    <div class="desktop-icon" id="profile-icon">
-      <span class="icon-glyph">🪪</span>
-      <span>Harald Ritz</span>
+  <!-- ====================================================================
+       DESKTOP-ICONS
+       ==================================================================== -->
+  <div class="desktop-icons" id="desktop-icons">
+    <div class="desktop-icon" data-app="computer"><span class="icon-glyph">🖥️</span><span class="icon-label">Arbeitsplatz</span></div>
+    <div class="desktop-icon" data-app="docs"><span class="icon-glyph">📁</span><span class="icon-label">Eigene Dateien</span></div>
+    <div class="desktop-icon" data-app="bin"><span class="icon-glyph">🗑️</span><span class="icon-label">Papierkorb</span></div>
+    <div class="desktop-icon" data-app="ie"><span class="icon-glyph">🌐</span><span class="icon-label">Internet Explorer</span></div>
+    <div class="desktop-icon" data-app="mail"><span class="icon-glyph">📧</span><span class="icon-label">E-Mail</span></div>
+    <div class="desktop-icon" data-app="sol"><span class="icon-glyph">🃏</span><span class="icon-label">Solitaire</span></div>
+    <div class="desktop-icon" data-app="mine"><span class="icon-glyph">💣</span><span class="icon-label">Minesweeper</span></div>
+    <div class="desktop-icon" data-app="ttt"><span class="icon-glyph">⭕</span><span class="icon-label">Tic-Tac-Toe</span></div>
+    <div class="desktop-icon" data-app="editor"><span class="icon-glyph">📝</span><span class="icon-label">Editor</span></div>
+    <div class="desktop-icon" data-app="profile"><span class="icon-glyph">🪪</span><span class="icon-label">Harald Ritz</span></div>
+  </div>
+
+  <!-- ====================================================================
+       FENSTER: Harald Ritz – Eigenschaften
+       ==================================================================== -->
+  <div class="window" id="win-profile" data-title="Harald Ritz – Eigenschaften" data-icon="🪪" data-width="620">
+    <div class="window-content">
+      <div class="tab-strip" role="tablist">
+        <div class="tab active" role="tab" data-tab="allgemein">Allgemein</div>
+        <div class="tab" role="tab" data-tab="details">Details</div>
+        <div class="tab" role="tab" data-tab="anpassen">Anpassen</div>
+      </div>
+      <div class="window-body">
+        <div class="tab-panel active" data-panel="allgemein">
+          <div class="profile-header">
+            <div class="placeholder-image">
+              <img src="assets/harald-ritz-placeholder.svg" alt="Platzhalterbild">
+            </div>
+            <dl class="profile-fields">
+              <dt>Name:</dt>
+              <dd class="field-value">Harald Ritz</dd>
+              <dt>Typ:</dt>
+              <dd class="field-value">Lorem Ipsum Generator a.D.</dd>
+              <dt>Status:</dt>
+              <dd class="field-value status">● Online</dd>
+            </dl>
+          </div>
+          <fieldset>
+            <legend>Über mich</legend>
+            <p>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+              enim ad minim veniam, quis nostrud exercitation ullamco laboris
+              nisi ut aliquip ex ea commodo consequat.
+            </p>
+            <p>
+              Duis aute irure dolor in reprehenderit in voluptate velit esse
+              cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+              cupidatat non proident, sunt in culpa qui officia deserunt
+              mollit anim id est laborum.
+            </p>
+          </fieldset>
+        </div>
+        <div class="tab-panel" data-panel="details">
+          <fieldset>
+            <legend>Eigenschaften</legend>
+            <table class="details-table">
+              <tr><th>Abteilung</th><td>Lorem Ipsum Department</td></tr>
+              <tr><th>Position</th><td>Senior Placeholder Manager</td></tr>
+              <tr><th>Betriebssystem</th><td>RitzOS Professional, Version 5.1</td></tr>
+              <tr><th>Erstellt am</th><td>01.04.2004</td></tr>
+              <tr><th>Zuletzt geändert</th><td>Vor wenigen Augenblicken</td></tr>
+              <tr><th>Größe</th><td>1,44 MB (auf Diskette)</td></tr>
+            </table>
+          </fieldset>
+          <fieldset>
+            <legend>Beschreibung</legend>
+            <p>
+              At vero eos et accusamus et iusto odio dignissimos ducimus qui
+              blanditiis praesentium voluptatum deleniti atque corrupti quos
+              dolores et quas molestias excepturi sint occaecati cupiditate
+              non provident.
+            </p>
+          </fieldset>
+        </div>
+        <div class="tab-panel" data-panel="anpassen">
+          <fieldset>
+            <legend>Interessen</legend>
+            <p>
+              Sed ut perspiciatis unde omnis iste natus error sit voluptatem
+              accusantium doloremque laudantium, totam rem aperiam, eaque ipsa
+              quae ab illo inventore veritatis et quasi architecto beatae
+              vitae dicta sunt explicabo.
+            </p>
+          </fieldset>
+          <fieldset>
+            <legend>Sonstiges</legend>
+            <p>
+              Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit
+              aut fugit, sed quia consequuntur magni dolores eos qui ratione
+              voluptatem sequi nesciunt.
+            </p>
+          </fieldset>
+        </div>
+        <div class="dialog-buttons">
+          <button class="xp-btn default-btn" id="profile-ok" type="button">OK</button>
+          <button class="xp-btn" id="profile-cancel" type="button">Abbrechen</button>
+          <button class="xp-btn" id="profile-apply" type="button">Übernehmen</button>
+        </div>
+      </div>
+      <div class="status-bar">
+        <span>Bereit</span>
+        <span>Lorem-Ipsum-Modus aktiv</span>
+      </div>
     </div>
   </div>
 
-  <div class="window" id="profile-window">
-    <div class="title-bar">
-      <div class="title-bar-text">
-        <svg class="title-bar-icon" viewBox="0 0 16 16" aria-hidden="true">
-          <rect x="1" y="2" width="14" height="12" rx="1" fill="#ffffff" stroke="#0a246a" stroke-width="0.6"/>
-          <circle cx="5.5" cy="6.5" r="2" fill="#1f6fe5"/>
-          <path d="M2 13c0-1.7 1.6-3 3.5-3s3.5 1.3 3.5 3z" fill="#1f6fe5"/>
-          <line x1="10.5" y1="5" x2="14" y2="5" stroke="#aca899" stroke-width="1"/>
-          <line x1="10.5" y1="7.5" x2="14" y2="7.5" stroke="#aca899" stroke-width="1"/>
-          <line x1="10.5" y1="10" x2="14" y2="10" stroke="#aca899" stroke-width="1"/>
-        </svg>
-        Harald Ritz - Eigenschaften
+  <!-- ====================================================================
+       FENSTER: Internet Explorer
+       ==================================================================== -->
+  <div class="window" id="win-ie" data-title="Internet Explorer" data-icon="🌐" data-width="740">
+    <div class="window-content">
+      <div class="ie-toolbar">
+        <button class="xp-toolbtn" id="ie-back" type="button" title="Zurück">◀ Zurück</button>
+        <button class="xp-toolbtn" id="ie-forward" type="button" title="Vorwärts">▶</button>
+        <button class="xp-toolbtn" id="ie-reload" type="button" title="Aktualisieren">⟳</button>
+        <button class="xp-toolbtn" id="ie-home" type="button" title="Startseite">🏠 Start</button>
       </div>
-      <div class="title-bar-controls">
-        <button aria-label="Minimieren" id="btn-minimize" type="button">_</button>
-        <button aria-label="Maximieren" id="btn-maximize" type="button">&#9633;</button>
-        <button aria-label="Schließen" class="close-btn" id="btn-close" type="button">×</button>
+      <div class="ie-addressbar">
+        <label for="ie-address">Adresse</label>
+        <input id="ie-address" type="text" spellcheck="false" autocomplete="off">
+        <button class="xp-toolbtn" id="ie-go" type="button">➜ Wechseln zu</button>
+      </div>
+      <div class="ie-content" id="ie-content"></div>
+      <div class="status-bar">
+        <span id="ie-status">Fertig</span>
+        <span>🌐 RitzNet</span>
       </div>
     </div>
+  </div>
 
-    <div class="tab-strip" role="tablist">
-      <div class="tab active" role="tab" data-tab="allgemein">Allgemein</div>
-      <div class="tab" role="tab" data-tab="details">Details</div>
-      <div class="tab" role="tab" data-tab="anpassen">Anpassen</div>
-    </div>
-
-    <div class="window-body">
-      <div class="tab-panel active" data-panel="allgemein">
-        <div class="profile-header">
-          <div class="placeholder-image">
-            <img src="assets/harald-ritz-placeholder.svg" alt="Platzhalterbild">
-          </div>
-          <dl class="profile-fields">
-            <dt>Name:</dt>
-            <dd class="field-value">Harald Ritz</dd>
-            <dt>Typ:</dt>
-            <dd class="field-value">Lorem Ipsum Generator a.D.</dd>
-            <dt>Status:</dt>
-            <dd class="field-value status">● Online</dd>
-          </dl>
+  <!-- ====================================================================
+       FENSTER: Solitaire
+       ==================================================================== -->
+  <div class="window" id="win-sol" data-title="Solitaire" data-icon="🃏" data-width="640">
+    <div class="window-content">
+      <div class="sol-toolbar">
+        <button class="xp-toolbtn" id="sol-new" type="button">🔄 Neues Spiel</button>
+        <span class="sol-counter" id="sol-moves">Züge: 0</span>
+      </div>
+      <div class="sol-table">
+        <div class="sol-top">
+          <div class="sol-cell" id="sol-stock"></div>
+          <div class="sol-cell" id="sol-waste"></div>
+          <div class="sol-spacer"></div>
+          <div class="sol-cell" id="sol-f0"></div>
+          <div class="sol-cell" id="sol-f1"></div>
+          <div class="sol-cell" id="sol-f2"></div>
+          <div class="sol-cell" id="sol-f3"></div>
         </div>
-
-        <fieldset>
-          <legend>Über mich</legend>
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-            enim ad minim veniam, quis nostrud exercitation ullamco laboris
-            nisi ut aliquip ex ea commodo consequat.
-          </p>
-          <p>
-            Duis aute irure dolor in reprehenderit in voluptate velit esse
-            cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-            cupidatat non proident, sunt in culpa qui officia deserunt
-            mollit anim id est laborum.
-          </p>
-        </fieldset>
+        <div class="sol-tableau" id="sol-tableau"></div>
+        <div class="sol-win-overlay hidden" id="sol-win-overlay">
+          <div class="sol-win-box">
+            <span class="sol-win-emoji">🎉</span>
+            <p>Glückwunsch, Sie haben gewonnen!</p>
+            <button class="xp-btn default-btn" id="sol-win-new" type="button">Neues Spiel</button>
+          </div>
+        </div>
       </div>
+      <div class="status-bar">
+        <span id="sol-status">Klicken Sie eine Karte an, dann das Ziel. Doppelklick legt automatisch ab.</span>
+      </div>
+    </div>
+  </div>
 
-      <div class="tab-panel" data-panel="details">
+  <!-- ====================================================================
+       FENSTER: Minesweeper
+       ==================================================================== -->
+  <div class="window" id="win-mine" data-title="Minesweeper" data-icon="💣" data-width="320">
+    <div class="window-content">
+      <div class="ms-panel">
+        <div class="ms-header">
+          <span class="ms-lcd" id="ms-mines">010</span>
+          <button class="ms-face" id="ms-face" type="button">🙂</button>
+          <span class="ms-lcd" id="ms-timer">000</span>
+        </div>
+        <div class="ms-grid" id="ms-grid"></div>
+      </div>
+      <div class="status-bar">
+        <span>Linksklick: aufdecken · Rechtsklick: Fahne 🚩</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       FENSTER: Tic-Tac-Toe
+       ==================================================================== -->
+  <div class="window" id="win-ttt" data-title="Tic-Tac-Toe" data-icon="⭕" data-width="300">
+    <div class="window-content">
+      <div class="ttt-panel">
+        <p class="ttt-status" id="ttt-status">Sie sind ✕ — Sie beginnen!</p>
+        <div class="ttt-grid" id="ttt-grid"></div>
+        <div class="ttt-footer">
+          <span id="ttt-score">Sie 0 : 0 RitzOS</span>
+          <button class="xp-btn" id="ttt-new" type="button">Neue Runde</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       FENSTER: Explorer
+       ==================================================================== -->
+  <div class="window" id="win-explorer" data-title="Explorer" data-icon="🗂️" data-width="620">
+    <div class="window-content">
+      <div class="ie-toolbar">
+        <button class="xp-toolbtn" id="exp-back" type="button">◀ Zurück</button>
+        <button class="xp-toolbtn" id="exp-up" type="button">📂 Aufwärts</button>
+      </div>
+      <div class="ie-addressbar">
+        <label>Adresse</label>
+        <input id="exp-address" type="text" readonly>
+      </div>
+      <div class="exp-body" id="exp-body"></div>
+      <div class="status-bar">
+        <span id="exp-status">0 Objekt(e)</span>
+        <span>💽 Lokales System</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       FENSTER: Editor
+       ==================================================================== -->
+  <div class="window" id="win-editor" data-title="Unbenannt – Editor" data-icon="📝" data-width="560">
+    <div class="window-content">
+      <div class="ie-toolbar">
+        <button class="xp-toolbtn" id="ed-new" type="button">📄 Neu</button>
+        <button class="xp-toolbtn" id="ed-save" type="button">💾 Speichern</button>
+      </div>
+      <textarea class="editor-area" id="editor-area" spellcheck="false"></textarea>
+      <div class="status-bar">
+        <span id="editor-status">Bereit</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       FENSTER: Bildanzeige
+       ==================================================================== -->
+  <div class="window" id="win-viewer" data-title="Bild- und Faxanzeige" data-icon="🖼️" data-width="520">
+    <div class="window-content">
+      <div class="viewer-body"><img id="viewer-img" src="" alt="Bild"></div>
+      <div class="status-bar"><span id="viewer-status">Bereit</span></div>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       FENSTER: E-Mail (Ritz Express)
+       ==================================================================== -->
+  <div class="window" id="win-mail" data-title="Ritz Express – Posteingang" data-icon="📧" data-width="680">
+    <div class="window-content">
+      <div class="ie-toolbar">
+        <button class="xp-toolbtn" id="mail-new" type="button">✉️ Neue E-Mail</button>
+        <button class="xp-toolbtn" id="mail-sendrecv" type="button">📬 Senden/Empfangen</button>
+      </div>
+      <div class="mail-body">
+        <div class="mail-list" id="mail-list"></div>
+        <div class="mail-read" id="mail-read">
+          <p class="mail-read-hint">Wählen Sie eine Nachricht aus, um sie zu lesen.</p>
+        </div>
+      </div>
+      <div class="status-bar"><span id="mail-status">3 Nachricht(en), 3 ungelesen</span></div>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       FENSTER: Systemsteuerung
+       ==================================================================== -->
+  <div class="window" id="win-settings" data-title="Systemsteuerung" data-icon="⚙️" data-width="560">
+    <div class="window-content">
+      <div class="window-body settings-body">
         <fieldset>
-          <legend>Eigenschaften</legend>
+          <legend>Anzeige – Hintergrundbild</legend>
+          <div class="wallpaper-grid" id="wallpaper-grid">
+            <button class="wallpaper-swatch wp-bliss" data-wp="bliss" type="button" title="Bliss"></button>
+            <button class="wallpaper-swatch wp-azur" data-wp="azur" type="button" title="Azur"></button>
+            <button class="wallpaper-swatch wp-smaragd" data-wp="smaragd" type="button" title="Smaragd"></button>
+            <button class="wallpaper-swatch wp-silber" data-wp="silber" type="button" title="Silber"></button>
+            <button class="wallpaper-swatch wp-nacht" data-wp="nacht" type="button" title="Mitternacht"></button>
+          </div>
+          <p class="settings-hint">Die Auswahl wird gespeichert und beim nächsten Start wiederhergestellt.</p>
+        </fieldset>
+        <fieldset>
+          <legend>Darstellung</legend>
+          <div class="settings-row">
+            <button class="xp-btn" id="settings-fullscreen" type="button">Vollbild umschalten</button>
+            <button class="xp-btn" id="settings-cleanup" type="button">Alle Fenster schließen</button>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>System</legend>
           <table class="details-table">
-            <tr><th>Abteilung</th><td>Lorem Ipsum Department</td></tr>
-            <tr><th>Position</th><td>Senior Placeholder Manager</td></tr>
-            <tr><th>Erstellt am</th><td>01.04.2004</td></tr>
-            <tr><th>Zuletzt geändert</th><td>Vor wenigen Augenblicken</td></tr>
-            <tr><th>Größe</th><td>1,44 MB (auf Diskette)</td></tr>
+            <tr><th>Betriebssystem</th><td>RitzOS Professional, Version 5.1 (Build 2600)</td></tr>
+            <tr><th>Registriert für</th><td>Harald Ritz</td></tr>
+            <tr><th>Prozessor</th><td>RitzTel Pentium-Ersatz, 233 MHz</td></tr>
+            <tr><th>Arbeitsspeicher</th><td>256 MB RAM (davon 255 MB belegt)</td></tr>
+            <tr><th>Auflösung</th><td id="settings-resolution">–</td></tr>
           </table>
         </fieldset>
-        <fieldset>
-          <legend>Beschreibung</legend>
-          <p>
-            At vero eos et accusamus et iusto odio dignissimos ducimus qui
-            blanditiis praesentium voluptatum deleniti atque corrupti quos
-            dolores et quas molestias excepturi sint occaecati cupiditate
-            non provident.
-          </p>
-        </fieldset>
       </div>
-
-      <div class="tab-panel" data-panel="anpassen">
-        <fieldset>
-          <legend>Interessen</legend>
-          <p>
-            Sed ut perspiciatis unde omnis iste natus error sit voluptatem
-            accusantium doloremque laudantium, totam rem aperiam, eaque ipsa
-            quae ab illo inventore veritatis et quasi architecto beatae
-            vitae dicta sunt explicabo.
-          </p>
-        </fieldset>
-        <fieldset>
-          <legend>Sonstiges</legend>
-          <p>
-            Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit
-            aut fugit, sed quia consequuntur magni dolores eos qui ratione
-            voluptatem sequi nesciunt.
-          </p>
-        </fieldset>
-      </div>
-
-      <div class="dialog-buttons">
-        <button class="xp-btn default-btn" id="btn-ok" type="button">OK</button>
-        <button class="xp-btn" id="btn-cancel" type="button">Abbrechen</button>
-        <button class="xp-btn" id="btn-apply" type="button">Übernehmen</button>
-      </div>
-    </div>
-
-    <div class="status-bar">
-      <span>Bereit</span>
-      <span>Lorem-Ipsum-Modus aktiv</span>
+      <div class="status-bar"><span>Systemsteuerung</span></div>
     </div>
   </div>
 
+  <!-- ====================================================================
+       FENSTER: Ausführen
+       ==================================================================== -->
+  <div class="window" id="win-run" data-title="Ausführen" data-icon="▶️" data-width="380">
+    <div class="window-content">
+      <div class="window-body">
+        <p class="run-hint">Geben Sie den Namen eines Programms ein, z.&nbsp;B.
+          <em>solitaire</em>, <em>iexplore</em>, <em>minesweeper</em>, <em>editor</em>, <em>explorer</em> …</p>
+        <div class="run-row">
+          <label for="run-input">Öffnen:</label>
+          <input id="run-input" type="text" spellcheck="false" autocomplete="off">
+        </div>
+        <div class="dialog-buttons">
+          <button class="xp-btn default-btn" id="run-ok" type="button">OK</button>
+          <button class="xp-btn" id="run-cancel" type="button">Abbrechen</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       TASKLEISTE
+       ==================================================================== -->
   <div class="taskbar">
     <button class="start-button" id="start-button" type="button">
       <span class="flag"><span></span><span></span><span></span><span></span></span>
       Start
     </button>
-    <div class="taskbar-item active" id="taskbar-item">
-      <span class="icon-glyph">🪪</span> Harald Ritz - Eigenschaften
+    <div class="quick-launch">
+      <button class="quick-btn" data-app="ie" type="button" title="Internet Explorer">🌐</button>
+      <button class="quick-btn" data-app="mail" type="button" title="E-Mail">📧</button>
+      <button class="quick-btn" id="show-desktop" type="button" title="Desktop anzeigen">🗔</button>
     </div>
+    <div class="taskbar-items" id="taskbar-items"></div>
     <div class="tray">
+      <button class="tray-btn" id="tray-fullscreen" type="button" title="Vollbild umschalten">⛶</button>
+      <button class="tray-btn" id="tray-volume" type="button" title="Lautstärke">🔊</button>
       <span class="clock" id="clock"></span>
     </div>
   </div>
 
-  <!-- Startmenü -->
+  <!-- ====================================================================
+       STARTMENÜ
+       ==================================================================== -->
   <div class="start-menu" id="start-menu">
     <div class="start-menu-header">
       <span class="user-avatar">🧑‍💻</span>
@@ -218,29 +425,25 @@
     </div>
     <div class="start-menu-body">
       <div class="start-menu-col left">
-        <div class="start-menu-item" id="open-profile-item">
-          <span class="icon-glyph">🪪</span> Eigenschaften von Harald Ritz
-        </div>
-        <div class="start-menu-item" id="start-ie-item">
-          <span class="icon-glyph">🌐</span> Internet Explorer
-        </div>
-        <div class="start-menu-item" id="start-mail-item">
-          <span class="icon-glyph">📧</span> E-Mail
-        </div>
+        <div class="start-menu-item" data-app="ie"><span class="icon-glyph">🌐</span> Internet Explorer</div>
+        <div class="start-menu-item" data-app="mail"><span class="icon-glyph">📧</span> E-Mail – Ritz Express</div>
+        <div class="start-menu-sep"></div>
+        <div class="start-menu-item" data-app="sol"><span class="icon-glyph">🃏</span> Solitaire</div>
+        <div class="start-menu-item" data-app="mine"><span class="icon-glyph">💣</span> Minesweeper</div>
+        <div class="start-menu-item" data-app="ttt"><span class="icon-glyph">⭕</span> Tic-Tac-Toe</div>
+        <div class="start-menu-sep"></div>
+        <div class="start-menu-item" data-app="editor"><span class="icon-glyph">📝</span> Editor</div>
+        <div class="start-menu-item" data-app="programs"><span class="icon-glyph">🗂️</span> Alle Programme</div>
       </div>
       <div class="start-menu-col right">
-        <div class="start-menu-item" id="start-computer-item">
-          <span class="icon-glyph">🖥️</span> Arbeitsplatz
-        </div>
-        <div class="start-menu-item" id="start-files-item">
-          <span class="icon-glyph">🗂️</span> Eigene Dateien
-        </div>
-        <div class="start-menu-item" id="start-bin-item">
-          <span class="icon-glyph">🗑️</span> Papierkorb
-        </div>
-        <div class="start-menu-item" id="start-control-item">
-          <span class="icon-glyph">⚙️</span> Systemsteuerung
-        </div>
+        <div class="start-menu-item" data-app="docs"><span class="icon-glyph">📁</span> Eigene Dateien</div>
+        <div class="start-menu-item" data-app="pictures"><span class="icon-glyph">🖼️</span> Eigene Bilder</div>
+        <div class="start-menu-item" data-app="computer"><span class="icon-glyph">🖥️</span> Arbeitsplatz</div>
+        <div class="start-menu-item" data-app="bin"><span class="icon-glyph">🗑️</span> Papierkorb</div>
+        <div class="start-menu-sep"></div>
+        <div class="start-menu-item" data-app="settings"><span class="icon-glyph">⚙️</span> Systemsteuerung</div>
+        <div class="start-menu-item" data-app="run"><span class="icon-glyph">▶️</span> Ausführen…</div>
+        <div class="start-menu-item" data-app="profile"><span class="icon-glyph">🪪</span> Harald Ritz</div>
       </div>
     </div>
     <div class="start-menu-footer">
@@ -253,269 +456,269 @@
     </div>
   </div>
 
+  <!-- Kontextmenü (Rechtsklick) -->
+  <div class="context-menu" id="context-menu"></div>
+
   <script>
-    // Reiter (Tabs)
-    var tabs = document.querySelectorAll('.tab');
-    var panels = document.querySelectorAll('.tab-panel');
-    tabs.forEach(function (tab) {
-      tab.addEventListener('click', function () {
-        tabs.forEach(function (t) { t.classList.remove('active'); });
-        panels.forEach(function (p) { p.classList.remove('active'); });
-        tab.classList.add('active');
-        document.querySelector('.tab-panel[data-panel="' + tab.dataset.tab + '"]').classList.add('active');
-      });
-    });
+    'use strict';
 
-    // Uhr in der Taskleiste
-    function updateClock() {
-      var now = new Date();
-      var hh = String(now.getHours()).padStart(2, '0');
-      var mm = String(now.getMinutes()).padStart(2, '0');
-      document.getElementById('clock').textContent = hh + ':' + mm;
+    /* ==================================================================
+       HILFSFUNKTIONEN
+       ================================================================== */
+    function $(sel, root) { return (root || document).querySelector(sel); }
+    function $$(sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
+    function esc(str) {
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
-    updateClock();
-    setInterval(updateClock, 1000 * 30);
 
-    // Boot-/Anmelde-/Herunterfahren-Screens
-    var bootScreen = document.getElementById('boot-screen');
-    var welcomeScreen = document.getElementById('welcome-screen');
-    var shutdownScreen = document.getElementById('shutdown-screen');
-    var shutdownText = document.getElementById('shutdown-text');
-    var restartBtn = document.getElementById('restart-btn');
-    var loginBtn = document.getElementById('login-btn');
+    /* ==================================================================
+       HINWEIS-DIALOG
+       ================================================================== */
+    const infoDialog = $('#info-dialog');
+    function showInfo(text, title) {
+      $('#info-dialog-text').textContent = text;
+      $('#info-dialog-title').textContent = title || 'Hinweis';
+      infoDialog.classList.remove('hidden');
+    }
+    function hideInfo() { infoDialog.classList.add('hidden'); }
+    $('#info-dialog-close').addEventListener('click', hideInfo);
+    $('#info-dialog-ok').addEventListener('click', hideInfo);
+
+    /* ==================================================================
+       FENSTER-MANAGER
+       ================================================================== */
+    const WM = { z: 50, openCount: 0, windows: {} };
+    const taskbarItems = $('#taskbar-items');
+
+    function wmRegister(el) {
+      const id = el.id;
+      const title = el.dataset.title;
+      const icon = el.dataset.icon;
+      const w = { el: el, id: id, icon: icon, title: title, taskBtn: null, savedRect: null, positioned: false };
+      WM.windows[id] = w;
+
+      const tb = document.createElement('div');
+      tb.className = 'title-bar';
+      tb.innerHTML =
+        '<div class="title-bar-text"><span class="title-bar-icon icon-glyph">' + icon + '</span>' +
+        '<span class="tb-title">' + esc(title) + '</span></div>' +
+        '<div class="title-bar-controls">' +
+        '<button class="tb-min" aria-label="Minimieren" type="button">_</button>' +
+        '<button class="tb-max" aria-label="Maximieren" type="button">&#9633;</button>' +
+        '<button class="tb-close close-btn" aria-label="Schließen" type="button">×</button>' +
+        '</div>';
+      el.insertBefore(tb, el.firstChild);
+
+      tb.querySelector('.tb-min').addEventListener('click', function () { wmMinimize(id); });
+      tb.querySelector('.tb-max').addEventListener('click', function () { wmToggleMax(id); });
+      tb.querySelector('.tb-close').addEventListener('click', function () { wmClose(id); });
+      tb.addEventListener('dblclick', function (e) {
+        if (e.target.closest('.title-bar-controls')) return;
+        wmToggleMax(id);
+      });
+
+      el.addEventListener('pointerdown', function () { wmFocus(id); }, true);
+
+      // Fenster per Titelleiste verschieben
+      let dragging = false, offX = 0, offY = 0;
+      tb.addEventListener('pointerdown', function (e) {
+        if (e.target.closest('.title-bar-controls')) return;
+        if (el.classList.contains('maximized')) return;
+        const rect = el.getBoundingClientRect();
+        dragging = true;
+        offX = e.clientX - rect.left;
+        offY = e.clientY - rect.top;
+        e.preventDefault();
+      });
+      document.addEventListener('pointermove', function (e) {
+        if (!dragging) return;
+        let x = e.clientX - offX;
+        let y = e.clientY - offY;
+        x = Math.max(-el.offsetWidth + 80, Math.min(x, window.innerWidth - 80));
+        y = Math.max(0, Math.min(y, window.innerHeight - 60));
+        el.style.left = x + 'px';
+        el.style.top = y + 'px';
+      });
+      document.addEventListener('pointerup', function () { dragging = false; });
+    }
+
+    function wmOpen(id) {
+      const w = WM.windows[id];
+      if (!w) return;
+      const el = w.el;
+      if (!el.classList.contains('open')) {
+        el.classList.add('open');
+        if (!w.positioned) {
+          const width = parseInt(el.dataset.width || '560', 10);
+          el.style.width = Math.min(width, window.innerWidth - 16) + 'px';
+          const n = WM.openCount++;
+          const x = Math.max(8, Math.min(90 + (n % 8) * 28, window.innerWidth - width - 16));
+          const y = Math.max(8, 36 + (n % 8) * 26);
+          el.style.left = x + 'px';
+          el.style.top = y + 'px';
+          w.positioned = true;
+        }
+        if (!w.taskBtn) {
+          const btn = document.createElement('button');
+          btn.className = 'taskbar-item';
+          btn.type = 'button';
+          btn.innerHTML = '<span class="icon-glyph">' + w.icon + '</span><span class="ti-label">' + esc(w.title) + '</span>';
+          btn.addEventListener('click', function () {
+            if (el.classList.contains('minimized')) {
+              el.classList.remove('minimized');
+              wmFocus(id);
+            } else if (el.classList.contains('focused')) {
+              wmMinimize(id);
+            } else {
+              wmFocus(id);
+            }
+          });
+          taskbarItems.appendChild(btn);
+          w.taskBtn = btn;
+        }
+      }
+      el.classList.remove('minimized');
+      wmFocus(id);
+    }
+
+    function wmClose(id) {
+      const w = WM.windows[id];
+      if (!w) return;
+      w.el.classList.remove('open', 'minimized', 'maximized', 'focused');
+      if (w.taskBtn) { w.taskBtn.remove(); w.taskBtn = null; }
+    }
+
+    function wmMinimize(id) {
+      const w = WM.windows[id];
+      w.el.classList.add('minimized');
+      w.el.classList.remove('focused');
+      if (w.taskBtn) w.taskBtn.classList.remove('active');
+    }
+
+    function wmToggleMax(id) {
+      const w = WM.windows[id];
+      const el = w.el;
+      const maximized = el.classList.toggle('maximized');
+      const btn = el.querySelector('.tb-max');
+      if (maximized) {
+        w.savedRect = { left: el.style.left, top: el.style.top, width: el.style.width };
+        btn.innerHTML = '&#10064;';
+      } else if (w.savedRect) {
+        el.style.left = w.savedRect.left;
+        el.style.top = w.savedRect.top;
+        el.style.width = w.savedRect.width;
+        btn.innerHTML = '&#9633;';
+      }
+      wmFocus(id);
+    }
+
+    function wmFocus(id) {
+      Object.keys(WM.windows).forEach(function (key) {
+        const other = WM.windows[key];
+        other.el.classList.remove('focused');
+        if (other.taskBtn) other.taskBtn.classList.remove('active');
+      });
+      const w = WM.windows[id];
+      w.el.classList.add('focused');
+      w.el.style.zIndex = ++WM.z;
+      if (w.taskBtn) w.taskBtn.classList.add('active');
+    }
+
+    function wmSetTitle(id, title) {
+      const w = WM.windows[id];
+      w.title = title;
+      w.el.querySelector('.tb-title').textContent = title;
+      if (w.taskBtn) w.taskBtn.querySelector('.ti-label').textContent = title;
+    }
+
+    function wmCloseAll() {
+      Object.keys(WM.windows).forEach(wmClose);
+    }
+
+    function wmMinimizeAll() {
+      Object.keys(WM.windows).forEach(function (id) {
+        if (WM.windows[id].el.classList.contains('open')) wmMinimize(id);
+      });
+    }
+
+    $$('.window').forEach(wmRegister);
+
+    /* ==================================================================
+       APP-STARTER
+       ================================================================== */
+    function openApp(name) {
+      switch (name) {
+        case 'profile': wmOpen('win-profile'); break;
+        case 'ie': wmOpen('win-ie'); if (!ieHist.length) ieNavigate(IE_HOME); break;
+        case 'mail': wmOpen('win-mail'); break;
+        case 'sol': wmOpen('win-sol'); if (!sol.started) solNew(); break;
+        case 'mine': wmOpen('win-mine'); if (!MS.built) msNew(); break;
+        case 'ttt': wmOpen('win-ttt'); if (!TTT.built) tttNew(true); break;
+        case 'editor': wmOpen('win-editor'); break;
+        case 'settings': wmOpen('win-settings'); updateResolution(); break;
+        case 'run': wmOpen('win-run'); $('#run-input').value = ''; $('#run-input').focus(); break;
+        case 'computer': expOpen([fsComputer]); break;
+        case 'docs': expOpen([fsComputer, driveC, eigeneDateien]); break;
+        case 'pictures': expOpen([fsComputer, driveC, eigeneDateien, eigeneBilder]); break;
+        case 'programs': expOpen([fsComputer, driveC, programme]); break;
+        case 'bin': expOpen([fsBin]); break;
+        default: showInfo('Das Programm "' + name + '" wurde nicht gefunden.');
+      }
+    }
+
+    /* ==================================================================
+       BOOT / ANMELDUNG / HERUNTERFAHREN
+       ================================================================== */
+    const bootScreen = $('#boot-screen');
+    const welcomeScreen = $('#welcome-screen');
+    const shutdownScreen = $('#shutdown-screen');
+    const shutdownText = $('#shutdown-text');
+    const restartBtn = $('#restart-btn');
 
     function runBootSequence(duration) {
-      var fill = bootScreen.querySelector('.boot-progress-fill');
+      const fill = bootScreen.querySelector('.boot-progress-fill');
       bootScreen.classList.remove('hidden');
       fill.style.animation = 'none';
-      requestAnimationFrame(function () {
-        fill.style.animation = '';
-      });
+      requestAnimationFrame(function () { fill.style.animation = ''; });
       setTimeout(function () {
         bootScreen.classList.add('hidden');
         welcomeScreen.classList.remove('hidden');
       }, duration);
     }
 
-    loginBtn.addEventListener('click', function () {
-      welcomeScreen.classList.add('hidden');
-      resetDesktop();
-    });
-
-    // Fenstersteuerung (Minimieren / Maximieren / Schließen)
-    var win = document.getElementById('profile-window');
-    var titleBar = win.querySelector('.title-bar');
-    var taskbarItem = document.getElementById('taskbar-item');
-    var btnMinimize = document.getElementById('btn-minimize');
-    var btnMaximize = document.getElementById('btn-maximize');
-    var btnClose = document.getElementById('btn-close');
-    var savedRect = null;
-
-    function openWindow() {
-      win.classList.remove('minimized', 'closed');
-      taskbarItem.style.display = '';
-      taskbarItem.classList.add('active');
-    }
-
-    function closeWindow() {
-      win.classList.add('closed');
-      taskbarItem.style.display = 'none';
-    }
-
-    function minimizeWindow() {
-      win.classList.add('minimized');
-      taskbarItem.classList.remove('active');
-    }
-
-    function toggleMaximize() {
-      var maximized = win.classList.toggle('maximized');
-      if (maximized) {
-        savedRect = {
-          left: win.style.left,
-          top: win.style.top,
-          width: win.style.width,
-          margin: win.style.margin,
-          position: win.style.position
-        };
-        win.style.left = '';
-        win.style.top = '';
-        win.style.width = '';
-        win.style.margin = '';
-        win.style.position = '';
-      } else if (savedRect) {
-        win.style.left = savedRect.left;
-        win.style.top = savedRect.top;
-        win.style.width = savedRect.width;
-        win.style.margin = savedRect.margin;
-        win.style.position = savedRect.position;
-        savedRect = null;
+    function tryFullscreen() {
+      const docEl = document.documentElement;
+      if (!document.fullscreenElement && docEl.requestFullscreen) {
+        docEl.requestFullscreen().catch(function () { /* Browser hat abgelehnt */ });
       }
-      btnMaximize.innerHTML = maximized ? '&#10064;' : '&#9633;';
     }
 
-    function resetDesktop() {
-      win.classList.remove('minimized', 'closed', 'maximized');
-      win.style.left = '';
-      win.style.top = '';
-      win.style.width = '';
-      win.style.margin = '';
-      win.style.position = '';
-      savedRect = null;
-      btnMaximize.innerHTML = '&#9633;';
-      taskbarItem.style.display = '';
-      taskbarItem.classList.add('active');
-    }
-
-    btnMinimize.addEventListener('click', minimizeWindow);
-    btnMaximize.addEventListener('click', toggleMaximize);
-    btnClose.addEventListener('click', closeWindow);
-
-    taskbarItem.addEventListener('click', function () {
-      if (win.classList.contains('minimized') || win.classList.contains('closed')) {
-        openWindow();
+    function toggleFullscreen() {
+      if (document.fullscreenElement) {
+        document.exitFullscreen();
       } else {
-        minimizeWindow();
+        tryFullscreen();
       }
-    });
-
-    document.getElementById('profile-icon').addEventListener('dblclick', openWindow);
-
-    document.getElementById('btn-ok').addEventListener('click', closeWindow);
-    document.getElementById('btn-cancel').addEventListener('click', closeWindow);
-    document.getElementById('btn-apply').addEventListener('click', function () {
-      showInfo('Die Änderungen wurden übernommen.');
-    });
-
-    // Fenster per Titelleiste verschieben (Maus & Touch)
-    var dragOffsetX = 0;
-    var dragOffsetY = 0;
-    var isDragging = false;
-
-    function startDrag(clientX, clientY) {
-      if (win.classList.contains('maximized')) return;
-      var rect = win.getBoundingClientRect();
-      isDragging = true;
-      dragOffsetX = clientX - rect.left;
-      dragOffsetY = clientY - rect.top;
-      win.style.width = rect.width + 'px';
-      win.style.margin = '0';
-      win.style.position = 'fixed';
-      win.style.left = rect.left + 'px';
-      win.style.top = rect.top + 'px';
     }
 
-    function moveDrag(clientX, clientY) {
-      if (!isDragging) return;
-      win.style.left = (clientX - dragOffsetX) + 'px';
-      win.style.top = (clientY - dragOffsetY) + 'px';
-    }
-
-    function endDrag() {
-      isDragging = false;
-    }
-
-    titleBar.addEventListener('mousedown', function (event) {
-      if (event.target.closest('.title-bar-controls')) return;
-      startDrag(event.clientX, event.clientY);
-    });
-    document.addEventListener('mousemove', function (event) {
-      moveDrag(event.clientX, event.clientY);
-    });
-    document.addEventListener('mouseup', endDrag);
-
-    titleBar.addEventListener('touchstart', function (event) {
-      if (event.target.closest('.title-bar-controls')) return;
-      var touch = event.touches[0];
-      startDrag(touch.clientX, touch.clientY);
-    });
-    document.addEventListener('touchmove', function (event) {
-      if (!isDragging) return;
-      moveDrag(event.touches[0].clientX, event.touches[0].clientY);
-    });
-    document.addEventListener('touchend', endDrag);
-
-    // Doppelklick auf die Titelleiste maximiert/stellt wieder her
-    titleBar.addEventListener('dblclick', function (event) {
-      if (event.target.closest('.title-bar-controls')) return;
-      toggleMaximize();
+    $('#login-btn').addEventListener('click', function () {
+      welcomeScreen.classList.add('hidden');
+      tryFullscreen();
+      wmCloseAll();
+      setTimeout(function () { openApp('profile'); }, 350);
     });
 
-    // Startmenü
-    var startButton = document.getElementById('start-button');
-    var startMenu = document.getElementById('start-menu');
-
-    startButton.addEventListener('click', function (event) {
-      event.stopPropagation();
-      startMenu.classList.toggle('open');
-      startButton.classList.toggle('pressed', startMenu.classList.contains('open'));
-    });
-
-    document.addEventListener('click', function (event) {
-      if (!startMenu.contains(event.target) && !startButton.contains(event.target)) {
-        startMenu.classList.remove('open');
-        startButton.classList.remove('pressed');
-      }
-    });
-
-    function closeStartMenu() {
-      startMenu.classList.remove('open');
-      startButton.classList.remove('pressed');
-    }
-
-    document.getElementById('open-profile-item').addEventListener('click', function () {
-      openWindow();
+    $('#logout-btn').addEventListener('click', function () {
       closeStartMenu();
-    });
-
-    // Hinweis-Dialog für (noch) nicht implementierte Funktionen
-    var infoDialog = document.getElementById('info-dialog');
-    var infoDialogText = document.getElementById('info-dialog-text');
-
-    function showInfo(text) {
-      infoDialogText.textContent = text;
-      infoDialog.classList.remove('hidden');
-    }
-
-    function hideInfo() {
-      infoDialog.classList.add('hidden');
-    }
-
-    document.getElementById('info-dialog-close').addEventListener('click', hideInfo);
-    document.getElementById('info-dialog-ok').addEventListener('click', hideInfo);
-
-    document.getElementById('computer-icon').addEventListener('dblclick', function () {
-      showInfo('Arbeitsplatz ist in dieser Demo nicht verfügbar.');
-    });
-    document.getElementById('bin-icon').addEventListener('dblclick', function () {
-      showInfo('Der Papierkorb ist leer.');
-    });
-    document.getElementById('ie-icon').addEventListener('dblclick', function () {
-      showInfo('Es konnte keine Verbindung zum Internet hergestellt werden.');
-    });
-
-    [
-      ['start-ie-item', 'Es konnte keine Verbindung zum Internet hergestellt werden.'],
-      ['start-mail-item', 'Kein E-Mail-Programm konfiguriert.'],
-      ['start-computer-item', 'Arbeitsplatz ist in dieser Demo nicht verfügbar.'],
-      ['start-files-item', 'Der Ordner "Eigene Dateien" ist leer.'],
-      ['start-bin-item', 'Der Papierkorb ist leer.'],
-      ['start-control-item', 'Die Systemsteuerung ist in dieser Demo nicht verfügbar.']
-    ].forEach(function (entry) {
-      document.getElementById(entry[0]).addEventListener('click', function () {
-        showInfo(entry[1]);
-        closeStartMenu();
-      });
-    });
-
-    // Abmelden / Ausschalten
-    document.getElementById('logout-btn').addEventListener('click', function () {
-      closeStartMenu();
+      wmCloseAll();
       welcomeScreen.classList.remove('hidden');
     });
 
-    document.getElementById('shutdown-btn').addEventListener('click', function () {
+    $('#shutdown-btn').addEventListener('click', function () {
       closeStartMenu();
-      shutdownText.textContent = 'Windows wird heruntergefahren …';
+      wmCloseAll();
+      shutdownText.textContent = 'RitzOS wird heruntergefahren …';
       restartBtn.hidden = true;
       shutdownScreen.classList.remove('hidden');
       setTimeout(function () {
@@ -529,7 +732,1160 @@
       runBootSequence(2400);
     });
 
-    // Initialer Boot-Vorgang
+    /* ==================================================================
+       TASKLEISTE, UHR, STARTMENÜ
+       ================================================================== */
+    function updateClock() {
+      const now = new Date();
+      const hh = String(now.getHours()).padStart(2, '0');
+      const mm = String(now.getMinutes()).padStart(2, '0');
+      const clock = $('#clock');
+      clock.textContent = hh + ':' + mm;
+      clock.title = now.toLocaleDateString('de-DE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    }
+    updateClock();
+    setInterval(updateClock, 1000 * 30);
+
+    const startButton = $('#start-button');
+    const startMenu = $('#start-menu');
+
+    function closeStartMenu() {
+      startMenu.classList.remove('open');
+      startButton.classList.remove('pressed');
+    }
+
+    startButton.addEventListener('click', function (e) {
+      e.stopPropagation();
+      startMenu.classList.toggle('open');
+      startButton.classList.toggle('pressed', startMenu.classList.contains('open'));
+    });
+
+    document.addEventListener('click', function (e) {
+      if (!startMenu.contains(e.target) && !startButton.contains(e.target)) closeStartMenu();
+    });
+
+    $$('.start-menu-item').forEach(function (item) {
+      item.addEventListener('click', function () {
+        openApp(item.dataset.app);
+        closeStartMenu();
+      });
+    });
+
+    $$('.quick-btn[data-app]').forEach(function (btn) {
+      btn.addEventListener('click', function () { openApp(btn.dataset.app); });
+    });
+    $('#show-desktop').addEventListener('click', wmMinimizeAll);
+    $('#tray-fullscreen').addEventListener('click', toggleFullscreen);
+    $('#tray-volume').addEventListener('click', function () {
+      showInfo('Lautstärke: Maximal. (Es gibt allerdings nichts zu hören.)', 'Lautstärke');
+    });
+
+    /* ==================================================================
+       DESKTOP-ICONS
+       ================================================================== */
+    function clearIconSelection() {
+      $$('.desktop-icon').forEach(function (i) { i.classList.remove('selected'); });
+    }
+
+    $$('.desktop-icon').forEach(function (icon) {
+      icon.addEventListener('click', function (e) {
+        e.stopPropagation();
+        clearIconSelection();
+        icon.classList.add('selected');
+      });
+      icon.addEventListener('dblclick', function () { openApp(icon.dataset.app); });
+    });
+
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('.desktop-icon') && !e.target.closest('#context-menu')) clearIconSelection();
+    });
+
+    /* ==================================================================
+       KONTEXTMENÜ (Rechtsklick)
+       ================================================================== */
+    const ctxMenu = $('#context-menu');
+
+    function hideContextMenu() { ctxMenu.classList.remove('open'); }
+
+    function showContextMenu(x, y, items) {
+      ctxMenu.innerHTML = '';
+      items.forEach(function (item) {
+        if (item.sep) {
+          const sep = document.createElement('div');
+          sep.className = 'ctx-sep';
+          ctxMenu.appendChild(sep);
+          return;
+        }
+        const row = document.createElement('div');
+        row.className = 'ctx-item' + (item.bold ? ' bold' : '') + (item.disabled ? ' disabled' : '');
+        row.innerHTML = '<span class="ctx-icon">' + (item.icon || '') + '</span>' + esc(item.label);
+        if (!item.disabled && item.action) {
+          row.addEventListener('click', function () {
+            hideContextMenu();
+            item.action();
+          });
+        }
+        ctxMenu.appendChild(row);
+      });
+      ctxMenu.classList.add('open');
+      const rect = ctxMenu.getBoundingClientRect();
+      ctxMenu.style.left = Math.min(x, window.innerWidth - rect.width - 4) + 'px';
+      ctxMenu.style.top = Math.min(y, window.innerHeight - rect.height - 4) + 'px';
+    }
+
+    function desktopMenuItems() {
+      return [
+        { label: 'Ansicht', icon: '👁️', disabled: true },
+        { label: 'Aktualisieren', icon: '⟳', action: function () { /* fühlt sich echt an */ } },
+        { sep: true },
+        { label: 'Neu > Ordner', icon: '📁', action: function () { showInfo('Neue Ordner können in dieser Demo nicht angelegt werden.'); } },
+        { sep: true },
+        { label: 'Vollbild umschalten', icon: '⛶', action: toggleFullscreen },
+        { sep: true },
+        { label: 'Eigenschaften', icon: '⚙️', action: function () { openApp('settings'); } }
+      ];
+    }
+
+    function iconMenuItems(icon) {
+      const appName = icon.dataset.app;
+      return [
+        { label: 'Öffnen', icon: '📂', bold: true, action: function () { openApp(appName); } },
+        { sep: true },
+        { label: 'Umbenennen', icon: '✏️', disabled: true },
+        { label: 'Löschen', icon: '🗑️', action: function () { showInfo('Systemsymbole können nicht gelöscht werden. Schön wär’s.'); } },
+        { sep: true },
+        { label: 'Eigenschaften', icon: 'ℹ️', action: function () {
+            if (appName === 'profile') { openApp('profile'); }
+            else { showInfo('Typ: Systemobjekt\nSpeicherort: RitzOS-Desktop', 'Eigenschaften'); }
+          } }
+      ];
+    }
+
+    document.addEventListener('contextmenu', function (e) {
+      if (e.target.closest('input, textarea')) return; // natives Menü erlauben
+      e.preventDefault();
+      if (e.target.closest('.ms-grid')) { hideContextMenu(); return; } // Minesweeper-Fahnen
+      const icon = e.target.closest('.desktop-icon');
+      if (icon) {
+        clearIconSelection();
+        icon.classList.add('selected');
+        showContextMenu(e.clientX, e.clientY, iconMenuItems(icon));
+        return;
+      }
+      if (e.target.closest('.window, .taskbar, .start-menu, #context-menu, .screen')) {
+        hideContextMenu();
+        return;
+      }
+      showContextMenu(e.clientX, e.clientY, desktopMenuItems());
+    });
+
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('#context-menu')) hideContextMenu();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') { hideContextMenu(); closeStartMenu(); }
+    });
+
+    /* ==================================================================
+       APP: HARALD RITZ – EIGENSCHAFTEN (Tabs)
+       ================================================================== */
+    (function () {
+      const root = $('#win-profile');
+      const tabs = $$('.tab', root);
+      const panels = $$('.tab-panel', root);
+      tabs.forEach(function (tab) {
+        tab.addEventListener('click', function () {
+          tabs.forEach(function (t) { t.classList.remove('active'); });
+          panels.forEach(function (p) { p.classList.remove('active'); });
+          tab.classList.add('active');
+          $('.tab-panel[data-panel="' + tab.dataset.tab + '"]', root).classList.add('active');
+        });
+      });
+      $('#profile-ok').addEventListener('click', function () { wmClose('win-profile'); });
+      $('#profile-cancel').addEventListener('click', function () { wmClose('win-profile'); });
+      $('#profile-apply').addEventListener('click', function () { showInfo('Die Änderungen wurden übernommen.'); });
+    })();
+
+    /* ==================================================================
+       APP: INTERNET EXPLORER
+       ================================================================== */
+    const IE_HOME = 'ritz://start';
+    let ieHist = [];
+    let ieIdx = -1;
+
+    const iePages = {
+      'ritz://start': {
+        title: 'RitzNet – Startseite',
+        html: '<div class="web-portal">' +
+          '<h1>🌐 RitzNet</h1>' +
+          '<p class="web-tagline">Das Tor zum Ritz-Wide-Web seit 2004</p>' +
+          '<div class="web-search"><input type="text" id="ritz-search-input" placeholder="RitzSearch – was suchen Sie?">' +
+          '<button class="xp-btn" id="ritz-search-btn" type="button">Suchen</button></div>' +
+          '<div class="web-links">' +
+          '<a data-href="ritz://harald">🪪 Haralds Homepage</a>' +
+          '<a data-href="ritz://news">📰 RitzNews</a>' +
+          '<a data-href="ritz://wetter">⛅ Wetter</a>' +
+          '<a data-href="ritz://spiele">🕹️ Spiele-Arcade</a>' +
+          '<a data-href="ritz://gaestebuch">📖 Gästebuch</a>' +
+          '<a data-href="ritz://hilfe">❓ Hilfe</a>' +
+          '</div>' +
+          '<p class="web-footer">Optimiert für 800×600 · Am besten mit Internet Explorer (was sonst?)</p>' +
+          '</div>'
+      },
+      'ritz://harald': {
+        title: 'Haralds Homepage',
+        html: '<div class="web-retro">' +
+          '<div class="web-banner blink">★★★ WILLKOMMEN AUF MEINER HOMEPAGE!!! ★★★</div>' +
+          '<h1>Harald Ritz – Lorem Ipsum Generator a.D.</h1>' +
+          '<p>Hallo und herzlich willkommen auf meiner persönlichen Homepage im Ritz-Wide-Web! ' +
+          'Hier finden Sie alles über mich, mein Leben und meine Sammlung von Platzhaltertexten.</p>' +
+          '<div class="web-construction">🚧 Diese Seite befindet sich noch im Aufbau! 🚧</div>' +
+          '<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Meine Hobbys: ' +
+          'Lorem generieren, Ipsum sortieren, Dolor archivieren.</p>' +
+          '<p>Sie sind Besucher Nr. <span class="web-counter">000042</span></p>' +
+          '<p><a data-href="ritz://gaestebuch">→ Tragen Sie sich in mein Gästebuch ein!</a></p>' +
+          '<p><a data-href="ritz://start">← Zurück zu RitzNet</a></p>' +
+          '</div>'
+      },
+      'ritz://news': {
+        title: 'RitzNews – Aktuelle Nachrichten',
+        html: '<div class="web-page">' +
+          '<h1>📰 RitzNews</h1>' +
+          '<div class="web-article"><h2>RitzOS Professional erschienen!</h2>' +
+          '<p>Nach jahrelanger Entwicklung ist das Betriebssystem RitzOS endlich fertig. ' +
+          'Kritiker loben vor allem, dass es verdächtig vertraut aussieht.</p></div>' +
+          '<div class="web-article"><h2>Diskette mit 1,44 MB: „Mehr braucht kein Mensch“</h2>' +
+          '<p>Experte Harald Ritz erklärt, warum sein gesamtes Lebenswerk auf eine einzige ' +
+          'Diskette passt – und warum das gut so ist.</p></div>' +
+          '<div class="web-article"><h2>Lorem-Ipsum-Knappheit befürchtet</h2>' +
+          '<p>Nach der Pensionierung des bekanntesten Lorem-Ipsum-Generators droht ein ' +
+          'Engpass an Platzhaltertext. Die Branche ist alarmiert.</p></div>' +
+          '<p><a data-href="ritz://start">← Zurück zu RitzNet</a></p>' +
+          '</div>'
+      },
+      'ritz://wetter': {
+        title: 'RitzWetter',
+        html: '<div class="web-page">' +
+          '<h1>⛅ RitzWetter – 4-Tage-Vorhersage</h1>' +
+          '<table class="web-table">' +
+          '<tr><th>Tag</th><th>Wetter</th><th>Temperatur</th></tr>' +
+          '<tr><td>Heute</td><td>☀️ Sonnig</td><td>21 °C</td></tr>' +
+          '<tr><td>Morgen</td><td>⛅ Wolkig</td><td>18 °C</td></tr>' +
+          '<tr><td>Übermorgen</td><td>🌧️ Regen</td><td>14 °C</td></tr>' +
+          '<tr><td>Danach</td><td>🌈 Überraschung</td><td>?? °C</td></tr>' +
+          '</table>' +
+          '<p class="web-small">Alle Angaben ohne Gewähr. Vorhersage basiert auf einem Blick aus dem Fenster.</p>' +
+          '<p><a data-href="ritz://start">← Zurück zu RitzNet</a></p>' +
+          '</div>'
+      },
+      'ritz://spiele': {
+        title: 'Spiele-Arcade',
+        html: '<div class="web-page">' +
+          '<h1>🕹️ RitzNet Spiele-Arcade</h1>' +
+          '<p>Klicken Sie auf ein Spiel, um es direkt in RitzOS zu starten:</p>' +
+          '<div class="web-links">' +
+          '<a data-app="sol">🃏 Solitaire</a>' +
+          '<a data-app="mine">💣 Minesweeper</a>' +
+          '<a data-app="ttt">⭕ Tic-Tac-Toe</a>' +
+          '</div>' +
+          '<p><a data-href="ritz://start">← Zurück zu RitzNet</a></p>' +
+          '</div>'
+      },
+      'ritz://gaestebuch': {
+        title: 'Gästebuch',
+        html: '<div class="web-page">' +
+          '<h1>📖 Gästebuch</h1>' +
+          '<div class="web-guestbook-entry"><strong>Bernd, 12.03.2005:</strong> Tolle Seite, Harald! ' +
+          'Die Hintergrundmusik fehlt aber noch.</div>' +
+          '<div class="web-guestbook-entry"><strong>Gisela, 28.07.2006:</strong> Bin über die Suchmaschine ' +
+          'hierher gekommen. Was ist ein Lorem?</div>' +
+          '<div class="web-guestbook-entry"><strong>Anonym, 01.04.2009:</strong> ipsum dolor sit amet 👍</div>' +
+          '<div class="web-guestbook-entry"><strong>Harald Ritz, gestern:</strong> Teste, ob mein Gästebuch ' +
+          'noch funktioniert. Es funktioniert.</div>' +
+          '<p><a data-href="ritz://harald">← Zurück zur Homepage</a></p>' +
+          '</div>'
+      },
+      'ritz://hilfe': {
+        title: 'RitzNet-Hilfe',
+        html: '<div class="web-page">' +
+          '<h1>❓ Hilfe</h1>' +
+          '<p><strong>F: Warum kann ich keine echten Webseiten aufrufen?</strong><br>' +
+          'A: RitzOS ist aus Sicherheitsgründen nicht mit dem echten Internet verbunden. ' +
+          'Das RitzNet ist viel gemütlicher.</p>' +
+          '<p><strong>F: Wo finde ich die Spiele?</strong><br>' +
+          'A: Im Startmenü, auf dem Desktop oder in der <a data-href="ritz://spiele">Spiele-Arcade</a>.</p>' +
+          '<p><strong>F: Funktioniert der Rechtsklick?</strong><br>' +
+          'A: Ja! Probieren Sie es auf dem Desktop oder in Minesweeper aus.</p>' +
+          '<p><a data-href="ritz://start">← Zurück zu RitzNet</a></p>' +
+          '</div>'
+      }
+    };
+
+    function ieErrorPage(url) {
+      return '<div class="web-error">' +
+        '<h1>⚠️ Die Seite kann nicht angezeigt werden</h1>' +
+        '<p>Die Seite <strong>' + esc(url) + '</strong> ist zurzeit nicht verfügbar.</p>' +
+        '<hr>' +
+        '<p>Mögliche Ursachen:</p>' +
+        '<ul>' +
+        '<li>RitzOS ist aus Sicherheitsgründen nicht mit dem echten Internet verbunden.</li>' +
+        '<li>Das Modem ist nicht eingesteckt (es gibt kein Modem).</li>' +
+        '<li>Die Telefonleitung wird gerade zum Telefonieren benutzt.</li>' +
+        '</ul>' +
+        '<p><a data-href="ritz://start">→ Zur RitzNet-Startseite</a></p>' +
+        '</div>';
+    }
+
+    function ieSearchPage(query) {
+      const q = query.toLowerCase();
+      let results = '';
+      Object.keys(iePages).forEach(function (url) {
+        const page = iePages[url];
+        if (page.title.toLowerCase().indexOf(q) !== -1 || url.indexOf(q) !== -1) {
+          results += '<div class="web-result"><a data-href="' + url + '">' + esc(page.title) + '</a>' +
+            '<span class="web-url">' + url + '</span></div>';
+        }
+      });
+      if (!results) {
+        results = '<p>Keine Treffer für „' + esc(query) + '“. Haben Sie es richtig geschrieben? ' +
+          'Versuchen Sie es mit „lorem“, „news“ oder „spiele“.</p>';
+      }
+      return '<div class="web-page"><h1>🔍 RitzSearch</h1>' +
+        '<p>Suchergebnisse für: <strong>' + esc(query) + '</strong></p>' + results +
+        '<p><a data-href="ritz://start">← Zurück zu RitzNet</a></p></div>';
+    }
+
+    function ieRender(url) {
+      const content = $('#ie-content');
+      let title;
+      if (iePages[url]) {
+        content.innerHTML = iePages[url].html;
+        title = iePages[url].title;
+      } else if (url.indexOf('ritz://suche?q=') === 0) {
+        const q = decodeURIComponent(url.slice('ritz://suche?q='.length));
+        content.innerHTML = ieSearchPage(q);
+        title = 'RitzSearch: ' + q;
+      } else {
+        content.innerHTML = ieErrorPage(url);
+        title = 'Die Seite kann nicht angezeigt werden';
+      }
+      content.scrollTop = 0;
+      $('#ie-address').value = url;
+      $('#ie-status').textContent = 'Fertig';
+      wmSetTitle('win-ie', title + ' – Internet Explorer');
+      $('#ie-back').disabled = ieIdx <= 0;
+      $('#ie-forward').disabled = ieIdx >= ieHist.length - 1;
+    }
+
+    function ieNavigate(input) {
+      let url = String(input).trim();
+      if (!url) return;
+      if (url.indexOf('://') === -1) {
+        if (url.indexOf('.') !== -1) {
+          url = 'http://' + url;
+        } else {
+          url = 'ritz://suche?q=' + encodeURIComponent(url);
+        }
+      }
+      ieHist = ieHist.slice(0, ieIdx + 1);
+      ieHist.push(url);
+      ieIdx = ieHist.length - 1;
+      ieRender(url);
+    }
+
+    $('#ie-back').addEventListener('click', function () {
+      if (ieIdx > 0) { ieIdx--; ieRender(ieHist[ieIdx]); }
+    });
+    $('#ie-forward').addEventListener('click', function () {
+      if (ieIdx < ieHist.length - 1) { ieIdx++; ieRender(ieHist[ieIdx]); }
+    });
+    $('#ie-reload').addEventListener('click', function () {
+      if (ieIdx >= 0) ieRender(ieHist[ieIdx]);
+    });
+    $('#ie-home').addEventListener('click', function () { ieNavigate(IE_HOME); });
+    $('#ie-go').addEventListener('click', function () { ieNavigate($('#ie-address').value); });
+    $('#ie-address').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') ieNavigate($('#ie-address').value);
+    });
+
+    $('#ie-content').addEventListener('click', function (e) {
+      const link = e.target.closest('a');
+      if (!link) {
+        if (e.target.id === 'ritz-search-btn') {
+          ieNavigate('ritz://suche?q=' + encodeURIComponent($('#ritz-search-input').value || 'lorem'));
+        }
+        return;
+      }
+      if (link.dataset.href) ieNavigate(link.dataset.href);
+      else if (link.dataset.app) openApp(link.dataset.app);
+    });
+    $('#ie-content').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' && e.target.id === 'ritz-search-input') {
+        ieNavigate('ritz://suche?q=' + encodeURIComponent(e.target.value || 'lorem'));
+      }
+    });
+
+    /* ==================================================================
+       APP: SOLITAIRE (Klondike)
+       ================================================================== */
+    const SOL_SUITS = ['♠', '♥', '♦', '♣'];
+    const SOL_RED = { '♥': true, '♦': true };
+
+    const sol = { stock: [], waste: [], found: [[], [], [], []], tab: [[], [], [], [], [], [], []], sel: null, moves: 0, started: false };
+
+    function solRankTxt(r) {
+      return { 1: 'A', 11: 'B', 12: 'D', 13: 'K' }[r] || String(r);
+    }
+
+    function solNew() {
+      const deck = [];
+      SOL_SUITS.forEach(function (s) {
+        for (let r = 1; r <= 13; r++) deck.push({ s: s, r: r, up: false });
+      });
+      for (let i = deck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const t = deck[i]; deck[i] = deck[j]; deck[j] = t;
+      }
+      sol.found = [[], [], [], []];
+      sol.tab = [[], [], [], [], [], [], []];
+      for (let col = 0; col < 7; col++) {
+        for (let n = 0; n <= col; n++) {
+          const card = deck.pop();
+          card.up = (n === col);
+          sol.tab[col].push(card);
+        }
+      }
+      sol.stock = deck;
+      sol.waste = [];
+      sol.sel = null;
+      sol.moves = 0;
+      sol.started = true;
+      $('#sol-win-overlay').classList.add('hidden');
+      solRender();
+    }
+
+    function solPile(code) {
+      if (code === 's') return sol.stock;
+      if (code === 'w') return sol.waste;
+      if (code[0] === 'f') return sol.found[+code[1]];
+      return sol.tab[+code[1]];
+    }
+
+    function solIsRed(card) { return !!SOL_RED[card.s]; }
+
+    function solSelectedCards() {
+      if (!sol.sel) return [];
+      const pile = solPile(sol.sel.pile);
+      return pile.slice(sol.sel.idx);
+    }
+
+    function solCanDrop(cards, dest) {
+      const first = cards[0];
+      if (dest[0] === 'f') {
+        if (cards.length !== 1) return false;
+        const f = solPile(dest);
+        if (!f.length) return first.r === 1;
+        const top = f[f.length - 1];
+        return top.s === first.s && top.r === first.r - 1;
+      }
+      if (dest[0] === 't') {
+        const t = solPile(dest);
+        if (!t.length) return first.r === 13;
+        const top = t[t.length - 1];
+        return top.up && solIsRed(top) !== solIsRed(first) && top.r === first.r + 1;
+      }
+      return false;
+    }
+
+    function solTryMove(dest) {
+      if (!sol.sel || sol.sel.pile === dest) return false;
+      const cards = solSelectedCards();
+      if (!cards.length || !solCanDrop(cards, dest)) return false;
+      const src = solPile(sol.sel.pile);
+      src.splice(sol.sel.idx, cards.length);
+      const dst = solPile(dest);
+      cards.forEach(function (c) { dst.push(c); });
+      if (sol.sel.pile[0] === 't' && src.length && !src[src.length - 1].up) {
+        src[src.length - 1].up = true;
+      }
+      sol.moves++;
+      sol.sel = null;
+      solRender();
+      solCheckWin();
+      return true;
+    }
+
+    function solAutoToFoundation(pileCode) {
+      const pile = solPile(pileCode);
+      if (!pile.length) return;
+      sol.sel = { pile: pileCode, idx: pile.length - 1 };
+      for (let f = 0; f < 4; f++) {
+        if (solTryMove('f' + f)) return;
+      }
+      sol.sel = null;
+      solRender();
+    }
+
+    function solCheckWin() {
+      const total = sol.found.reduce(function (sum, f) { return sum + f.length; }, 0);
+      if (total === 52) {
+        $('#sol-win-overlay').classList.remove('hidden');
+        $('#sol-status').textContent = 'Gewonnen in ' + sol.moves + ' Zügen!';
+      }
+    }
+
+    function solCardEl(card, pileCode, idx) {
+      const el = document.createElement('div');
+      el.className = 'pcard ' + (card.up ? (solIsRed(card) ? 'red' : 'black') : 'back');
+      if (card.up) {
+        el.innerHTML = '<span class="pc-corner">' + solRankTxt(card.r) + '<br>' + card.s + '</span>' +
+          '<span class="pc-big">' + card.s + '</span>';
+      }
+      if (sol.sel && sol.sel.pile === pileCode && idx >= sol.sel.idx) el.classList.add('sel');
+      el.addEventListener('click', function (e) {
+        e.stopPropagation();
+        solCardClick(pileCode, idx);
+      });
+      el.addEventListener('dblclick', function (e) {
+        e.stopPropagation();
+        const pile = solPile(pileCode);
+        if ((pileCode === 'w' || pileCode[0] === 't') && idx === pile.length - 1 && card.up) {
+          solAutoToFoundation(pileCode);
+        }
+      });
+      return el;
+    }
+
+    function solCardClick(pileCode, idx) {
+      const pile = solPile(pileCode);
+      const card = pile[idx];
+
+      if (pileCode === 's') { solStockClick(); return; }
+
+      if (!card.up) {
+        // Verdeckte oberste Karte aufdecken
+        if (pileCode[0] === 't' && idx === pile.length - 1) {
+          card.up = true;
+          sol.sel = null;
+          solRender();
+        }
+        return;
+      }
+
+      if (sol.sel) {
+        if (sol.sel.pile === pileCode && sol.sel.idx === idx) {
+          sol.sel = null;
+          solRender();
+          return;
+        }
+        if (solTryMove(pileCode)) return;
+      }
+
+      // Auswahl setzen (Foundation/Waste: nur oberste Karte)
+      if (pileCode === 'w' || pileCode[0] === 'f') {
+        sol.sel = { pile: pileCode, idx: pile.length - 1 };
+      } else {
+        sol.sel = { pile: pileCode, idx: idx };
+      }
+      solRender();
+    }
+
+    function solStockClick() {
+      sol.sel = null;
+      if (sol.stock.length) {
+        const card = sol.stock.pop();
+        card.up = true;
+        sol.waste.push(card);
+      } else if (sol.waste.length) {
+        while (sol.waste.length) {
+          const c = sol.waste.pop();
+          c.up = false;
+          sol.stock.push(c);
+        }
+        sol.moves++;
+      }
+      solRender();
+    }
+
+    function solRenderSlot(container, pileCode, emptyLabel) {
+      container.innerHTML = '';
+      const pile = solPile(pileCode);
+      if (!pile.length) {
+        const slot = document.createElement('div');
+        slot.className = 'pcard empty';
+        slot.textContent = emptyLabel || '';
+        slot.addEventListener('click', function (e) {
+          e.stopPropagation();
+          if (pileCode === 's') { solStockClick(); return; }
+          if (sol.sel) solTryMove(pileCode);
+        });
+        container.appendChild(slot);
+      } else {
+        const top = pile.length - 1;
+        container.appendChild(solCardEl(pile[top], pileCode, top));
+      }
+    }
+
+    function solRender() {
+      solRenderSlot($('#sol-stock'), 's', '↺');
+      solRenderSlot($('#sol-waste'), 'w', '');
+      for (let f = 0; f < 4; f++) {
+        solRenderSlot($('#sol-f' + f), 'f' + f, 'A');
+      }
+      const tableau = $('#sol-tableau');
+      tableau.innerHTML = '';
+      for (let t = 0; t < 7; t++) {
+        const colCode = 't' + t;
+        const col = document.createElement('div');
+        col.className = 'sol-col';
+        const pile = sol.tab[t];
+        let offset = 0;
+        pile.forEach(function (card, idx) {
+          const el = solCardEl(card, colCode, idx);
+          el.style.top = offset + 'px';
+          offset += card.up ? 24 : 10;
+          col.appendChild(el);
+        });
+        col.style.minHeight = (offset + 84) + 'px';
+        col.addEventListener('click', function () {
+          if (sol.sel) solTryMove(colCode);
+        });
+        tableau.appendChild(col);
+      }
+      $('#sol-moves').textContent = 'Züge: ' + sol.moves;
+    }
+
+    $('#sol-new').addEventListener('click', solNew);
+    $('#sol-win-new').addEventListener('click', solNew);
+
+    /* ==================================================================
+       APP: MINESWEEPER
+       ================================================================== */
+    const MS = { w: 9, h: 9, mines: 10, cells: [], started: false, over: false, time: 0, interval: null, built: false };
+
+    function msNew() {
+      MS.cells = [];
+      MS.started = false;
+      MS.over = false;
+      MS.time = 0;
+      MS.built = true;
+      if (MS.interval) { clearInterval(MS.interval); MS.interval = null; }
+      $('#ms-timer').textContent = '000';
+      $('#ms-face').textContent = '🙂';
+      for (let i = 0; i < MS.w * MS.h; i++) {
+        MS.cells.push({ mine: false, flag: false, open: false, n: 0 });
+      }
+      msUpdateMineCounter();
+      msRender();
+    }
+
+    function msNeighbors(i) {
+      const x = i % MS.w, y = Math.floor(i / MS.w);
+      const out = [];
+      for (let dy = -1; dy <= 1; dy++) {
+        for (let dx = -1; dx <= 1; dx++) {
+          if (!dx && !dy) continue;
+          const nx = x + dx, ny = y + dy;
+          if (nx >= 0 && nx < MS.w && ny >= 0 && ny < MS.h) out.push(ny * MS.w + nx);
+        }
+      }
+      return out;
+    }
+
+    function msPlaceMines(safe) {
+      let placed = 0;
+      while (placed < MS.mines) {
+        const i = Math.floor(Math.random() * MS.cells.length);
+        if (i === safe || MS.cells[i].mine) continue;
+        MS.cells[i].mine = true;
+        placed++;
+      }
+      MS.cells.forEach(function (cell, i) {
+        cell.n = msNeighbors(i).filter(function (j) { return MS.cells[j].mine; }).length;
+      });
+    }
+
+    function msReveal(i) {
+      const cell = MS.cells[i];
+      if (cell.open || cell.flag) return;
+      cell.open = true;
+      if (cell.n === 0 && !cell.mine) {
+        msNeighbors(i).forEach(msReveal);
+      }
+    }
+
+    function msUpdateMineCounter() {
+      const flags = MS.cells.filter(function (c) { return c.flag; }).length;
+      const left = Math.max(0, MS.mines - flags);
+      $('#ms-mines').textContent = String(left).padStart(3, '0');
+    }
+
+    function msCellClick(i) {
+      if (MS.over) return;
+      const cell = MS.cells[i];
+      if (cell.flag || cell.open) return;
+      if (!MS.started) {
+        MS.started = true;
+        msPlaceMines(i);
+        MS.interval = setInterval(function () {
+          MS.time = Math.min(999, MS.time + 1);
+          $('#ms-timer').textContent = String(MS.time).padStart(3, '0');
+        }, 1000);
+      }
+      if (cell.mine) {
+        cell.open = true;
+        MS.over = true;
+        clearInterval(MS.interval);
+        MS.cells.forEach(function (c) { if (c.mine) c.open = true; });
+        $('#ms-face').textContent = '😵';
+        msRender();
+        return;
+      }
+      msReveal(i);
+      const opened = MS.cells.filter(function (c) { return c.open; }).length;
+      if (opened === MS.w * MS.h - MS.mines) {
+        MS.over = true;
+        clearInterval(MS.interval);
+        $('#ms-face').textContent = '😎';
+        MS.cells.forEach(function (c) { if (c.mine) c.flag = true; });
+        msUpdateMineCounter();
+      }
+      msRender();
+    }
+
+    function msToggleFlag(i) {
+      if (MS.over) return;
+      const cell = MS.cells[i];
+      if (cell.open) return;
+      cell.flag = !cell.flag;
+      msUpdateMineCounter();
+      msRender();
+    }
+
+    function msRender() {
+      const grid = $('#ms-grid');
+      grid.innerHTML = '';
+      grid.style.gridTemplateColumns = 'repeat(' + MS.w + ', 26px)';
+      MS.cells.forEach(function (cell, i) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'ms-cell';
+        if (cell.open) {
+          btn.classList.add('open');
+          if (cell.mine) {
+            btn.textContent = '💣';
+            btn.classList.add('boom');
+          } else if (cell.n) {
+            btn.textContent = cell.n;
+            btn.classList.add('n' + cell.n);
+          }
+        } else if (cell.flag) {
+          btn.textContent = '🚩';
+        }
+        btn.addEventListener('click', function () { msCellClick(i); });
+        btn.addEventListener('contextmenu', function (e) {
+          e.preventDefault();
+          msToggleFlag(i);
+        });
+        grid.appendChild(btn);
+      });
+    }
+
+    $('#ms-face').addEventListener('click', msNew);
+
+    /* ==================================================================
+       APP: TIC-TAC-TOE
+       ================================================================== */
+    const TTT = { board: [], over: false, playerScore: 0, cpuScore: 0, built: false };
+    const TTT_LINES = [
+      [0, 1, 2], [3, 4, 5], [6, 7, 8],
+      [0, 3, 6], [1, 4, 7], [2, 5, 8],
+      [0, 4, 8], [2, 4, 6]
+    ];
+
+    function tttNew(resetBuilt) {
+      TTT.board = ['', '', '', '', '', '', '', '', ''];
+      TTT.over = false;
+      if (resetBuilt) TTT.built = true;
+      $('#ttt-status').textContent = 'Sie sind ✕ — Sie beginnen!';
+      tttRender();
+    }
+
+    function tttWinner(board) {
+      for (const line of TTT_LINES) {
+        const v = board[line[0]];
+        if (v && v === board[line[1]] && v === board[line[2]]) return v;
+      }
+      return board.every(function (c) { return c; }) ? 'draw' : null;
+    }
+
+    function tttCpuMove() {
+      const board = TTT.board;
+      function findMove(mark) {
+        for (const line of TTT_LINES) {
+          const vals = line.map(function (i) { return board[i]; });
+          if (vals.filter(function (v) { return v === mark; }).length === 2 && vals.indexOf('') !== -1) {
+            return line[vals.indexOf('')];
+          }
+        }
+        return -1;
+      }
+      let move = findMove('O');
+      if (move === -1) move = findMove('X');
+      if (move === -1 && !board[4]) move = 4;
+      if (move === -1) {
+        const free = [];
+        board.forEach(function (v, i) { if (!v) free.push(i); });
+        move = free[Math.floor(Math.random() * free.length)];
+      }
+      board[move] = 'O';
+    }
+
+    function tttFinish(result) {
+      TTT.over = true;
+      if (result === 'X') {
+        TTT.playerScore++;
+        $('#ttt-status').textContent = '🎉 Sie haben gewonnen!';
+      } else if (result === 'O') {
+        TTT.cpuScore++;
+        $('#ttt-status').textContent = '💻 RitzOS hat gewonnen!';
+      } else {
+        $('#ttt-status').textContent = '🤝 Unentschieden!';
+      }
+      $('#ttt-score').textContent = 'Sie ' + TTT.playerScore + ' : ' + TTT.cpuScore + ' RitzOS';
+    }
+
+    function tttCellClick(i) {
+      if (TTT.over || TTT.board[i]) return;
+      TTT.board[i] = 'X';
+      let result = tttWinner(TTT.board);
+      if (result) { tttRender(); tttFinish(result); return; }
+      $('#ttt-status').textContent = 'RitzOS denkt nach …';
+      tttRender();
+      setTimeout(function () {
+        tttCpuMove();
+        result = tttWinner(TTT.board);
+        tttRender();
+        if (result) tttFinish(result);
+        else $('#ttt-status').textContent = 'Sie sind dran!';
+      }, 400);
+    }
+
+    function tttRender() {
+      const grid = $('#ttt-grid');
+      grid.innerHTML = '';
+      TTT.board.forEach(function (v, i) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'ttt-cell' + (v === 'X' ? ' x' : v === 'O' ? ' o' : '');
+        btn.textContent = v === 'X' ? '✕' : v === 'O' ? '◯' : '';
+        btn.addEventListener('click', function () { tttCellClick(i); });
+        grid.appendChild(btn);
+      });
+    }
+
+    $('#ttt-new').addEventListener('click', function () { tttNew(false); });
+
+    /* ==================================================================
+       APP: EXPLORER (virtuelles Dateisystem)
+       ================================================================== */
+    function vfsFolder(name, icon, children) { return { name: name, type: 'folder', icon: icon || '📁', children: children }; }
+    function vfsTxt(name, content) { return { name: name, type: 'txt', icon: '📄', content: content }; }
+    function vfsImg(name, src) { return { name: name, type: 'img', icon: '🖼️', src: src }; }
+    function vfsApp(name, appId, icon) { return { name: name, type: 'app', icon: icon, app: appId }; }
+
+    const eigeneBilder = vfsFolder('Eigene Bilder', '🖼️', [
+      vfsImg('harald.svg', 'assets/harald-ritz-placeholder.svg'),
+      vfsImg('gruene_wiese.webp', 'assets/xp.webp')
+    ]);
+
+    const eigeneDateien = vfsFolder('Eigene Dateien', '📁', [
+      eigeneBilder,
+      vfsTxt('lebenslauf.txt',
+        'LEBENSLAUF — HARALD RITZ\n========================\n\n' +
+        '1970–1990:  Lorem ipsum dolor sit amet\n' +
+        '1990–2004:  Consectetur adipiscing elit\n' +
+        '2004–2024:  Senior Placeholder Manager,\n            Lorem Ipsum Department\n' +
+        'seit 2024:  Lorem Ipsum Generator a.D.\n\n' +
+        'Besondere Kenntnisse: Blindtext (fließend)'),
+      vfsTxt('einkaufsliste.txt',
+        'EINKAUFSLISTE\n=============\n\n- Disketten (1,44 MB, 10er-Pack)\n- Mauspad\n- Röhrenmonitor-Putztuch\n- Lorem (falls im Angebot)\n- Ipsum (nur das gute)'),
+      vfsTxt('geheim.txt',
+        'STRENG GEHEIM!\n==============\n\nWer das liest, hat den Datei-Explorer verstanden.\nGlückwunsch. Mehr Geheimnisse gibt es hier nicht.'),
+      vfsTxt('passwoerter.txt',
+        'MEINE PASSWÖRTER\n================\n\nE-Mail:    hunter2\nRitzNet:   hunter2\nSonstiges: hunter2\n\n(Sehr sicher, weil niemand damit rechnet.)')
+    ]);
+
+    const programme = vfsFolder('Programme', '🗂️', [
+      vfsApp('Internet Explorer', 'ie', '🌐'),
+      vfsApp('Ritz Express (E-Mail)', 'mail', '📧'),
+      vfsApp('Solitaire', 'sol', '🃏'),
+      vfsApp('Minesweeper', 'mine', '💣'),
+      vfsApp('Tic-Tac-Toe', 'ttt', '⭕'),
+      vfsApp('Editor', 'editor', '📝'),
+      vfsApp('Systemsteuerung', 'settings', '⚙️')
+    ]);
+
+    const ritzosFolder = vfsFolder('RitzOS', '🗂️', [
+      vfsTxt('system.ini',
+        '[RitzOS]\nversion=5.1\nbuild=2600\nlook=verdaechtig_vertraut\n\n[warnung]\nbitte_nicht_loeschen=true'),
+      vfsTxt('boot.log',
+        'RitzOS Boot-Protokoll\n---------------------\n[OK] Kernel geladen\n[OK] Tapete aufgehängt\n[OK] Startmenü poliert\n[OK] Solitaire-Karten gemischt\n[OK] System bereit')
+    ]);
+
+    const driveC = {
+      name: 'Lokaler Datenträger (C:)', type: 'drive', icon: '💽',
+      children: [eigeneDateien, programme, ritzosFolder]
+    };
+
+    const fsComputer = {
+      name: 'Arbeitsplatz', type: 'root', icon: '🖥️',
+      children: [
+        { name: 'Diskette (A:)', type: 'drive', icon: '💾', children: [], note: 'Keine Diskette eingelegt. Es ist auch keine zu erwarten.' },
+        driveC,
+        { name: 'CD-Laufwerk (D:)', type: 'drive', icon: '💿', children: [], note: 'Legen Sie eine CD ein. (Wo wollen Sie die denn hernehmen?)' }
+      ]
+    };
+
+    const fsBin = {
+      name: 'Papierkorb', type: 'root', icon: '🗑️',
+      children: [
+        vfsTxt('alte_witze.txt',
+          'ALTE WITZE (AUSSORTIERT)\n========================\n\n„Kommt ein Byte zum Arzt …“\n\nDer Rest wurde aus Qualitätsgründen gelöscht.'),
+        vfsTxt('anderes_betriebssystem.lnk',
+          'Verknüpfung zu einem anderen Betriebssystem.\n\nWurde aus naheliegenden Gründen in den Papierkorb verschoben.')
+      ]
+    };
+
+    const EXP = { path: [], hist: [], histIdx: -1 };
+
+    function expOpen(path) {
+      wmOpen('win-explorer');
+      EXP.hist = EXP.hist.slice(0, EXP.histIdx + 1);
+      EXP.hist.push(path);
+      EXP.histIdx = EXP.hist.length - 1;
+      expRenderPath(path);
+    }
+
+    function expRenderPath(path) {
+      EXP.path = path;
+      const node = path[path.length - 1];
+      wmSetTitle('win-explorer', node.name);
+      $('#exp-address').value = path.map(function (n) { return n.name; }).join('\\');
+      $('#exp-back').disabled = EXP.histIdx <= 0;
+      $('#exp-up').disabled = path.length <= 1;
+
+      const body = $('#exp-body');
+      body.innerHTML = '';
+      const children = node.children || [];
+      if (!children.length) {
+        body.innerHTML = '<p class="exp-empty">Dieser Ordner ist leer.</p>';
+      }
+      children.forEach(function (child) {
+        const item = document.createElement('div');
+        item.className = 'exp-item';
+        item.innerHTML = '<span class="icon-glyph">' + child.icon + '</span><span class="exp-name">' + esc(child.name) + '</span>';
+        item.addEventListener('click', function (e) {
+          e.stopPropagation();
+          $$('.exp-item', body).forEach(function (x) { x.classList.remove('selected'); });
+          item.classList.add('selected');
+        });
+        item.addEventListener('dblclick', function () { expActivate(child); });
+        body.appendChild(item);
+      });
+      $('#exp-status').textContent = children.length + ' Objekt(e)';
+    }
+
+    function expActivate(node) {
+      if (node.type === 'folder' || node.type === 'drive' || node.type === 'root') {
+        if (node.note && (!node.children || !node.children.length)) {
+          showInfo(node.note, node.name);
+          return;
+        }
+        expOpen(EXP.path.concat([node]));
+      } else if (node.type === 'txt') {
+        openEditor(node.name, node.content);
+      } else if (node.type === 'img') {
+        openViewer(node.name, node.src);
+      } else if (node.type === 'app') {
+        openApp(node.app);
+      }
+    }
+
+    $('#exp-back').addEventListener('click', function () {
+      if (EXP.histIdx > 0) {
+        EXP.histIdx--;
+        expRenderPath(EXP.hist[EXP.histIdx]);
+      }
+    });
+    $('#exp-up').addEventListener('click', function () {
+      if (EXP.path.length > 1) expOpen(EXP.path.slice(0, -1));
+    });
+
+    /* ==================================================================
+       APP: EDITOR & BILDANZEIGE
+       ================================================================== */
+    function openEditor(filename, content) {
+      wmOpen('win-editor');
+      wmSetTitle('win-editor', (filename || 'Unbenannt') + ' – Editor');
+      if (content !== undefined) $('#editor-area').value = content;
+      $('#editor-status').textContent = filename ? filename + ' geladen' : 'Bereit';
+    }
+
+    $('#ed-new').addEventListener('click', function () {
+      $('#editor-area').value = '';
+      wmSetTitle('win-editor', 'Unbenannt – Editor');
+      $('#editor-status').textContent = 'Neues Dokument';
+    });
+    $('#ed-save').addEventListener('click', function () {
+      showInfo('Speichern fehlgeschlagen: Die Diskette ist voll.\n(Es sind ja auch nur 1,44 MB.)', 'Editor');
+    });
+
+    function openViewer(name, src) {
+      wmOpen('win-viewer');
+      wmSetTitle('win-viewer', name + ' – Bild- und Faxanzeige');
+      $('#viewer-img').src = src;
+      $('#viewer-status').textContent = name;
+    }
+
+    /* ==================================================================
+       APP: E-MAIL (Ritz Express)
+       ================================================================== */
+    const MAILS = [
+      {
+        from: 'RitzOS-Team', subject: 'Willkommen bei RitzOS Professional!', date: '01.04.2004',
+        body: 'Sehr geehrter Herr Ritz,\n\nherzlichen Glückwunsch zu Ihrem neuen Betriebssystem RitzOS Professional!\n\n' +
+          'Tipp: Dreimal auf nichts klicken bewirkt nichts. Doppelklick auf Icons hingegen schon.\n\n' +
+          'Mit freundlichen Grüßen\nIhr RitzOS-Team',
+        read: false
+      },
+      {
+        from: 'Prinz von Nigeria', subject: 'DRINGENDE GESCHÄFTSBEZIEHUNG!!!', date: '13.06.2005',
+        body: 'SEHR GEEHRTER FREUND,\n\nich bin Prinz und habe 25.000.000 US-Dollar, die ich dringend ' +
+          'auf Ihre Diskette überweisen muss.\n\nBitte senden Sie mir Ihre Diskette per Post.\n\n' +
+          'HOCHACHTUNGSVOLL,\nDER PRINZ\n\n[Diese Nachricht wurde von RitzGuard als verdächtig eingestuft.]',
+        read: false
+      },
+      {
+        from: 'Mama', subject: 'Ruf mal wieder an', date: 'gestern',
+        body: 'Hallo Harald,\n\ndu sitzt schon wieder den ganzen Tag vor diesem Computer. ' +
+          'Das Essen wird kalt.\n\nRuf mal wieder an!\n\nDeine Mama\n\n' +
+          'PS: Die Nachbarin sagt, es gibt jetzt Computer OHNE Kabel. Stimmt das?',
+        read: false
+      }
+    ];
+
+    function mailRender() {
+      const list = $('#mail-list');
+      list.innerHTML = '';
+      MAILS.forEach(function (mail, i) {
+        const row = document.createElement('div');
+        row.className = 'mail-item' + (mail.read ? '' : ' unread');
+        row.innerHTML = '<span class="mail-from">' + esc(mail.from) + '</span>' +
+          '<span class="mail-subject">' + esc(mail.subject) + '</span>' +
+          '<span class="mail-date">' + esc(mail.date) + '</span>';
+        row.addEventListener('click', function () {
+          mail.read = true;
+          $$('.mail-item', list).forEach(function (x) { x.classList.remove('selected'); });
+          row.classList.add('selected');
+          row.classList.remove('unread');
+          $('#mail-read').innerHTML =
+            '<div class="mail-head"><strong>Von:</strong> ' + esc(mail.from) +
+            '<br><strong>Betreff:</strong> ' + esc(mail.subject) +
+            '<br><strong>Datum:</strong> ' + esc(mail.date) + '</div>' +
+            '<pre class="mail-text">' + esc(mail.body) + '</pre>';
+          mailUpdateStatus();
+        });
+        list.appendChild(row);
+      });
+      mailUpdateStatus();
+    }
+
+    function mailUpdateStatus() {
+      const unread = MAILS.filter(function (m) { return !m.read; }).length;
+      $('#mail-status').textContent = MAILS.length + ' Nachricht(en), ' + unread + ' ungelesen';
+    }
+
+    $('#mail-new').addEventListener('click', function () {
+      showInfo('Senden nicht möglich: Das Modem ist belegt.\n(Jemand telefoniert gerade.)', 'Ritz Express');
+    });
+    $('#mail-sendrecv').addEventListener('click', function () {
+      showInfo('Keine neuen Nachrichten. Der Prinz hat es wohl aufgegeben.', 'Ritz Express');
+    });
+    mailRender();
+
+    /* ==================================================================
+       APP: SYSTEMSTEUERUNG
+       ================================================================== */
+    function setWallpaper(key) {
+      document.body.dataset.wallpaper = key;
+      try { localStorage.setItem('ritzos-wallpaper', key); } catch (e) { /* privat-modus */ }
+      $$('.wallpaper-swatch').forEach(function (s) {
+        s.classList.toggle('active', s.dataset.wp === key);
+      });
+    }
+
+    $$('.wallpaper-swatch').forEach(function (swatch) {
+      swatch.addEventListener('click', function () { setWallpaper(swatch.dataset.wp); });
+    });
+
+    (function restoreWallpaper() {
+      let saved = null;
+      try { saved = localStorage.getItem('ritzos-wallpaper'); } catch (e) { /* egal */ }
+      setWallpaper(saved || 'bliss');
+    })();
+
+    function updateResolution() {
+      $('#settings-resolution').textContent = window.innerWidth + ' × ' + window.innerHeight + ' Pixel';
+    }
+    window.addEventListener('resize', updateResolution);
+
+    $('#settings-fullscreen').addEventListener('click', toggleFullscreen);
+    $('#settings-cleanup').addEventListener('click', wmCloseAll);
+
+    /* ==================================================================
+       APP: AUSFÜHREN
+       ================================================================== */
+    const RUN_ALIASES = {
+      'iexplore': 'ie', 'ie': 'ie', 'internet': 'ie', 'browser': 'ie',
+      'solitaire': 'sol', 'sol': 'sol', 'karten': 'sol',
+      'minesweeper': 'mine', 'mine': 'mine', 'minen': 'mine',
+      'ttt': 'ttt', 'tictactoe': 'ttt', 'tic-tac-toe': 'ttt',
+      'notepad': 'editor', 'editor': 'editor',
+      'explorer': 'computer', 'arbeitsplatz': 'computer',
+      'control': 'settings', 'systemsteuerung': 'settings',
+      'mail': 'mail', 'outlook': 'mail', 'email': 'mail',
+      'harald': 'profile', 'ritz': 'profile',
+      'cmd': null
+    };
+
+    function runCommand() {
+      const input = $('#run-input').value.trim().toLowerCase();
+      if (!input) return;
+      if (input === 'cmd') {
+        wmClose('win-run');
+        showInfo('Die Eingabeaufforderung wurde durch ein Aquarium ersetzt.\nLeider ist das Aquarium gerade leer.', 'cmd.exe');
+        return;
+      }
+      const app = RUN_ALIASES[input];
+      if (app) {
+        wmClose('win-run');
+        openApp(app);
+      } else {
+        showInfo('"' + input + '" wurde nicht gefunden. Überprüfen Sie die Schreibweise, und wiederholen Sie den Vorgang.', 'Ausführen');
+      }
+    }
+
+    $('#run-ok').addEventListener('click', runCommand);
+    $('#run-cancel').addEventListener('click', function () { wmClose('win-run'); });
+    $('#run-input').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') runCommand();
+    });
+
+    /* ==================================================================
+       START
+       ================================================================== */
+    updateResolution();
     runBootSequence(2400);
   </script>
 </body>

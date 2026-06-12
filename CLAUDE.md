@@ -12,6 +12,7 @@ This is a static personal portfolio/landing site for "leotrax3d", deployed via G
 - `internship.html`, `internship/internship_qr1.html`, `internship/internship_qr2.html` — internship report pages and their QR-linked sub-pages.
 - `ClassChat.html`, `qr.html`, `gute-besserung.html` — standalone feature/joke pages, each with their own inline JS.
 - `link/001.html`, `link/002.html` — tiny redirect pages. Each reads `data-target-url` from `<body>` and either previews the link (when the URL ends in `/?`) or does `location.replace()` to it. Both currently point at the same target URL.
+- `haraldritz.html` + `haraldritz.css` — standalone "RitzOS" page: a fake desktop OS in XP-Luna style (boot/login/shutdown screens, window manager with draggable windows + taskbar, fake Internet Explorer with internal `ritz://` pages, Solitaire, Minesweeper, Tic-Tac-Toe, file explorer over a virtual filesystem, editor, mail client, control panel with persisted wallpaper, right-click context menu, fullscreen mode). Deliberately branded "RitzOS", never "Windows XP". Independent of `styles.css`/`xp.css`.
 - `privacy-policy.html` — fully self-contained page with its own `<style>` block (does not use `styles.css`/`xp.css`).
 - `styles.css` — shared dark "mono" theme (CSS custom properties under `:root`: `--bg`, `--text`, `--accent`, etc., font is JetBrains Mono).
 - `xp.css` — alternate "Windows XP" theme that overrides the same CSS variables and component styles. Loaded as a `<link disabled>` stylesheet and toggled at runtime.
