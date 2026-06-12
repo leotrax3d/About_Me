@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Harald Ritz</title>
+  <link rel="stylesheet" href="haraldritz.css">
+</head>
+<body>
+  <div class="window">
+    <div class="title-bar">
+      <div class="title-bar-text">
+        <span class="title-bar-icon">🖥️</span> Harald Ritz - Eigenschaften
+      </div>
+      <div class="title-bar-controls">
+        <button aria-label="Minimieren">_</button>
+        <button aria-label="Maximieren">&#9633;</button>
+        <button aria-label="Schließen" class="close-btn">X</button>
+      </div>
+    </div>
+
+    <div class="menu-bar">
+      <span>Datei</span>
+      <span>Bearbeiten</span>
+      <span>Ansicht</span>
+      <span>Favoriten</span>
+      <span>?</span>
+    </div>
+
+    <div class="window-body">
+      <div class="profile-header">
+        <div class="placeholder-image">
+          <img src="assets/harald-ritz-placeholder.svg" alt="Platzhalterbild">
+        </div>
+        <div class="profile-info">
+          <h1>Harald Ritz</h1>
+          <p class="subtitle">Lorem Ipsum Generator a.D.</p>
+          <p>Status: Online</p>
+        </div>
+      </div>
+
+      <fieldset>
+        <legend>Über mich</legend>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+          tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
+          veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex
+          ea commodo consequat.
+        </p>
+        <p>
+          Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
+          dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat
+          non proident, sunt in culpa qui officia deserunt mollit anim id est
+          laborum.
+        </p>
+      </fieldset>
+
+      <fieldset>
+        <legend>Interessen</legend>
+        <p>
+          Sed ut perspiciatis unde omnis iste natus error sit voluptatem
+          accusantium doloremque laudantium, totam rem aperiam, eaque ipsa
+          quae ab illo inventore veritatis et quasi architecto beatae vitae
+          dicta sunt explicabo.
+        </p>
+      </fieldset>
+    </div>
+
+    <div class="status-bar">
+      <span>Bereit</span>
+      <span>Lorem-Ipsum-Modus aktiv</span>
+    </div>
+  </div>
+
+  <div class="taskbar">
+    <button class="start-button">Start</button>
+    <div class="taskbar-item">Harald Ritz - Eigenschaften</div>
+    <div class="clock" id="clock"></div>
+  </div>
+
+  <script>
+    function updateClock() {
+      var now = new Date();
+      var hh = String(now.getHours()).padStart(2, '0');
+      var mm = String(now.getMinutes()).padStart(2, '0');
+      document.getElementById('clock').textContent = hh + ':' + mm;
+    }
+    updateClock();
+    setInterval(updateClock, 1000 * 30);
+  </script>
+</body>
+</html>
