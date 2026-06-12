@@ -7,22 +7,83 @@
   <link rel="stylesheet" href="haraldritz.css">
 </head>
 <body>
-  <div class="desktop-icons">
-    <div class="desktop-icon">
-      <span class="icon-glyph">🖥️</span>
-      <span>Arbeitsplatz</span>
+  <!-- Boot-Screen -->
+  <div id="boot-screen" class="screen boot-screen">
+    <div class="boot-logo">
+      <div class="flag big"><span></span><span></span><span></span><span></span></div>
+      <div class="boot-text">
+        <span class="boot-text-main">Harald Ritz</span>
+        <span class="boot-text-sub">xp</span>
+      </div>
     </div>
-    <div class="desktop-icon">
-      <span class="icon-glyph">🗑️</span>
-      <span>Papierkorb</span>
-    </div>
-    <div class="desktop-icon">
-      <span class="icon-glyph">🌐</span>
-      <span>Internet Explorer</span>
+    <div class="boot-progress"><div class="boot-progress-fill"></div></div>
+    <p class="boot-caption">Wird gestartet …</p>
+  </div>
+
+  <!-- Anmeldebildschirm -->
+  <div id="welcome-screen" class="screen welcome-screen hidden">
+    <div class="welcome-inner">
+      <div class="welcome-banner">
+        <div class="flag"><span></span><span></span><span></span><span></span></div>
+        <div class="welcome-title">Harald Ritz <em>xp</em></div>
+      </div>
+      <button class="user-tile" id="login-btn" type="button">
+        <span class="user-avatar">🧑‍💻</span>
+        <span class="user-name">Harald Ritz</span>
+      </button>
+      <p class="welcome-hint">Klicken Sie auf Ihren Benutzernamen, um sich anzumelden</p>
     </div>
   </div>
 
-  <div class="window">
+  <!-- Herunterfahren-Screen -->
+  <div id="shutdown-screen" class="screen shutdown-screen hidden">
+    <div class="flag big"><span></span><span></span><span></span><span></span></div>
+    <p id="shutdown-text">Windows wird heruntergefahren …</p>
+    <button class="xp-btn" id="restart-btn" type="button" hidden>Neu starten</button>
+  </div>
+
+  <!-- Hinweis-Dialog für Desktop-Icons -->
+  <div id="info-dialog" class="screen dialog-overlay hidden">
+    <div class="info-window">
+      <div class="title-bar">
+        <div class="title-bar-text">
+          <span class="title-bar-icon icon-glyph">ℹ️</span>
+          Hinweis
+        </div>
+        <div class="title-bar-controls">
+          <button aria-label="Schließen" class="close-btn" id="info-dialog-close" type="button">×</button>
+        </div>
+      </div>
+      <div class="info-body">
+        <span class="icon-glyph">🛈</span>
+        <p id="info-dialog-text">Diese Funktion ist in dieser Demo nicht verfügbar.</p>
+      </div>
+      <div class="dialog-buttons">
+        <button class="xp-btn default-btn" id="info-dialog-ok" type="button">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="desktop-icons">
+    <div class="desktop-icon" id="computer-icon">
+      <span class="icon-glyph">🖥️</span>
+      <span>Arbeitsplatz</span>
+    </div>
+    <div class="desktop-icon" id="bin-icon">
+      <span class="icon-glyph">🗑️</span>
+      <span>Papierkorb</span>
+    </div>
+    <div class="desktop-icon" id="ie-icon">
+      <span class="icon-glyph">🌐</span>
+      <span>Internet Explorer</span>
+    </div>
+    <div class="desktop-icon" id="profile-icon">
+      <span class="icon-glyph">🪪</span>
+      <span>Harald Ritz</span>
+    </div>
+  </div>
+
+  <div class="window" id="profile-window">
     <div class="title-bar">
       <div class="title-bar-text">
         <svg class="title-bar-icon" viewBox="0 0 16 16" aria-hidden="true">
@@ -36,9 +97,9 @@
         Harald Ritz - Eigenschaften
       </div>
       <div class="title-bar-controls">
-        <button aria-label="Minimieren" disabled>_</button>
-        <button aria-label="Maximieren" disabled>&#9633;</button>
-        <button aria-label="Schließen" class="close-btn">×</button>
+        <button aria-label="Minimieren" id="btn-minimize" type="button">_</button>
+        <button aria-label="Maximieren" id="btn-maximize" type="button">&#9633;</button>
+        <button aria-label="Schließen" class="close-btn" id="btn-close" type="button">×</button>
       </div>
     </div>
 
@@ -124,9 +185,9 @@
       </div>
 
       <div class="dialog-buttons">
-        <button class="xp-btn default-btn">OK</button>
-        <button class="xp-btn">Abbrechen</button>
-        <button class="xp-btn">Übernehmen</button>
+        <button class="xp-btn default-btn" id="btn-ok" type="button">OK</button>
+        <button class="xp-btn" id="btn-cancel" type="button">Abbrechen</button>
+        <button class="xp-btn" id="btn-apply" type="button">Übernehmen</button>
       </div>
     </div>
 
@@ -137,11 +198,11 @@
   </div>
 
   <div class="taskbar">
-    <button class="start-button">
+    <button class="start-button" id="start-button" type="button">
       <span class="flag"><span></span><span></span><span></span><span></span></span>
       Start
     </button>
-    <div class="taskbar-item active">
+    <div class="taskbar-item active" id="taskbar-item">
       <span class="icon-glyph">🪪</span> Harald Ritz - Eigenschaften
     </div>
     <div class="tray">
@@ -149,7 +210,51 @@
     </div>
   </div>
 
+  <!-- Startmenü -->
+  <div class="start-menu" id="start-menu">
+    <div class="start-menu-header">
+      <span class="user-avatar">🧑‍💻</span>
+      <span>Harald Ritz</span>
+    </div>
+    <div class="start-menu-body">
+      <div class="start-menu-col left">
+        <div class="start-menu-item" id="open-profile-item">
+          <span class="icon-glyph">🪪</span> Eigenschaften von Harald Ritz
+        </div>
+        <div class="start-menu-item" id="start-ie-item">
+          <span class="icon-glyph">🌐</span> Internet Explorer
+        </div>
+        <div class="start-menu-item" id="start-mail-item">
+          <span class="icon-glyph">📧</span> E-Mail
+        </div>
+      </div>
+      <div class="start-menu-col right">
+        <div class="start-menu-item" id="start-computer-item">
+          <span class="icon-glyph">🖥️</span> Arbeitsplatz
+        </div>
+        <div class="start-menu-item" id="start-files-item">
+          <span class="icon-glyph">🗂️</span> Eigene Dateien
+        </div>
+        <div class="start-menu-item" id="start-bin-item">
+          <span class="icon-glyph">🗑️</span> Papierkorb
+        </div>
+        <div class="start-menu-item" id="start-control-item">
+          <span class="icon-glyph">⚙️</span> Systemsteuerung
+        </div>
+      </div>
+    </div>
+    <div class="start-menu-footer">
+      <button class="start-menu-power" id="logout-btn" type="button">
+        <span class="icon-glyph">🔒</span> Abmelden
+      </button>
+      <button class="start-menu-power" id="shutdown-btn" type="button">
+        <span class="icon-glyph">⏻</span> Ausschalten
+      </button>
+    </div>
+  </div>
+
   <script>
+    // Reiter (Tabs)
     var tabs = document.querySelectorAll('.tab');
     var panels = document.querySelectorAll('.tab-panel');
     tabs.forEach(function (tab) {
@@ -161,6 +266,7 @@
       });
     });
 
+    // Uhr in der Taskleiste
     function updateClock() {
       var now = new Date();
       var hh = String(now.getHours()).padStart(2, '0');
@@ -169,6 +275,175 @@
     }
     updateClock();
     setInterval(updateClock, 1000 * 30);
+
+    // Boot-/Anmelde-/Herunterfahren-Screens
+    var bootScreen = document.getElementById('boot-screen');
+    var welcomeScreen = document.getElementById('welcome-screen');
+    var shutdownScreen = document.getElementById('shutdown-screen');
+    var shutdownText = document.getElementById('shutdown-text');
+    var restartBtn = document.getElementById('restart-btn');
+    var loginBtn = document.getElementById('login-btn');
+
+    function runBootSequence(duration) {
+      var fill = bootScreen.querySelector('.boot-progress-fill');
+      bootScreen.classList.remove('hidden');
+      fill.style.animation = 'none';
+      requestAnimationFrame(function () {
+        fill.style.animation = '';
+      });
+      setTimeout(function () {
+        bootScreen.classList.add('hidden');
+        welcomeScreen.classList.remove('hidden');
+      }, duration);
+    }
+
+    loginBtn.addEventListener('click', function () {
+      welcomeScreen.classList.add('hidden');
+    });
+
+    // Fenstersteuerung (Minimieren / Maximieren / Schließen)
+    var win = document.getElementById('profile-window');
+    var taskbarItem = document.getElementById('taskbar-item');
+    var btnMinimize = document.getElementById('btn-minimize');
+    var btnMaximize = document.getElementById('btn-maximize');
+    var btnClose = document.getElementById('btn-close');
+
+    function openWindow() {
+      win.classList.remove('minimized', 'closed');
+      taskbarItem.classList.add('active');
+    }
+
+    btnMinimize.addEventListener('click', function () {
+      win.classList.add('minimized');
+      taskbarItem.classList.remove('active');
+    });
+
+    btnMaximize.addEventListener('click', function () {
+      win.classList.toggle('maximized');
+      btnMaximize.innerHTML = win.classList.contains('maximized') ? '&#10064;' : '&#9633;';
+    });
+
+    btnClose.addEventListener('click', function () {
+      win.classList.add('closed');
+      taskbarItem.classList.remove('active');
+    });
+
+    taskbarItem.addEventListener('click', function () {
+      if (win.classList.contains('minimized') || win.classList.contains('closed')) {
+        openWindow();
+      } else {
+        win.classList.add('minimized');
+        taskbarItem.classList.remove('active');
+      }
+    });
+
+    document.getElementById('profile-icon').addEventListener('dblclick', openWindow);
+
+    document.getElementById('btn-ok').addEventListener('click', function () {
+      win.classList.add('closed');
+      taskbarItem.classList.remove('active');
+    });
+
+    document.getElementById('btn-cancel').addEventListener('click', function () {
+      win.classList.add('closed');
+      taskbarItem.classList.remove('active');
+    });
+
+    document.getElementById('btn-apply').addEventListener('click', function () {
+      showInfo('Die Änderungen wurden übernommen.');
+    });
+
+    // Startmenü
+    var startButton = document.getElementById('start-button');
+    var startMenu = document.getElementById('start-menu');
+
+    startButton.addEventListener('click', function (event) {
+      event.stopPropagation();
+      startMenu.classList.toggle('open');
+      startButton.classList.toggle('pressed', startMenu.classList.contains('open'));
+    });
+
+    document.addEventListener('click', function (event) {
+      if (!startMenu.contains(event.target) && !startButton.contains(event.target)) {
+        startMenu.classList.remove('open');
+        startButton.classList.remove('pressed');
+      }
+    });
+
+    function closeStartMenu() {
+      startMenu.classList.remove('open');
+      startButton.classList.remove('pressed');
+    }
+
+    document.getElementById('open-profile-item').addEventListener('click', function () {
+      openWindow();
+      closeStartMenu();
+    });
+
+    // Hinweis-Dialog für (noch) nicht implementierte Funktionen
+    var infoDialog = document.getElementById('info-dialog');
+    var infoDialogText = document.getElementById('info-dialog-text');
+
+    function showInfo(text) {
+      infoDialogText.textContent = text;
+      infoDialog.classList.remove('hidden');
+    }
+
+    function hideInfo() {
+      infoDialog.classList.add('hidden');
+    }
+
+    document.getElementById('info-dialog-close').addEventListener('click', hideInfo);
+    document.getElementById('info-dialog-ok').addEventListener('click', hideInfo);
+
+    document.getElementById('computer-icon').addEventListener('dblclick', function () {
+      showInfo('Arbeitsplatz ist in dieser Demo nicht verfügbar.');
+    });
+    document.getElementById('bin-icon').addEventListener('dblclick', function () {
+      showInfo('Der Papierkorb ist leer.');
+    });
+    document.getElementById('ie-icon').addEventListener('dblclick', function () {
+      showInfo('Es konnte keine Verbindung zum Internet hergestellt werden.');
+    });
+
+    [
+      ['start-ie-item', 'Es konnte keine Verbindung zum Internet hergestellt werden.'],
+      ['start-mail-item', 'Kein E-Mail-Programm konfiguriert.'],
+      ['start-computer-item', 'Arbeitsplatz ist in dieser Demo nicht verfügbar.'],
+      ['start-files-item', 'Der Ordner "Eigene Dateien" ist leer.'],
+      ['start-bin-item', 'Der Papierkorb ist leer.'],
+      ['start-control-item', 'Die Systemsteuerung ist in dieser Demo nicht verfügbar.']
+    ].forEach(function (entry) {
+      document.getElementById(entry[0]).addEventListener('click', function () {
+        showInfo(entry[1]);
+        closeStartMenu();
+      });
+    });
+
+    // Abmelden / Ausschalten
+    document.getElementById('logout-btn').addEventListener('click', function () {
+      closeStartMenu();
+      welcomeScreen.classList.remove('hidden');
+    });
+
+    document.getElementById('shutdown-btn').addEventListener('click', function () {
+      closeStartMenu();
+      shutdownText.textContent = 'Windows wird heruntergefahren …';
+      restartBtn.hidden = true;
+      shutdownScreen.classList.remove('hidden');
+      setTimeout(function () {
+        shutdownText.textContent = 'Sie können Ihren Computer jetzt sicher ausschalten.';
+        restartBtn.hidden = false;
+      }, 2000);
+    });
+
+    restartBtn.addEventListener('click', function () {
+      shutdownScreen.classList.add('hidden');
+      runBootSequence(2400);
+    });
+
+    // Initialer Boot-Vorgang
+    runBootSequence(2400);
   </script>
 </body>
 </html>
