@@ -126,6 +126,8 @@ body {
     #036bfe 100%
   );
   border-bottom: 1px solid #0044b5;
+  touch-action: none;
+  cursor: default;
 }
 
 .title-bar-text {
@@ -440,6 +442,11 @@ fieldset p:last-child {
   gap: 6px;
   height: 24px;
   padding: 0 10px;
+  flex: 0 1 220px;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   border: 1px outset #6c9bd1;
   border-radius: 2px;
   background: #3a7fd5;

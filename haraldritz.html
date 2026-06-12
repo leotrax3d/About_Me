@@ -299,58 +299,145 @@
 
     loginBtn.addEventListener('click', function () {
       welcomeScreen.classList.add('hidden');
+      resetDesktop();
     });
 
     // Fenstersteuerung (Minimieren / Maximieren / Schließen)
     var win = document.getElementById('profile-window');
+    var titleBar = win.querySelector('.title-bar');
     var taskbarItem = document.getElementById('taskbar-item');
     var btnMinimize = document.getElementById('btn-minimize');
     var btnMaximize = document.getElementById('btn-maximize');
     var btnClose = document.getElementById('btn-close');
+    var savedRect = null;
 
     function openWindow() {
       win.classList.remove('minimized', 'closed');
+      taskbarItem.style.display = '';
       taskbarItem.classList.add('active');
     }
 
-    btnMinimize.addEventListener('click', function () {
+    function closeWindow() {
+      win.classList.add('closed');
+      taskbarItem.style.display = 'none';
+    }
+
+    function minimizeWindow() {
       win.classList.add('minimized');
       taskbarItem.classList.remove('active');
-    });
+    }
 
-    btnMaximize.addEventListener('click', function () {
-      win.classList.toggle('maximized');
-      btnMaximize.innerHTML = win.classList.contains('maximized') ? '&#10064;' : '&#9633;';
-    });
+    function toggleMaximize() {
+      var maximized = win.classList.toggle('maximized');
+      if (maximized) {
+        savedRect = {
+          left: win.style.left,
+          top: win.style.top,
+          width: win.style.width,
+          margin: win.style.margin,
+          position: win.style.position
+        };
+        win.style.left = '';
+        win.style.top = '';
+        win.style.width = '';
+        win.style.margin = '';
+        win.style.position = '';
+      } else if (savedRect) {
+        win.style.left = savedRect.left;
+        win.style.top = savedRect.top;
+        win.style.width = savedRect.width;
+        win.style.margin = savedRect.margin;
+        win.style.position = savedRect.position;
+        savedRect = null;
+      }
+      btnMaximize.innerHTML = maximized ? '&#10064;' : '&#9633;';
+    }
 
-    btnClose.addEventListener('click', function () {
-      win.classList.add('closed');
-      taskbarItem.classList.remove('active');
-    });
+    function resetDesktop() {
+      win.classList.remove('minimized', 'closed', 'maximized');
+      win.style.left = '';
+      win.style.top = '';
+      win.style.width = '';
+      win.style.margin = '';
+      win.style.position = '';
+      savedRect = null;
+      btnMaximize.innerHTML = '&#9633;';
+      taskbarItem.style.display = '';
+      taskbarItem.classList.add('active');
+    }
+
+    btnMinimize.addEventListener('click', minimizeWindow);
+    btnMaximize.addEventListener('click', toggleMaximize);
+    btnClose.addEventListener('click', closeWindow);
 
     taskbarItem.addEventListener('click', function () {
       if (win.classList.contains('minimized') || win.classList.contains('closed')) {
         openWindow();
       } else {
-        win.classList.add('minimized');
-        taskbarItem.classList.remove('active');
+        minimizeWindow();
       }
     });
 
     document.getElementById('profile-icon').addEventListener('dblclick', openWindow);
 
-    document.getElementById('btn-ok').addEventListener('click', function () {
-      win.classList.add('closed');
-      taskbarItem.classList.remove('active');
-    });
-
-    document.getElementById('btn-cancel').addEventListener('click', function () {
-      win.classList.add('closed');
-      taskbarItem.classList.remove('active');
-    });
-
+    document.getElementById('btn-ok').addEventListener('click', closeWindow);
+    document.getElementById('btn-cancel').addEventListener('click', closeWindow);
     document.getElementById('btn-apply').addEventListener('click', function () {
       showInfo('Die Änderungen wurden übernommen.');
+    });
+
+    // Fenster per Titelleiste verschieben (Maus & Touch)
+    var dragOffsetX = 0;
+    var dragOffsetY = 0;
+    var isDragging = false;
+
+    function startDrag(clientX, clientY) {
+      if (win.classList.contains('maximized')) return;
+      var rect = win.getBoundingClientRect();
+      isDragging = true;
+      dragOffsetX = clientX - rect.left;
+      dragOffsetY = clientY - rect.top;
+      win.style.width = rect.width + 'px';
+      win.style.margin = '0';
+      win.style.position = 'fixed';
+      win.style.left = rect.left + 'px';
+      win.style.top = rect.top + 'px';
+    }
+
+    function moveDrag(clientX, clientY) {
+      if (!isDragging) return;
+      win.style.left = (clientX - dragOffsetX) + 'px';
+      win.style.top = (clientY - dragOffsetY) + 'px';
+    }
+
+    function endDrag() {
+      isDragging = false;
+    }
+
+    titleBar.addEventListener('mousedown', function (event) {
+      if (event.target.closest('.title-bar-controls')) return;
+      startDrag(event.clientX, event.clientY);
+    });
+    document.addEventListener('mousemove', function (event) {
+      moveDrag(event.clientX, event.clientY);
+    });
+    document.addEventListener('mouseup', endDrag);
+
+    titleBar.addEventListener('touchstart', function (event) {
+      if (event.target.closest('.title-bar-controls')) return;
+      var touch = event.touches[0];
+      startDrag(touch.clientX, touch.clientY);
+    });
+    document.addEventListener('touchmove', function (event) {
+      if (!isDragging) return;
+      moveDrag(event.touches[0].clientX, event.touches[0].clientY);
+    });
+    document.addEventListener('touchend', endDrag);
+
+    // Doppelklick auf die Titelleiste maximiert/stellt wieder her
+    titleBar.addEventListener('dblclick', function (event) {
+      if (event.target.closest('.title-bar-controls')) return;
+      toggleMaximize();
     });
 
     // Startmenü
