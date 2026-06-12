@@ -1,0 +1,267 @@
+/* ==========================================================================
+   HARALD RITZ — Windows-XP-Style Profilseite
+   Eigenständiges Stylesheet, unabhängig von styles.css / xp.css
+   ========================================================================== */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  font-family: "Tahoma", "Segoe UI", Verdana, Arial, sans-serif;
+  font-size: 13px;
+  color: #000000;
+}
+
+body {
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #3a6ea5 0%, #6a9bd8 40%, #aac8ec 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 16px 64px;
+}
+
+/* ==========================================================================
+   FENSTER
+   ========================================================================== */
+
+.window {
+  width: 100%;
+  max-width: 720px;
+  background: #ece9d8;
+  border: 1px solid #0831d9;
+  border-radius: 8px 8px 3px 3px;
+  box-shadow:
+    2px 2px 0 rgba(0, 0, 0, 0.25),
+    0 0 0 1px #003c74;
+  overflow: hidden;
+}
+
+/* Titelleiste im Luna-Blau */
+.title-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 4px 4px 4px 8px;
+  background: linear-gradient(
+    to bottom,
+    #0058e6 0%,
+    #3a93ff 8%,
+    #288eff 40%,
+    #127dff 88%,
+    #036bfe 100%
+  );
+  border-bottom: 1px solid #0044b5;
+}
+
+.title-bar-text {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 13px;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.title-bar-icon {
+  font-size: 14px;
+}
+
+.title-bar-controls {
+  display: flex;
+  gap: 3px;
+}
+
+.title-bar-controls button {
+  width: 21px;
+  height: 19px;
+  border: 1px solid #ffffff;
+  border-radius: 2px;
+  background: linear-gradient(to bottom, #5ba1f7 0%, #1f6fe5 100%);
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 12px;
+  line-height: 1;
+  cursor: default;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+}
+
+.title-bar-controls .close-btn {
+  background: linear-gradient(to bottom, #f8a097 0%, #e0291b 100%);
+}
+
+/* Menüleiste */
+.menu-bar {
+  display: flex;
+  gap: 16px;
+  padding: 3px 10px;
+  background: #ece9d8;
+  border-bottom: 1px solid #aca899;
+  font-size: 12px;
+}
+
+.menu-bar span {
+  cursor: default;
+}
+
+.menu-bar span:hover {
+  background: #316ac5;
+  color: #ffffff;
+  padding: 0 2px;
+}
+
+/* Inhalt des Fensters */
+.window-body {
+  background: #ffffff;
+  padding: 14px;
+}
+
+.profile-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.placeholder-image img {
+  display: block;
+  width: 140px;
+  height: 140px;
+  border: 2px inset #ffffff;
+  box-shadow: 1px 1px 0 #808080;
+}
+
+.profile-info h1 {
+  margin: 0 0 4px;
+  font-size: 20px;
+}
+
+.profile-info p {
+  margin: 2px 0;
+  color: #333333;
+}
+
+.profile-info .subtitle {
+  font-style: italic;
+  color: #555555;
+}
+
+/* Gruppenrahmen im klassischen "Fieldset"-Look */
+fieldset {
+  border: 1px solid #aca899;
+  border-radius: 2px;
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  background: #f4f3ee;
+}
+
+fieldset legend {
+  padding: 0 4px;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+fieldset p {
+  margin: 0 0 8px;
+  line-height: 1.5;
+  text-align: justify;
+}
+
+fieldset p:last-child {
+  margin-bottom: 0;
+}
+
+/* Statusleiste */
+.status-bar {
+  display: flex;
+  gap: 6px;
+  padding: 3px 6px;
+  background: #ece9d8;
+  border-top: 1px solid #ffffff;
+}
+
+.status-bar span {
+  flex: 1;
+  border: 1px inset #ffffff;
+  background: #ece9d8;
+  padding: 2px 8px;
+  font-size: 11px;
+  color: #333333;
+}
+
+.status-bar span:last-child {
+  flex: 0 0 auto;
+}
+
+/* ==========================================================================
+   TASKLEISTE
+   ========================================================================== */
+
+.taskbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 4px;
+  background: linear-gradient(to bottom, #2f71d4 0%, #1c4faa 4%, #1e5bc6 50%, #2f71d4 96%, #1c4faa 100%);
+  border-top: 1px solid #1656c9;
+  box-shadow: 0 -1px 0 rgba(255, 255, 255, 0.3) inset;
+}
+
+.start-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 14px 0 8px;
+  border: 1px solid #1a5d1a;
+  border-radius: 0 8px 8px 0;
+  background: linear-gradient(to bottom, #6fdc6f 0%, #3fae3f 45%, #2c8f2c 50%, #4cc24c 100%);
+  color: #ffffff;
+  font-weight: bold;
+  font-style: italic;
+  font-size: 13px;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+  cursor: default;
+}
+
+.taskbar-item {
+  display: flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 10px;
+  border: 1px outset #6c9bd1;
+  border-radius: 2px;
+  background: #3a7fd5;
+  color: #ffffff;
+  font-size: 12px;
+}
+
+.clock {
+  margin-left: auto;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  border: 1px solid #0c3a8f;
+  border-radius: 2px;
+  background: #1c4faa;
+  color: #ffffff;
+  font-size: 12px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+}
