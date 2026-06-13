@@ -59,6 +59,7 @@
           <a class="easter-trigger active" href="ClassChat.html">ClassChat</a>
         </li>
         <li><a class="easter-trigger" href="showcase.html">showcase</a></li>
+        <li><a class="easter-trigger" href="blog.html">blog</a></li>
         <li>
           <a href="https://github.com/leotrax3d" target="_blank" class="nav-gh">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
@@ -382,7 +383,7 @@
         const args = parts.slice(1);
         if (command === "help") {
           addTerminalLine(
-            "commands: help, overview, features, github, home, internship, qr, whoami, uptime, date, theme, ascii, echo, coin, rps, guess, clear, exit",
+            "commands: help, overview, features, github, home, internship, blog, qr, whoami, uptime, date, theme, ascii, echo, coin, rps, guess, clear, exit",
           );
           return;
         }
@@ -419,6 +420,11 @@
         if (command === "internship") {
           addTerminalLine("opening internship...");
           window.location.href = "internship.html";
+          return;
+        }
+        if (command === "blog") {
+          addTerminalLine("opening blog...");
+          window.location.href = "blog.html";
           return;
         }
         if (command === "qr") {
