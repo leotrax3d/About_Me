@@ -98,6 +98,53 @@ die auf Berührung antwortet.
 > lebendiger Hintergrund auch auf der Startseite (`index.html`) — er ersetzt dort
 > das frühere statische Punktraster.
 
+## Übertrag auf die Startseite
+
+Die Startseite folgt einem verwandten, aber eigenen Gedanken: Sie soll keine
+Seite sein, die man *herunterscrollt*, sondern eine, an die man sich
+*erinnert*. Wo der Showcase reine Form ist, ist die Startseite ein **lebendes
+Terminal** — alles Verhalten spricht die Sprache der Konsole, nicht die eines
+Design-Tools.
+
+### Prinzipien
+
+1. **Reaktion statt Dekoration.** Kein Element bewegt sich grundlos. Das
+   Punktefeld weicht dem Cursor aus; ein Klick — irgendwo, jederzeit — schickt
+   eine **Schockwelle** durch das Feld, die die Punkte in Akzentfarbe
+   aufleuchten lässt. Die Seite antwortet auf Berührung, sie performt nicht
+   vor sich hin.
+
+2. **Ein Verhalten, eine Sprache.** Die Headline besteht aus einzelnen
+   Buchstaben, die dem Cursor ausweichen — *dasselbe* Verhalten wie die
+   Punkte des Feldes dahinter. Kein zweites Bewegungsvokabular, keine
+   fremde Metapher: Vordergrund und Hintergrund gehorchen demselben Gesetz.
+
+3. **Text verhält sich wie ein Terminal.** Überschriften *dekodieren* sich
+   beim ersten Sichtkontakt aus Zeichenrauschen (Scramble-Effekt);
+   Projektnamen tun es erneut bei jedem Hover; Navigationslinks flackern beim
+   Überfahren.
+
+4. **Scrollen ist Choreografie, nicht Förderband.** Eine Scroll-Geste, drei
+   Antworten: Die Hero *zoomt heraus* und gibt die Bühne frei, das Lauf-Band
+   zieht quer als horizontaler Puls, und die Skills-Sektion *pinnt sich
+   fest* — weiteres Scrollen fährt sie seitwärts durch, bevor die Reise
+   abwärts weitergeht. Die Richtung wechselt, das Eingabegerät nie.
+
+5. **Entdeckbar, nie blockierend.** Jede Interaktion ist optional und im Weg
+   von niemandem: Die Schockwelle stört keinen Klick, der Scramble keinen
+   Lesefluss, das Terminal-Easteregg (Dreifachklick) keinen Besucher, der es
+   nie findet. Wer spielt, wird belohnt; wer liest, wird nicht aufgehalten.
+
+6. **Bewusst, nicht voll.** Keine Uhren, keine Scroll-Indikatoren, keine
+   Icon-Garnitur auf Buttons. Was da ist, verhält sich: Punktefeld,
+   Schockwelle, ausweichende Buchstaben, Scramble, Lauf-Band, Terminal.
+   Der Erinnerungswert kommt aus dem Verhalten, nicht aus der Menge.
+
+7. **`prefers-reduced-motion` gilt absolut.** Scramble, Schockwelle,
+   Buchstaben-Ausweichen, Hero-Zoom, Lauf-Band und Skills-Travel schalten
+   sich ab; die Skills fallen auf einen nativ scrollbaren Streifen zurück,
+   die Komposition bleibt vollständig lesbar stehen.
+
 ## Was diese Seite nicht ist
 
 - Kein Erklärtext, keine Feature-Liste, kein Call-to-Action.

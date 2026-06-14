@@ -26,6 +26,14 @@
   --accent: #c5f13e;
   --accent2: #c5f13e;
   --mono: "JetBrains Mono", monospace;
+  /* Display face for big headlines; falls back to the mono on pages
+     that don't load Space Grotesk. */
+  --display: "Space Grotesk", "JetBrains Mono", sans-serif;
+  --gutter: clamp(1.25rem, 4vw, 2.5rem);
+  --max: 1160px;
+  /* Two-tier rounding: soft 12px surfaces, full pills for chips,
+     buttons and tags. */
+  --radius: 12px;
   /* Glassmorphism: lightly translucent surfaces — the live background
      dots stay visible through the frosted pane, only gently softened. */
   --glass: rgba(18, 20, 22, 0.2);
@@ -98,16 +106,16 @@ body.custom-cursor .nav-back {
 }
 
 .cursor {
-  width: 34px;
-  height: 34px;
+  width: 30px;
+  height: 30px;
   border: 1px solid #c5f13e;
   border-radius: 50%;
   backdrop-filter: blur(2px);
 }
 
 .cursor-dot {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background: var(--accent);
 }
@@ -118,8 +126,9 @@ body.custom-cursor .nav-back {
 }
 
 .cursor.is-hover {
-  transform: translate(-50%, -50%) scale(1.3);
+  transform: translate(-50%, -50%) scale(1.4);
   border-color: #d4ff55;
+  background: rgba(197, 241, 62, 0.08);
 }
 
 .terminal-overlay {
@@ -156,9 +165,11 @@ body.custom-cursor .nav-back {
 }
 
 .name-overlay-text {
+  font-family: var(--display);
   font-size: clamp(2rem, 6vw, 4.5rem);
   font-weight: 700;
   letter-spacing: -0.02em;
+  text-transform: uppercase;
   color: var(--accent);
   text-align: center;
 }
@@ -172,7 +183,7 @@ body.custom-cursor .nav-back {
   width: min(740px, 92vw);
   background: #0d0e0f;
   border: 1px solid var(--border2);
-  border-radius: 8px;
+  border-radius: var(--radius);
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
   display: flex;
   flex-direction: column;
@@ -196,8 +207,8 @@ body.custom-cursor .nav-back {
   color: var(--muted);
   font-family: var(--mono);
   font-size: 10px;
-  padding: 4px 8px;
-  border-radius: 4px;
+  padding: 4px 10px;
+  border-radius: 999px;
 }
 
 .terminal-body {
@@ -275,6 +286,14 @@ body.terminal-open {
   body.custom-cursor {
     cursor: auto;
   }
+
+  .h1-ch {
+    transform: none !important;
+  }
+
+  .marquee-track {
+    animation: none !important;
+  }
 }
 
 /* Nav */
@@ -287,23 +306,32 @@ nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.1rem 2.5rem;
+  padding: 1.1rem var(--gutter);
   border-bottom: 1px solid var(--border);
-  background: rgba(13, 14, 15, 0.88);
-  backdrop-filter: blur(12px);
+  background: rgba(13, 14, 15, 0.72);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 
 .nav-logo {
-  font-size: 13px;
+  font-family: var(--display);
+  font-size: 14px;
   font-weight: 700;
-  color: var(--accent);
+  color: var(--text);
   text-decoration: none;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.nav-logo::after {
+  content: "_";
+  color: var(--accent);
+  animation: bl 1.4s step-end infinite;
 }
 
 .nav-links {
   display: flex;
-  gap: 2rem;
+  gap: 1.9rem;
   list-style: none;
   align-items: center;
 }
@@ -315,7 +343,7 @@ nav {
   width: 34px;
   height: 34px;
   border: 1px solid var(--border2);
-  border-radius: 4px;
+  border-radius: 999px;
   background: var(--bg2);
   color: var(--accent);
 }
@@ -337,8 +365,9 @@ nav {
 .nav-links a {
   color: var(--muted);
   text-decoration: none;
-  font-size: 11px;
-  letter-spacing: 0.06em;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
   transition: color 0.15s;
   padding: 0.25rem 0.2rem;
 }
@@ -348,22 +377,25 @@ nav {
 }
 
 .nav-links a.active {
-  color: var(--text);
+  color: var(--accent);
 }
 
 nav .nav-links .nav-gh {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  font-size: 11px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
   color: var(--text);
   text-decoration: none;
   border: 1px solid var(--border2);
-  padding: 5px 13px;
-  border-radius: 3px;
+  padding: 6px 14px;
+  border-radius: 999px;
   transition:
     border-color 0.15s,
-    color 0.15s;
+    color 0.15s,
+    background 0.15s;
 }
 
 nav .nav-links .nav-gh:hover {
@@ -375,12 +407,14 @@ nav .nav-links .nav-gh:hover {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  font-size: 11px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
   color: var(--text);
   text-decoration: none;
   border: 1px solid var(--border2);
-  padding: 5px 13px;
-  border-radius: 3px;
+  padding: 6px 14px;
+  border-radius: 2px;
   transition:
     border-color 0.15s,
     color 0.15s;
@@ -402,9 +436,9 @@ section[id] {
 }
 
 .wrap {
-  max-width: 1000px;
+  max-width: var(--max);
   margin: 0 auto;
-  padding: 0 2.5rem;
+  padding: 0 var(--gutter);
 }
 
 /* Hero */
@@ -412,29 +446,33 @@ header {
   min-height: 100svh;
   display: flex;
   align-items: center;
-  padding-top: 60px;
+  padding-top: 80px;
+  padding-bottom: 90px;
 }
 
 .hero-inner {
-  max-width: 1000px;
+  max-width: var(--max);
   margin: 0 auto;
-  padding: 0 2.5rem;
+  padding: 0 var(--gutter);
   width: 100%;
 }
 
 .page-home h1 {
-  font-size: clamp(3rem, 9vw, 6.5rem);
+  font-family: var(--display);
+  font-size: clamp(3rem, 10.5vw, 8.5rem);
   font-weight: 700;
-  letter-spacing: -0.04em;
-  line-height: 0.97;
-  margin-bottom: 2rem;
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+  line-height: 1.04;
+  margin-bottom: 2.6rem;
   animation: hero-float 0.7s ease both;
 }
 
 .page-home h1 .dim {
-  color: var(--muted);
-  font-weight: 300;
-  font-style: italic;
+  font-weight: 500;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(232, 230, 224, 0.45);
+  font-style: normal;
 }
 
 .page-home h1 .hi {
@@ -443,30 +481,42 @@ header {
   animation: none;
 }
 
+/* Single letters of the hero headline; JS moves them away from the
+   cursor (same behaviour as the dot field). Words stay atomic so
+   lines never break mid-word. */
+.h1-w {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.h1-ch {
+  display: inline-block;
+  will-change: transform;
+}
+
 .hero-quote {
   color: var(--muted);
-  font-size: 11px;
-  letter-spacing: 0.04em;
-  margin-bottom: 2.25rem;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 2.5rem;
   animation: hero-float 0.7s ease both;
   animation-delay: 0.1s;
 }
 
 .hero-body {
-  max-width: 440px;
+  max-width: 460px;
   color: var(--muted);
-  font-size: 14px;
-  line-height: 2;
-  margin-bottom: 2.5rem;
-  border-left: 2px solid var(--accent);
-  padding-left: 1rem;
+  font-size: 13.5px;
+  line-height: 2.1;
+  margin-bottom: 2.8rem;
   animation: hero-float 0.7s ease both;
   animation-delay: 0.2s;
 }
 
 .hero-body strong {
   color: var(--text);
-  font-weight: 400;
+  font-weight: 500;
 }
 
 .hero-actions {
@@ -498,23 +548,69 @@ header {
   }
 }
 
+/* Marquee — skills ticker between hero and content */
+.marquee {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  overflow: hidden;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 1.05rem 0;
+  background: rgba(13, 14, 15, 0.4);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+
+.marquee-track {
+  display: flex;
+  flex-shrink: 0;
+  min-width: 100%;
+  align-items: center;
+  animation: marquee 38s linear infinite;
+}
+
+.marquee-item {
+  font-family: var(--display);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+  padding-right: 1.6rem;
+}
+
+.marquee-item::after {
+  content: "·";
+  color: var(--accent);
+  padding-left: 1.6rem;
+}
+
+@keyframes marquee {
+  to {
+    transform: translateX(-100%);
+  }
+}
+
 .btn {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
+  gap: 9px;
+  padding: 13px 24px;
   font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.05em;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   text-decoration: none;
-  border-radius: 3px;
+  border-radius: 999px;
   transition: all 0.15s;
 }
 
 .btn-fill {
   background: var(--accent);
   color: #0d0e0f;
-  font-weight: 700;
 }
 
 .btn-fill:hover {
@@ -522,60 +618,84 @@ header {
 }
 
 .btn-ghost {
-  color: var(--muted);
+  color: var(--text);
   border: 1px solid var(--border2);
 }
 
 .btn-ghost:hover {
-  color: var(--text);
-  border-color: var(--border2);
+  color: var(--accent);
+  border-color: var(--accent);
 }
 
 /* Sections */
 .sec {
-  padding: 5rem 0;
+  padding: 6.5rem 0;
 }
 
 .page-home .sec {
-  padding: 5.5rem 0;
+  padding: 7rem 0;
 }
 
 .sec-head {
   display: flex;
-  align-items: baseline;
-  gap: 0.75rem;
-  margin-bottom: 3rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 3.5rem;
 }
 
 .sec-num {
   font-size: 10px;
   color: var(--accent);
-  letter-spacing: 0.12em;
+  letter-spacing: 0.28em;
   font-weight: 500;
   flex-shrink: 0;
 }
 
+.sec-num::before {
+  content: "[ ";
+  color: var(--muted);
+}
+
+.sec-num::after {
+  content: " ]";
+  color: var(--muted);
+}
+
+
 h2 {
-  font-size: clamp(1.4rem, 3vw, 1.9rem);
+  font-family: var(--display);
+  font-size: clamp(2.1rem, 5vw, 3.6rem);
   font-weight: 700;
-  letter-spacing: -0.03em;
-  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  line-height: 0.95;
   color: var(--text);
 }
 
 /* About */
 .about-grid {
   display: grid;
-  grid-template-columns: 3fr 2fr;
-  gap: 4rem;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 5rem;
   align-items: start;
 }
 
 .about-text p {
   color: var(--muted);
-  margin-bottom: 1rem;
+  margin-bottom: 1.3rem;
   font-size: 14px;
   line-height: 2;
+}
+
+.about-text p:first-child {
+  font-family: var(--display);
+  font-size: clamp(1.25rem, 2.3vw, 1.7rem);
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 2rem;
 }
 
 .about-text p b {
@@ -583,21 +703,25 @@ h2 {
   font-weight: 500;
 }
 
+.about-text p:first-child b {
+  color: var(--accent);
+  font-weight: 600;
+}
+
 .info-list {
   border: 1px solid var(--glass-border);
-  border-radius: 8px;
+  border-radius: var(--radius);
   overflow: hidden;
   background: var(--glass);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
 }
 
 .info-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 9px 14px;
+  padding: 11px 16px;
   font-size: 11px;
   border-bottom: 1px solid var(--border);
 }
@@ -608,6 +732,9 @@ h2 {
 
 .info-row .k {
   color: var(--muted);
+  font-size: 9.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
 }
 
 .info-row .v {
@@ -651,24 +778,72 @@ h2 {
   }
 }
 
-/* Skills */
+/* Skills — same frosted material as the about info-list */
 .skills-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1px;
-  background: var(--glass-border);
+  background: var(--border);
   border: 1px solid var(--glass-border);
-  border-radius: 8px;
+  border-radius: var(--radius);
   overflow: hidden;
+  counter-reset: skill;
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+}
+
+/* On the home page the skills are a horizontal strip. While scrolling
+   through the pinned section, JS drives it sideways; without JS or
+   with reduced motion it falls back to a native overflow scroller. */
+.page-home .skills-grid {
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+  touch-action: pan-x pan-y;
+}
+
+.page-home .skills-grid::-webkit-scrollbar {
+  display: none;
+}
+
+.page-home .skill {
+  flex: 0 0 clamp(230px, 26vw, 320px);
+}
+
+/* Pinned horizontal-travel section: a tall spacer provides the scroll
+   distance, the sticky frame holds the strip in view while it moves. */
+.hscroll-sticky {
+  position: sticky;
+  top: 0;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+}
+
+#skills.hscroll-on .skills-grid {
+  overflow: visible;
+  width: max-content;
+  will-change: transform;
 }
 
 .skill {
   background: var(--glass);
-  padding: 1.5rem;
+  padding: 1.7rem 1.5rem 1.9rem;
   transition: background 0.15s;
+  position: relative;
+}
+
+.skill::before {
+  counter-increment: skill;
+  content: "0" counter(skill);
+  display: block;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.25em;
+  color: var(--accent);
+  margin-bottom: 1.1rem;
 }
 
 .skill:hover {
@@ -676,85 +851,144 @@ h2 {
 }
 
 .skill-name {
-  font-size: 12px;
+  font-family: var(--display);
+  font-size: 15px;
   font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   color: var(--text);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.7rem;
+  transition: color 0.15s;
+}
+
+.skill:hover .skill-name {
+  color: var(--accent);
 }
 
 .skill-tags {
   font-size: 11px;
   color: var(--muted);
-  line-height: 1.9;
+  line-height: 1.95;
 }
 
-/* Projects */
+/* Projects — index list: number / name / description / tag / arrow */
 .project-list {
-  border: 1px solid var(--glass-border);
-  border-radius: 8px;
-  overflow: hidden;
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+  border-top: 1px solid var(--border);
+  border-radius: 0;
+  counter-reset: proj;
 }
 
 .project {
   display: grid;
-  grid-template-columns: 170px 1fr 90px;
+  grid-template-columns: 3.2rem 1.15fr 1.5fr 2rem;
+  grid-template-areas:
+    "num name desc arrow"
+    "num tag desc arrow";
   align-items: center;
-  gap: 2rem;
-  padding: 1.2rem 1.5rem;
-  background: var(--glass);
-  border-bottom: 1px solid var(--glass-border);
+  column-gap: 2rem;
+  row-gap: 0;
+  padding: 1.7rem 1.2rem;
+  border-radius: var(--radius);
+  background: transparent;
+  border-bottom: 1px solid var(--border);
   text-decoration: none;
   color: inherit;
   transition: background 0.15s;
+  position: relative;
 }
 
-.project:last-child {
-  border-bottom: none;
+.project::before {
+  counter-increment: proj;
+  content: "0" counter(proj);
+  grid-area: num;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.25em;
+  color: var(--accent);
+}
+
+.project::after {
+  content: "↗";
+  grid-area: arrow;
+  font-family: var(--display);
+  font-size: 1.25rem;
+  color: var(--muted);
+  justify-self: end;
+  transition:
+    color 0.2s,
+    transform 0.2s;
 }
 
 .project:hover {
-  background: var(--glass-strong);
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.project:hover::after {
+  color: var(--accent);
+  transform: translate(3px, -3px);
 }
 
 .project-name {
-  font-size: 12px;
+  grid-area: name;
+  align-self: end;
+  font-family: var(--display);
+  font-size: clamp(1.25rem, 2.4vw, 1.9rem);
   font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  line-height: 1.05;
   color: var(--text);
+  transition: color 0.2s;
+}
+
+.project:hover .project-name {
+  color: var(--accent);
 }
 
 .project-desc {
-  font-size: 13px;
+  grid-area: desc;
+  font-size: 12px;
   color: var(--muted);
-  line-height: 1.8;
+  line-height: 1.85;
 }
 
 .project-tag {
-  font-size: 10px;
-  color: var(--accent2);
-  text-align: right;
-  letter-spacing: 0.04em;
-  border: 1px solid rgba(62, 241, 208, 0.18);
-  padding: 3px 9px;
-  border-radius: 3px;
-  justify-self: end;
+  grid-area: tag;
+  justify-self: start;
+  align-self: start;
+  margin-top: 0.7rem;
+  font-size: 9px;
+  color: var(--muted);
+  text-transform: uppercase;
+  text-align: left;
+  letter-spacing: 0.16em;
+  border: 1px solid var(--border2);
+  padding: 5px 12px;
+  border-radius: 999px;
   white-space: nowrap;
+  transition:
+    color 0.2s,
+    border-color 0.2s;
+}
+
+.project:hover .project-tag {
+  color: var(--accent);
+  border-color: rgba(197, 241, 62, 0.4);
 }
 
 /* Page header */
 .page-header {
-  padding-top: 120px;
+  padding-top: 130px;
   padding-bottom: 4rem;
   position: relative;
   z-index: 1;
 }
 
 .page-eyebrow {
-  font-size: 11px;
+  font-size: 10px;
   color: var(--muted);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
   margin-bottom: 1.5rem;
   display: flex;
   align-items: center;
@@ -775,17 +1009,20 @@ h2 {
 }
 
 .page-header h1 {
-  font-size: clamp(2.4rem, 6vw, 4.5rem);
+  font-family: var(--display);
+  font-size: clamp(2.4rem, 6vw, 4.8rem);
   font-weight: 700;
-  letter-spacing: -0.04em;
-  line-height: 1;
-  margin-bottom: 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+  line-height: 1.04;
+  margin-bottom: 1.6rem;
 }
 
 .page-header h1 .dim {
-  color: var(--muted);
-  font-weight: 300;
-  font-style: italic;
+  font-weight: 500;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(232, 230, 224, 0.45);
+  font-style: normal;
 }
 
 .page-sub {
@@ -793,7 +1030,7 @@ h2 {
   color: var(--muted);
   font-size: 12px;
   line-height: 1.9;
-  border-left: 2px solid var(--accent);
+  border-left: 1px solid var(--accent);
   padding-left: 1rem;
 }
 
@@ -808,7 +1045,7 @@ h2 {
 .qr-panel {
   background: var(--bg2);
   border: 1px solid var(--border);
-  border-radius: 4px;
+  border-radius: var(--radius);
   padding: 1.5rem;
 }
 
@@ -838,8 +1075,9 @@ h2 {
 
 .qr-field label {
   display: block;
-  font-size: 11px;
-  letter-spacing: 0.06em;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   color: var(--muted);
   margin-bottom: 0.4rem;
 }
@@ -854,14 +1092,14 @@ h2 {
   font-family: var(--mono);
   font-size: 12px;
   padding: 0.65rem 0.75rem;
-  border-radius: 4px;
+  border-radius: 8px;
 }
 
 .qr-color {
   width: 100%;
   height: 38px;
   padding: 0;
-  border-radius: 4px;
+  border-radius: 8px;
   border: 1px solid var(--border);
   background: var(--bg3);
 }
@@ -872,7 +1110,7 @@ h2 {
 
 .qr-color::-webkit-color-swatch {
   border: none;
-  border-radius: 3px;
+  border-radius: 2px;
 }
 
 .qr-check {
@@ -909,7 +1147,7 @@ h2 {
 .qr-canvas-wrap {
   background: var(--text);
   padding: 1rem;
-  border-radius: 6px;
+  border-radius: var(--radius);
   border: 1px solid var(--border2);
   width: fit-content;
   max-width: 100%;
@@ -996,7 +1234,7 @@ h2 {
   flex-direction: column;
   gap: 1px;
   border: 1px solid var(--border);
-  border-radius: 4px;
+  border-radius: var(--radius);
   overflow: hidden;
 }
 
@@ -1023,17 +1261,22 @@ h2 {
 }
 
 .task-title {
-  font-size: 12px;
+  font-family: var(--display);
+  font-size: 13px;
   font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
   color: var(--text);
 }
 
 .task-tag {
-  font-size: 10px;
-  color: var(--accent2);
-  border: 1px solid rgba(62, 241, 208, 0.18);
-  padding: 3px 9px;
-  border-radius: 3px;
+  font-size: 9px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  border: 1px solid var(--border2);
+  padding: 4px 10px;
+  border-radius: 999px;
   white-space: nowrap;
 }
 
@@ -1050,7 +1293,7 @@ h2 {
   gap: 1px;
   background: var(--border);
   border: 1px solid var(--border);
-  border-radius: 4px;
+  border-radius: var(--radius);
   overflow: hidden;
 }
 
@@ -1065,8 +1308,11 @@ h2 {
 }
 
 .learning-title {
-  font-size: 12px;
+  font-family: var(--display);
+  font-size: 13px;
   font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
   color: var(--text);
   margin-bottom: 0.5rem;
 }
@@ -1084,7 +1330,7 @@ h2 {
   gap: 1px;
   background: var(--border);
   border: 1px solid var(--border);
-  border-radius: 4px;
+  border-radius: var(--radius);
   overflow: hidden;
 }
 
@@ -1111,10 +1357,10 @@ h2 {
 
 /* Quote */
 .quote-block {
-  border-left: 2px solid var(--accent);
+  border-left: 1px solid var(--accent);
   padding: 1.2rem 1.5rem;
   background: var(--bg2);
-  border-radius: 0 4px 4px 0;
+  border-radius: 0 var(--radius) var(--radius) 0;
   font-size: 12px;
   color: var(--muted);
   font-style: italic;
@@ -1132,13 +1378,15 @@ footer {
   position: relative;
   z-index: 1;
   border-top: 1px solid var(--border);
-  padding: 1.6rem 2.5rem;
-  max-width: 1000px;
+  padding: 1.6rem var(--gutter);
+  max-width: var(--max);
   margin: 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 11px;
+  font-size: 9.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
   color: var(--muted);
 }
 
@@ -1152,35 +1400,27 @@ footer a:hover {
   color: var(--accent);
 }
 
-/* "Old UI" theme-toggle — a frosted glass pill matching the tables. */
+/* "Old UI" theme-toggle — quiet mono pill in the footer. */
 .xp-toggle-btn {
   font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.02em;
+  font-size: 9.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   color: var(--muted);
-  background: var(--glass);
-  border: 1px solid var(--glass-border);
+  background: transparent;
+  border: 1px solid var(--border2);
   border-radius: 999px;
   padding: 7px 16px;
   cursor: pointer;
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
   transition:
     color 0.15s,
     border-color 0.15s,
-    background 0.15s,
-    transform 0.15s;
+    background 0.15s;
 }
 
 .xp-toggle-btn:hover {
-  color: var(--text);
-  background: var(--glass-strong);
+  color: var(--accent);
   border-color: var(--accent);
-  transform: translateY(-1px);
-}
-
-.xp-toggle-btn:active {
-  transform: translateY(0);
 }
 
 body.custom-cursor .xp-toggle-btn {
@@ -1200,10 +1440,10 @@ body.custom-cursor .xp-toggle-btn {
 /* Fade */
 .fade {
   opacity: 0;
-  transform: translateY(16px);
+  transform: translateY(22px);
   transition:
-    opacity 0.55s ease,
-    transform 0.55s ease;
+    opacity 0.65s ease,
+    transform 0.65s ease;
 }
 
 .fade.on {
@@ -1223,7 +1463,7 @@ body.custom-cursor .xp-toggle-btn {
   }
 
   .page-home h1 {
-    font-size: clamp(2.6rem, 13vw, 3.8rem);
+    font-size: clamp(2.7rem, 13.5vw, 4rem);
   }
 
   .page-header h1 {
@@ -1236,7 +1476,7 @@ body.custom-cursor .xp-toggle-btn {
 
   .about-grid {
     grid-template-columns: 1fr;
-    gap: 2rem;
+    gap: 2.5rem;
   }
 
   .skills-grid {
@@ -1244,26 +1484,23 @@ body.custom-cursor .xp-toggle-btn {
   }
 
   .project {
-    grid-template-columns: 1fr auto;
-    grid-template-rows: auto auto;
-    gap: 0.3rem 1rem;
-    padding: 1rem 1.2rem;
+    grid-template-columns: 2rem 1fr;
+    grid-template-areas:
+      "num name"
+      "num tag"
+      "num desc";
+    column-gap: 1rem;
+    row-gap: 0.4rem;
+    align-items: start;
+    padding: 1.3rem 0.9rem;
   }
 
-  .project-name {
-    grid-column: 1;
-    grid-row: 1;
+  .project::after {
+    display: none;
   }
 
   .project-tag {
-    grid-column: 2;
-    grid-row: 1;
-    justify-self: end;
-  }
-
-  .project-desc {
-    grid-column: 1 / -1;
-    grid-row: 2;
+    margin-top: 0;
   }
 
   .page-sub {
@@ -1300,13 +1537,17 @@ body.custom-cursor .xp-toggle-btn {
 
   footer {
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.7rem;
     text-align: center;
     padding: 1.4rem 1.25rem;
   }
 
   .sec {
-    padding: 3.5rem 0;
+    padding: 4rem 0;
+  }
+
+  .page-home .sec {
+    padding: 4.5rem 0;
   }
 
   .page-header {
@@ -1329,7 +1570,7 @@ body.custom-cursor .xp-toggle-btn {
     background: rgba(13, 14, 15, 0.96);
     border: 1px solid var(--border);
     padding: 0.8rem 0.9rem;
-    border-radius: 6px;
+    border-radius: var(--radius);
     display: none;
     min-width: 180px;
   }
@@ -1345,27 +1586,10 @@ body.custom-cursor .xp-toggle-btn {
   }
 
   .page-home h1 {
-    font-size: clamp(2.2rem, 14vw, 3rem);
+    font-size: clamp(2.3rem, 14vw, 3.1rem);
   }
 }
 
-/* Nav */
-nav {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1.1rem 2.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(13, 14, 15, 0.62);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.32);
-}
 /* ==========================================================================
    PROMO POPUP STYLES
    ========================================================================== */
@@ -1400,7 +1624,7 @@ nav {
 .popup-content {
   background: var(--bg2);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius);
   padding: 2.5rem 2rem;
   max-width: 450px;
   width: 90%;
@@ -1438,6 +1662,9 @@ nav {
   color: var(--text);
   margin-bottom: 1rem;
   font-size: 1.25rem;
+  text-transform: none;
+  letter-spacing: 0;
+  line-height: 1.3;
 }
 
 .popup-desc {
@@ -1459,7 +1686,7 @@ nav {
   border: 1px solid var(--border2);
   padding: 0.8rem 1rem;
   text-decoration: none;
-  border-radius: 4px;
+  border-radius: 999px;
   font-weight: 600;
   transition: all 0.3s ease;
 }
