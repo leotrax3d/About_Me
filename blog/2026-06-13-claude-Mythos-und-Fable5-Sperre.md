@@ -1,0 +1,18 @@
+---
+title: Claude Mythos und Fable 5
+date: 2026-06-13
+description: Trump hat zugeschnappt
+tag: meta
+---
+
+# Claude Mythos und Fable 5
+
+Am 9. Juni hat Anthropic Claude Fable 5 veröffentlicht. Ein neues Modell mit strengen Safety-Grenzen in Bereichen wie Cybersicherheit, Biologie und Chemie.
+
+
+Nach Berichten über neue Exportauflagen aus den USA wurde der Zugang zu Fable 5 und Mythos 5 für ausländische Staatsbürger gestoppt.
+
+
+Meine persönliche Meinung: Es gewinnt nicht die Technologie, die die Beste ist, sondern die, die am wenigsten kontrolliert wird-
+
+Und natürlich stellt man sich die Frage, wem solche Entscheidungen am Ende helfen. Wenn bestimmte Modelle verschwinden und andere verfügbar bleiben, entsteht schnell der Eindruck, dass hier nicht nur Sicherheit, sondern auch Wettbewerb mitspielt.
