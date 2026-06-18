@@ -1714,3 +1714,332 @@ body.custom-cursor .xp-toggle-btn {
   z-index: 99999 !important; /* Muss höher sein als das Popup (welches 9999 hat) */
   pointer-events: none !important; /* Sehr wichtig, damit du "durch" den Zeiger klicken kannst */
 }
+
+/* ==========================================================================
+   BLOG
+   Post list + rendered-markdown article view for blog.html. Reuses the
+   glass surfaces and accent typography from the rest of the site.
+   ========================================================================== */
+
+/* Post list */
+.blog-items {
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  overflow: hidden;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+}
+
+.blog-item {
+  display: grid;
+  grid-template-columns: 120px 1fr auto;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.3rem 1.5rem;
+  background: var(--glass);
+  border-bottom: 1px solid var(--glass-border);
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.15s;
+  animation: blog-in 0.45s ease both;
+  animation-delay: calc(var(--i, 0) * 55ms);
+}
+
+.blog-item:last-child {
+  border-bottom: none;
+}
+
+.blog-item:hover {
+  background: var(--glass-strong);
+}
+
+.blog-item-date {
+  font-size: 11px;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.blog-item-main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.blog-item-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.blog-item-desc {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.blog-item-tag {
+  font-size: 10px;
+  color: var(--accent2);
+  border: 1px solid rgba(62, 241, 208, 0.18);
+  padding: 3px 9px;
+  border-radius: 3px;
+  white-space: nowrap;
+  justify-self: end;
+}
+
+.blog-item-arrow {
+  color: var(--muted);
+  font-size: 14px;
+  justify-self: end;
+  transition:
+    transform 0.15s,
+    color 0.15s;
+}
+
+.blog-item:hover .blog-item-arrow {
+  color: var(--accent);
+  transform: translateX(3px);
+}
+
+@keyframes blog-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Empty / loading / error states */
+.blog-state {
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  background: var(--glass);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  padding: 2.2rem 1.5rem;
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* Back link */
+.blog-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  text-decoration: none;
+  margin-bottom: 2rem;
+  transition: color 0.15s;
+}
+
+.blog-back:hover {
+  color: var(--accent);
+}
+
+/* Rendered markdown */
+.blog-content {
+  max-width: 720px;
+  font-size: 14px;
+}
+
+.blog-content > *:first-child {
+  margin-top: 0;
+}
+
+.blog-content p {
+  color: var(--muted);
+  line-height: 1.95;
+  margin: 1rem 0;
+}
+
+.blog-content h1,
+.blog-content h2,
+.blog-content h3,
+.blog-content h4,
+.blog-content h5,
+.blog-content h6 {
+  color: var(--text);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+.blog-content h1 {
+  font-size: clamp(1.7rem, 4vw, 2.3rem);
+  margin: 2.4rem 0 1rem;
+}
+
+.blog-content h2 {
+  font-size: 1.35rem;
+  margin: 2.2rem 0 0.9rem;
+  padding-left: 0.8rem;
+  border-left: 2px solid var(--accent);
+}
+
+.blog-content h3 {
+  font-size: 1.1rem;
+  margin: 1.8rem 0 0.7rem;
+}
+
+.blog-content h4 {
+  font-size: 0.98rem;
+  margin: 1.5rem 0 0.6rem;
+  color: var(--muted);
+}
+
+.blog-content h5,
+.blog-content h6 {
+  font-size: 0.9rem;
+  margin: 1.3rem 0 0.5rem;
+  color: var(--muted);
+}
+
+.blog-content a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(197, 241, 62, 0.3);
+  transition: border-color 0.15s;
+}
+
+.blog-content a:hover {
+  border-bottom-color: var(--accent);
+}
+
+.blog-content strong {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.blog-content em {
+  font-style: italic;
+}
+
+.blog-content del {
+  color: var(--muted);
+}
+
+.blog-content ul,
+.blog-content ol {
+  color: var(--muted);
+  margin: 1rem 0;
+  padding-left: 1.5rem;
+  line-height: 1.9;
+}
+
+.blog-content li {
+  margin-bottom: 0.45rem;
+}
+
+.blog-content li::marker {
+  color: var(--accent);
+}
+
+.blog-content blockquote {
+  border-left: 2px solid var(--accent);
+  background: var(--glass);
+  padding: 0.9rem 1.2rem;
+  margin: 1.4rem 0;
+  border-radius: 0 6px 6px 0;
+  color: var(--muted);
+  font-style: italic;
+  line-height: 1.85;
+}
+
+.blog-content code {
+  font-family: var(--mono);
+  font-size: 0.86em;
+  background: var(--bg3);
+  color: var(--accent);
+  padding: 0.12em 0.4em;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+
+.blog-content pre.blog-pre {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem 1.2rem;
+  margin: 1.4rem 0;
+  overflow-x: auto;
+  font-size: 12.5px;
+  line-height: 1.7;
+}
+
+.blog-content pre.blog-pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--text);
+  font-size: inherit;
+}
+
+.blog-content img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  margin: 1.4rem 0;
+}
+
+.blog-content hr {
+  border: none;
+  border-top: 1px solid var(--border2);
+  margin: 2.2rem 0;
+}
+
+.blog-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.4rem 0;
+  font-size: 13px;
+}
+
+.blog-content th,
+.blog-content td {
+  border: 1px solid var(--border);
+  padding: 0.5rem 0.8rem;
+  text-align: left;
+  color: var(--muted);
+}
+
+.blog-content th {
+  color: var(--text);
+  background: var(--glass);
+}
+
+@media (max-width: 680px) {
+  .blog-item {
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    gap: 0.4rem 1rem;
+    padding: 1rem 1.2rem;
+  }
+
+  .blog-item-date {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .blog-item-tag,
+  .blog-item-arrow {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: center;
+  }
+
+  .blog-item-main {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}
