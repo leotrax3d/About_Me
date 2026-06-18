@@ -4,36 +4,59 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-This is a static personal portfolio/landing site for "leotrax3d", deployed via GitHub Pages at https://leotrax3d.github.io/About_Me/. There is no build step, package manager, or test suite — every page is a self-contained, hand-written HTML file with inline `<script>` blocks. Edit files directly and open them in a browser to verify changes (e.g. `xdg-open index.html` or any local static file server).
+Static personal portfolio/landing site for "leotrax3d", deployed via GitHub Pages at https://leotrax3d.github.io/About_Me/. There is no build step, package manager, or test suite — pages are hand-written HTML files, mostly self-contained but sharing one runtime script. Edit files directly and open them in a browser to verify (e.g. `xdg-open index.html`).
+
+Note: some features fetch at runtime (`blog.html`), so they only work over `http://` (a local static server), not a bare `file://` open — see the Blog section.
 
 ## Structure
 
-- `index.html` — main landing page (hero, about, skills, projects sections), shares the global terminal/cursor/theme JS described below.
-- `internship.html`, `internship/internship_qr1.html`, `internship/internship_qr2.html` — internship report pages and their QR-linked sub-pages.
-- `ClassChat.html`, `qr.html`, `gute-besserung.html` — standalone feature/joke pages, each with their own inline JS.
-- `link/001.html`, `link/002.html` — tiny redirect pages. Each reads `data-target-url` from `<body>` and either previews the link (when the URL ends in `/?`) or does `location.replace()` to it. Both currently point at the same target URL.
-- `privacy-policy.html` — fully self-contained page with its own `<style>` block (does not use `styles.css`/`xp.css`).
-- `styles.css` — shared dark "mono" theme (CSS custom properties under `:root`: `--bg`, `--text`, `--accent`, etc., font is JetBrains Mono).
-- `xp.css` — alternate "Windows XP" theme that overrides the same CSS variables and component styles. Loaded as a `<link disabled>` stylesheet and toggled at runtime.
-- `assets/` — images (internship photos, etc.).
+- `index.html` — main landing page (hero, about, skills, projects). Has `class="page-home"` on `<body>` and the only `#xp-toggle` button.
+- `site.js` — **shared runtime chrome** for the main pages (see below). The single most important file to understand.
+- `styles.css` — shared dark "mono" theme (CSS custom properties under `:root`: `--bg`, `--text`, `--accent` `#c5f13e`, etc.; font JetBrains Mono).
+- `xp.css` — alternate "Windows XP Luna" theme. Loaded as a `<link disabled id="xp-theme-link">` and toggled at runtime; overrides the same CSS variables plus component selectors.
+- `blog.html` + `blog/` — markdown-driven blog (see Blog system below).
+- `showcase.html` + `showcase.philosophy.md` — a wordless black/white motion design piece using **Three.js (r128)** and **GSAP + ScrollTrigger** from CDNs. Standalone; does not use `site.js`. The `.md` is its German design rationale (gitignored).
+- `haraldritz.html` + `haraldritz.css` — a Windows-XP "System Properties" dialog gag page for the persona "Harald Ritz" (the same name the terminal's `whoami` prints). Standalone, own CSS.
+- `internship.html`, `internship/internship_qr1.html`, `internship/internship_qr2.html` — internship report and QR sub-pages.
+- `ClassChat.html`, `qr.html`, `gute-besserung.html` — standalone feature/joke pages.
+- `link/001.html`, `link/002.html` — tiny redirect pages reading `data-target-url` from `<body>`; near-duplicates with the same hardcoded target.
+- `privacy-policy.html` — fully self-contained, own `<style>` block (no `styles.css`/`xp.css`/`site.js`).
+- `__shot_test.html` — a standalone snapshot page that still carries the **old inline copy** of the chrome plus a promo popup. A "before" artifact, not wired to `site.js`; do not treat it as live or sync changes into it.
+- `maldesign.md` — a German design-critique "wall of shame" working doc, not shipped.
+- `assets/` — images/SVGs.
 
-## Shared page conventions
+## site.js — shared chrome (read this first)
 
-Most pages (`index.html`, `internship.html`, `ClassChat.html`, `qr.html`, `gute-besserung.html`) share the same boilerplate, copy-pasted per file rather than templated:
+The pages `index.html`, `internship.html`, `ClassChat.html`, `qr.html`, `gute-besserung.html`, and `blog.html` each include `<script src="site.js"></script>` and let it inject and wire up all shared chrome at runtime (`insertAdjacentHTML` into `<body>`; no fetch/CORS, so it works from `file://` too). This **replaces** the old pattern of copy-pasting the same HTML/JS into every page. When changing shared behaviour, edit `site.js` once — do not re-add inline copies.
 
-- Same `<head>` includes: Google Fonts (JetBrains Mono, Material Symbols), `styles.css`, and on `index.html` also `xp.css` (disabled by default).
-- A `.terminal-overlay` "secret terminal" widget with a command parser (`runCommand`) supporting commands like `help`, `about`, `skills`, `projects`, `github`, `internship`, `whoami`, `uptime`, `date`, `theme`, `ascii`, `echo`, `coin`, `rps`, `guess`, `clear`, `exit`. Triple-clicking any element with class `easter-trigger` opens it.
-- A custom mouse cursor (`.cursor` / `.cursor-dot`, class `custom-cursor` on `<body>`), driven by `requestAnimationFrame`.
-- `nav` with `.nav-logo`, hamburger `.nav-menu` toggling `.nav-open`, and links back to `index.html#about` / `#skills` / `#projects`.
-- `IntersectionObserver`-based fade-in for elements with class `.fade`.
+What `site.js` provides (`init()` at the bottom calls each):
+- **Nav** — logo, hamburger `.nav-menu` toggling `.nav-open`, links built from the `NAV_ITEMS` array (about/skills/projects/internship/qr/ClassChat/showcase/blog + GitHub). The active link is derived from the current filename.
+- **Custom cursor** — `.cursor` ring + lagging `.cursor-dot`, `requestAnimationFrame`-driven; adds `custom-cursor` to `<body>`.
+- **Background point-field** — a `<canvas id="bg-field">` grid of dots that breathe, flee the cursor, and emit an accent-coloured shockwave on `pointerdown`. Pure canvas + rAF, paused when the tab is hidden, rebuilt on resize, static fallback under `prefers-reduced-motion`. (Replaced the old static dot grid.)
+- **Secret terminal** — `.terminal-overlay` opened by **triple-clicking any `.easter-trigger`**. Built-in commands: `help, about, skills, projects, github, internship, blog, qr, classchat, home, showcase, whoami` (prints `HARALD RITZ`)`, uptime, date, theme, ascii, echo, coin, rps, guess, clear, exit`.
+- **Scramble text** — section headings decode from glyph noise on first view; project names re-scramble on hover; nav links flicker on hover. Exposed as `window.scrambleText`. Skipped under `prefers-reduced-motion`.
+- **Fade-in** — `.fade` elements gain `.on` via `IntersectionObserver`.
+- **XP theme toggle** — only activates on pages that ship both `#xp-toggle` and `#xp-theme-link` (just `index.html`); persists choice in `localStorage` key `theme` (`"xp"`/`"dark"`). Keep new XP overrides in `xp.css`, not inline.
 
-Because this JS/HTML is duplicated across files, when changing shared behavior (terminal commands, cursor, nav, theme toggle) check whether the same block needs updating in every page that has it, not just `index.html`.
+### Per-page terminal commands
 
-## Theme toggle (XP mode)
+A page can define `window.terminalCommands` **before** `site.js` runs to add or override commands. Each handler receives `(args, t)` where `t = { print, close }`. Custom commands take priority over built-ins (so a page can override e.g. `github`). Example:
 
-`index.html` has an `#xp-toggle` button that enables/disables the `xp.css` `<link>` (`#xp-theme-link`) and persists the choice in `localStorage` under `theme` (`"xp"` or `"dark"`). `xp.css` overrides the same `--bg`/`--text`/`--accent`/etc. variables plus specific component selectors to mimic a Windows XP Luna look — keep new XP-mode overrides in `xp.css`, not inline.
+```js
+window.terminalCommands = {
+  overview(args, t) { t.print("jumping..."); t.close(); document.querySelector("#overview")?.scrollIntoView(); },
+};
+```
 
-## Known inconsistencies to be aware of
+## Blog system
 
-- `index.html` links to `tipptrainer.html` in the nav, but that file was deleted from the repo (see git history) — the link is currently dead.
-- `link/001.html` and `link/002.html` are near-duplicates with the same hardcoded `data-target-url`.
+`blog.html` renders markdown posts in `blog/`. It auto-discovers every `*.md` (except `README.md`) via the **GitHub contents API**, sorts newest-first, and renders them in-theme with a small custom markdown parser. `blog/posts.json` is an **optional fallback** filename list used only for local preview (no API); on the live site it is normally untouched.
+
+Adding a post: drop `blog/YYYY-MM-DD-title.md` with optional frontmatter (`title`, `date`, `description`, `tag`) and push. Missing `title`/`date` are inferred from the first `# heading` and the filename date prefix. See `blog/README.md` for the supported markdown subset.
+
+## Conventions & gotchas
+
+- The shared `site.js` pages also copy the same `<head>` (Google Fonts: JetBrains Mono + Material Symbols, `styles.css`); only `index.html` additionally links `xp.css` (disabled).
+- `index.html`'s nav once linked `tipptrainer.html`, which was deleted — watch for dead links.
+- `showcase.html` and `haraldritz.html` are deliberately standalone (own deps/CSS, no `site.js`); shared-chrome changes do not apply to them.
+- `CLAUDE.md` and `showcase.philosophy.md` are in `.gitignore`; `maldesign.md` and `site.js` may be untracked while iterating.

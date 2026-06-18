@@ -51,6 +51,7 @@ input:focus-visible {
 
 html {
   scroll-behavior: smooth;
+  background: var(--bg);
 }
 
 body {
@@ -60,6 +61,27 @@ body {
   font-size: 14px;
   line-height: 1.8;
   overflow-x: hidden;
+}
+
+/* Pages that opt into the live, cursor-reactive point field (via
+   site.js, which adds this class and injects #bg-field) let the
+   canvas show through instead of the static dotted ::after texture. */
+body.has-bg-field {
+  background: transparent;
+}
+
+body.has-bg-field::after {
+  display: none;
+}
+
+#bg-field {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+  display: block;
 }
 
 body.page-home {
@@ -778,12 +800,14 @@ h2 {
   }
 }
 
-/* Skills — same frosted material as the about info-list */
+/* Skills — same frosted material as the about info-list: one translucent
+   glass pane with transparent cells and var(--border) dividers, so the cells
+   sit directly on the page background (not over a lightening white layer). */
 .skills-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1px;
-  background: var(--border);
+  gap: 0;
+  background: var(--glass);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius);
   overflow: hidden;
@@ -792,47 +816,22 @@ h2 {
   -webkit-backdrop-filter: var(--glass-blur);
 }
 
-/* On the home page the skills are a horizontal strip. While scrolling
-   through the pinned section, JS drives it sideways; without JS or
-   with reduced motion it falls back to a native overflow scroller. */
-.page-home .skills-grid {
-  display: flex;
-  overflow-x: auto;
-  scrollbar-width: none;
-  touch-action: pan-x pan-y;
-}
-
-.page-home .skills-grid::-webkit-scrollbar {
-  display: none;
-}
-
-.page-home .skill {
-  flex: 0 0 clamp(230px, 26vw, 320px);
-}
-
-/* Pinned horizontal-travel section: a tall spacer provides the scroll
-   distance, the sticky frame holds the strip in view while it moves. */
-.hscroll-sticky {
-  position: sticky;
-  top: 0;
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  overflow: hidden;
-}
-
-#skills.hscroll-on .skills-grid {
-  overflow: visible;
-  width: max-content;
-  will-change: transform;
-}
-
 .skill {
-  background: var(--glass);
+  background: transparent;
   padding: 1.7rem 1.5rem 1.9rem;
   transition: background 0.15s;
   position: relative;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+/* 3-column layout: drop the dividers on the last column and last row. */
+.skill:nth-child(3n) {
+  border-right: none;
+}
+
+.skill:nth-child(n + 4) {
+  border-bottom: none;
 }
 
 .skill::before {
@@ -1483,6 +1482,23 @@ body.custom-cursor .xp-toggle-btn {
     grid-template-columns: 1fr 1fr;
   }
 
+  /* 2-column layout: dividers on the last column (every 2nd) and last row. */
+  .skill:nth-child(3n) {
+    border-right: 1px solid var(--border);
+  }
+
+  .skill:nth-child(n + 4) {
+    border-bottom: 1px solid var(--border);
+  }
+
+  .skill:nth-child(2n) {
+    border-right: none;
+  }
+
+  .skill:nth-child(n + 5) {
+    border-bottom: none;
+  }
+
   .project {
     grid-template-columns: 2rem 1fr;
     grid-template-areas:
@@ -1583,6 +1599,16 @@ body.custom-cursor .xp-toggle-btn {
 @media (max-width: 420px) {
   .skills-grid {
     grid-template-columns: 1fr;
+  }
+
+  /* 1-column layout: no vertical dividers, horizontal between every row. */
+  .skills-grid .skill {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .skills-grid .skill:last-child {
+    border-bottom: none;
   }
 
   .page-home h1 {
@@ -1688,6 +1714,10 @@ body.custom-cursor .xp-toggle-btn {
   text-decoration: none;
   border-radius: 999px;
   font-weight: 600;
+  /* Used on both <a> and <button>; keep the mono face and a real pointer. */
+  font-family: inherit;
+  font-size: inherit;
+  cursor: pointer;
   transition: all 0.3s ease;
 }
 
