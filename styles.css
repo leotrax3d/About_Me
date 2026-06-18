@@ -26,9 +26,8 @@
   --accent: #c5f13e;
   --accent2: #c5f13e;
   --mono: "JetBrains Mono", monospace;
-  /* Display face for big headlines; falls back to the mono on pages
-     that don't load Space Grotesk. */
-  --display: "Space Grotesk", "JetBrains Mono", sans-serif;
+  /* One typeface everywhere: headlines use JetBrains Mono too. */
+  --display: "JetBrains Mono", monospace;
   --gutter: clamp(1.25rem, 4vw, 2.5rem);
   --max: 1160px;
   /* Two-tier rounding: soft 12px surfaces, full pills for chips,
@@ -345,12 +344,6 @@ nav {
   text-transform: uppercase;
 }
 
-.nav-logo::after {
-  content: "_";
-  color: var(--accent);
-  animation: bl 1.4s step-end infinite;
-}
-
 .nav-links {
   display: flex;
   gap: 1.9rem;
@@ -400,6 +393,68 @@ nav {
 
 .nav-links a.active {
   color: var(--accent);
+}
+
+/* n-back nav tab — a quiet "notification ping" that keeps it warm in the
+   accent colour and emits a slow expanding ring, so it draws the eye
+   without shouting. The ping is suppressed once you are on the page. */
+.nav-links a.nav-pulse {
+  color: var(--accent);
+  position: relative;
+  animation: nav-glow 3.4s ease-in-out infinite;
+}
+
+.nav-links a.nav-pulse::after {
+  content: "";
+  position: absolute;
+  top: 0.18rem;
+  right: -0.5rem;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 0 rgba(197, 241, 62, 0.7);
+  animation: nav-ping 2.6s ease-out infinite;
+}
+
+.nav-links a.nav-pulse.active {
+  animation: none;
+}
+
+.nav-links a.nav-pulse.active::after {
+  animation: none;
+  box-shadow: none;
+}
+
+@keyframes nav-glow {
+  0%,
+  100% {
+    color: var(--accent);
+    text-shadow: 0 0 0 rgba(197, 241, 62, 0);
+  }
+  50% {
+    color: #e3ff8a;
+    text-shadow: 0 0 10px rgba(197, 241, 62, 0.55);
+  }
+}
+
+@keyframes nav-ping {
+  0% {
+    box-shadow: 0 0 0 0 rgba(197, 241, 62, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 7px rgba(197, 241, 62, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(197, 241, 62, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-links a.nav-pulse,
+  .nav-links a.nav-pulse::after {
+    animation: none;
+  }
 }
 
 nav .nav-links .nav-gh {
@@ -481,7 +536,9 @@ header {
 
 .page-home h1 {
   font-family: var(--display);
-  font-size: clamp(3rem, 10.5vw, 8.5rem);
+  /* JetBrains Mono runs wider than the old display face, so the headline
+     is dialled back a notch to keep its weight in check. */
+  font-size: clamp(2.7rem, 9vw, 7rem);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: -0.03em;
@@ -870,10 +927,15 @@ h2 {
   line-height: 1.95;
 }
 
-/* Projects — index list: number / name / description / tag / arrow */
+/* Projects — index list: number / name / description / tag / arrow.
+   Same frosted-glass surface as the skills grid and the about info list. */
 .project-list {
-  border-top: 1px solid var(--border);
-  border-radius: 0;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   counter-reset: proj;
 }
 
@@ -918,8 +980,12 @@ h2 {
     transform 0.2s;
 }
 
+.project:last-child {
+  border-bottom: none;
+}
+
 .project:hover {
-  background: rgba(255, 255, 255, 0.025);
+  background: var(--glass-strong);
 }
 
 .project:hover::after {
@@ -1009,7 +1075,7 @@ h2 {
 
 .page-header h1 {
   font-family: var(--display);
-  font-size: clamp(2.4rem, 6vw, 4.8rem);
+  font-size: clamp(2.2rem, 5.4vw, 4.2rem);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: -0.03em;
@@ -1462,11 +1528,11 @@ body.custom-cursor .xp-toggle-btn {
   }
 
   .page-home h1 {
-    font-size: clamp(2.7rem, 13.5vw, 4rem);
+    font-size: clamp(1.9rem, 10.5vw, 3.4rem);
   }
 
   .page-header h1 {
-    font-size: clamp(2rem, 11vw, 3rem);
+    font-size: clamp(1.9rem, 9.5vw, 2.8rem);
   }
 
   .hero-body {
@@ -1612,7 +1678,7 @@ body.custom-cursor .xp-toggle-btn {
   }
 
   .page-home h1 {
-    font-size: clamp(2.3rem, 14vw, 3.1rem);
+    font-size: clamp(1.8rem, 11.5vw, 2.7rem);
   }
 }
 

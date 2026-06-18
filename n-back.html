@@ -1,0 +1,637 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>n-back — leotrax3d</title>
+    <meta
+      name="description"
+      content="n-back — a minimalist dual n-back trainer for your phone. Train your working memory with a clean, distraction-free, open-source app by leotrax3d."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=menu"
+    />
+    <link rel="stylesheet" href="styles.css" />
+
+    <!-- Page-specific styling. The shared dark "mono" theme + chrome come
+         from styles.css / site.js; everything prefixed .nb- is unique to
+         this page and lives here so it stays self-contained. -->
+    <style>
+      /* ---- Hero ------------------------------------------------------ */
+      /* The global `header` rule forces min-height:100svh + flex centering
+         (that is the home hero). This page wants a normal page header, so
+         neutralise it — padding still comes from .page-header. */
+      .nb-hero {
+        min-height: 0;
+        display: block;
+      }
+      .nb-hero-inner {
+        display: grid;
+        grid-template-columns: 1.25fr 0.85fr;
+        gap: clamp(2rem, 5vw, 4.5rem);
+        align-items: center;
+      }
+      .nb-hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.9rem;
+        margin-top: 2rem;
+      }
+      .nb-hero-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.6rem;
+        margin-top: 2.4rem;
+        padding-top: 1.6rem;
+        border-top: 1px solid var(--border);
+      }
+      .nb-hero-meta div {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+      .nb-hero-meta .nb-meta-k {
+        font-size: 8px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .nb-hero-meta .nb-meta-v {
+        font-family: var(--display);
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--text);
+      }
+      .nb-hero-shot {
+        position: relative;
+        justify-self: center;
+        max-width: 300px;
+      }
+      .nb-hero-shot img {
+        width: 100%;
+        height: auto;
+        display: block;
+        border-radius: 22px;
+        border: 1px solid var(--border2);
+        box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.8);
+      }
+      .nb-hero-shot::after {
+        content: "";
+        position: absolute;
+        inset: -1px;
+        border-radius: 22px;
+        pointer-events: none;
+        box-shadow: 0 0 60px -10px rgba(197, 241, 62, 0.25);
+      }
+
+      /* ---- "What is it" explainer cards ----------------------------- */
+      .nb-explain {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        margin-bottom: 3rem;
+      }
+      .nb-card {
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius);
+        background: var(--glass);
+        backdrop-filter: var(--glass-blur);
+        -webkit-backdrop-filter: var(--glass-blur);
+        padding: 1.5rem;
+      }
+      .nb-card .nb-step {
+        font-family: var(--mono);
+        font-size: 9px;
+        letter-spacing: 0.25em;
+        color: var(--accent);
+      }
+      .nb-card h3 {
+        font-family: var(--display);
+        font-size: 1.05rem;
+        text-transform: uppercase;
+        letter-spacing: -0.01em;
+        margin: 0.7rem 0 0.6rem;
+      }
+      .nb-card p {
+        font-size: 12px;
+        line-height: 1.85;
+        color: var(--muted);
+        margin: 0;
+      }
+
+      /* ---- Screenshot gallery --------------------------------------- */
+      .nb-shots {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 1rem;
+      }
+      .nb-shot {
+        margin: 0;
+        cursor: pointer;
+        border: 1px solid var(--glass-border);
+        border-radius: 16px;
+        overflow: hidden;
+        background: var(--glass);
+        backdrop-filter: var(--glass-blur);
+        -webkit-backdrop-filter: var(--glass-blur);
+        transition:
+          transform 0.18s ease,
+          border-color 0.18s ease,
+          box-shadow 0.18s ease;
+      }
+      .nb-shot img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+      .nb-shot figcaption {
+        font-family: var(--mono);
+        font-size: 9px;
+        letter-spacing: 0.08em;
+        line-height: 1.6;
+        color: var(--muted);
+        padding: 0.75rem 0.8rem;
+        border-top: 1px solid var(--border);
+      }
+      .nb-shot:hover {
+        transform: translateY(-4px);
+        border-color: rgba(197, 241, 62, 0.4);
+        box-shadow: 0 18px 40px -22px rgba(0, 0, 0, 0.9);
+      }
+      .nb-shot:hover figcaption {
+        color: var(--text);
+      }
+
+      /* ---- Feature list --------------------------------------------- */
+      .nb-features {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0;
+        background: var(--glass);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius);
+        overflow: hidden;
+        backdrop-filter: var(--glass-blur);
+        -webkit-backdrop-filter: var(--glass-blur);
+      }
+      .nb-feature {
+        background: transparent;
+        padding: 1.6rem;
+        border-right: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+        transition: background 0.15s;
+      }
+      /* 2-column grid: drop dividers on the right column and last row. */
+      .nb-feature:nth-child(2n) {
+        border-right: none;
+      }
+      .nb-feature:nth-child(n + 5) {
+        border-bottom: none;
+      }
+      .nb-feature:hover {
+        background: var(--glass-strong);
+      }
+      .nb-feature h3 {
+        font-family: var(--display);
+        font-size: 1rem;
+        text-transform: uppercase;
+        letter-spacing: -0.01em;
+        margin: 0 0 0.6rem;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+      }
+      .nb-feature h3::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        background: var(--accent);
+        border-radius: 50%;
+      }
+      .nb-feature p {
+        font-size: 12px;
+        line-height: 1.85;
+        color: var(--muted);
+        margin: 0;
+      }
+
+      /* ---- Closing CTA ---------------------------------------------- */
+      .nb-cta {
+        text-align: center;
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius);
+        background: var(--glass);
+        backdrop-filter: var(--glass-blur);
+        -webkit-backdrop-filter: var(--glass-blur);
+        padding: clamp(2.5rem, 6vw, 4rem) 1.5rem;
+      }
+      .nb-cta h2 {
+        font-family: var(--display);
+        font-size: clamp(1.6rem, 4vw, 2.6rem);
+        text-transform: uppercase;
+        letter-spacing: -0.02em;
+        margin: 0 0 0.9rem;
+      }
+      .nb-cta p {
+        color: var(--muted);
+        font-size: 13px;
+        max-width: 440px;
+        margin: 0 auto 1.8rem;
+        line-height: 1.8;
+      }
+      .nb-cta-actions {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 0.9rem;
+      }
+
+      /* ---- Lightbox -------------------------------------------------- */
+      .nb-lightbox {
+        position: fixed;
+        inset: 0;
+        z-index: 9000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 4vh 4vw;
+        background: rgba(5, 6, 7, 0.92);
+        backdrop-filter: blur(4px);
+      }
+      .nb-lightbox.is-open {
+        display: flex;
+      }
+      .nb-lightbox img {
+        max-width: min(420px, 90vw);
+        max-height: 92vh;
+        width: auto;
+        height: auto;
+        border-radius: 18px;
+        border: 1px solid var(--border2);
+        box-shadow: 0 40px 100px -30px #000;
+      }
+      .nb-lb-close {
+        position: absolute;
+        top: 4vh;
+        right: 4vw;
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--muted);
+        background: var(--bg2);
+        border: 1px solid var(--border2);
+        border-radius: 999px;
+        padding: 8px 16px;
+        cursor: pointer;
+      }
+      .nb-lb-close:hover {
+        color: var(--accent);
+        border-color: var(--accent);
+      }
+
+      /* ---- Responsive ------------------------------------------------ */
+      @media (max-width: 900px) {
+        .nb-hero-inner {
+          grid-template-columns: 1fr;
+        }
+        .nb-hero-shot {
+          order: -1;
+          max-width: 230px;
+        }
+        .nb-explain {
+          grid-template-columns: 1fr;
+        }
+        .nb-shots {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .nb-features {
+          grid-template-columns: 1fr;
+        }
+        /* Single column: only horizontal dividers, none on the last row. */
+        .nb-feature {
+          border-right: none;
+          border-bottom: 1px solid var(--border);
+        }
+        .nb-feature:last-child {
+          border-bottom: none;
+        }
+      }
+      @media (max-width: 480px) {
+        .nb-shots {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body class="page-nback custom-cursor">
+    <!-- Shared chrome (background field, cursor, terminal, nav) is
+         injected by site.js. -->
+
+    <header class="page-header nb-hero">
+      <div class="wrap nb-hero-inner">
+        <div class="nb-hero-text">
+          <div class="page-eyebrow">
+            leotrax3d &nbsp;-&nbsp; <span>mobile app</span>
+          </div>
+          <h1 class="easter-trigger">
+            n-back<br />
+            <span class="dim">trainer</span>
+          </h1>
+          <p class="page-sub">
+            A minimalist <b>dual n-back</b> trainer for your phone — the
+            working-memory workout backed by cognitive science, wrapped in a
+            clean, distraction-free, open-source app.
+          </p>
+          <div class="nb-hero-actions">
+            <a class="btn btn-fill" href="#screens">see the app</a>
+            <a
+              class="btn btn-ghost"
+              href="https://github.com/leotrax3d"
+              target="_blank"
+              >open source ↗</a
+            >
+          </div>
+          <div class="nb-hero-meta">
+            <div>
+              <span class="nb-meta-k">trains</span>
+              <span class="nb-meta-v">working memory</span>
+            </div>
+            <div>
+              <span class="nb-meta-k">streams</span>
+              <span class="nb-meta-v">position + audio</span>
+            </div>
+            <div>
+              <span class="nb-meta-k">license</span>
+              <span class="nb-meta-v">open source</span>
+            </div>
+          </div>
+        </div>
+        <div class="nb-hero-shot">
+          <img
+            src="assets/n-back/web/1.webp"
+            alt="n-back app home screen showing streak, accuracy and level"
+            width="1100"
+            height="1956"
+            decoding="async"
+          />
+        </div>
+      </div>
+    </header>
+
+    <!-- 01 — what dual n-back is -->
+    <section id="what">
+      <div class="wrap">
+        <div class="sec fade">
+          <div class="sec-head">
+            <span class="sec-num">01</span>
+            <h2>what is dual n-back?</h2>
+          </div>
+
+          <p class="page-sub" style="max-width: 640px; margin-bottom: 2.5rem">
+            Dual n-back is a working-memory exercise first described by Kirchner
+            in 1958 and turned into its modern "dual" form by Jaeggi &amp;
+            colleagues in 2003. You watch two streams at once and have to
+            remember what happened <b>N steps ago</b> in each.
+          </p>
+
+          <div class="nb-explain">
+            <div class="nb-card">
+              <span class="nb-step">stream 01</span>
+              <h3>Position</h3>
+              <p>
+                A square lights up somewhere on a 3×3 grid each round. You track
+                <i>where</i> it appeared.
+              </p>
+            </div>
+            <div class="nb-card">
+              <span class="nb-step">stream 02</span>
+              <h3>Audio</h3>
+              <p>
+                At the same moment a letter is spoken. You track <i>which</i>
+                letter you heard, independently of the square.
+              </p>
+            </div>
+            <div class="nb-card">
+              <span class="nb-step">the catch</span>
+              <h3>N back</h3>
+              <p>
+                Flag a match whenever the current position — or the current
+                letter — is the same as it was <b>N rounds ago</b>. Two
+                memories, updated every beat.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 — the app itself, in screenshots -->
+    <section id="screens">
+      <div class="wrap">
+        <div class="sec fade">
+          <div class="sec-head">
+            <span class="sec-num">02</span>
+            <h2>the app</h2>
+          </div>
+
+          <div class="nb-shots">
+            <figure class="nb-shot" data-full="assets/n-back/1.png">
+              <img
+                src="assets/n-back/web/1.webp"
+                alt="Home screen: streak, average accuracy, level and XP"
+                width="1100"
+                height="1956"
+                loading="lazy"
+                decoding="async"
+              />
+              <figcaption>home — streak, accuracy &amp; level</figcaption>
+            </figure>
+            <figure class="nb-shot" data-full="assets/n-back/2.png">
+              <img
+                src="assets/n-back/web/2.webp"
+                alt="Active performance screen with current N-level and achievements"
+                width="1100"
+                height="1956"
+                loading="lazy"
+                decoding="async"
+              />
+              <figcaption>clean, focused design</figcaption>
+            </figure>
+            <figure class="nb-shot" data-full="assets/n-back/3.png">
+              <img
+                src="assets/n-back/web/3.webp"
+                alt="Statistics: accuracy trend chart, total sessions and activity"
+                width="1100"
+                height="1956"
+                loading="lazy"
+                decoding="async"
+              />
+              <figcaption>stats — trends &amp; history</figcaption>
+            </figure>
+            <figure class="nb-shot" data-full="assets/n-back/4.png">
+              <img
+                src="assets/n-back/web/4.webp"
+                alt="Gameplay: 3x3 grid with position and audio buttons"
+                width="1100"
+                height="1956"
+                loading="lazy"
+                decoding="async"
+              />
+              <figcaption>gameplay — position + audio</figcaption>
+            </figure>
+            <figure class="nb-shot" data-full="assets/n-back/5.png">
+              <img
+                src="assets/n-back/web/5.webp"
+                alt="Open source — built and shared by leotrax3d"
+                width="1100"
+                height="1956"
+                loading="lazy"
+                decoding="async"
+              />
+              <figcaption>free &amp; open source</figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 — features -->
+    <section id="features">
+      <div class="wrap">
+        <div class="sec fade">
+          <div class="sec-head">
+            <span class="sec-num">03</span>
+            <h2>features</h2>
+          </div>
+
+          <div class="nb-features">
+            <div class="nb-feature">
+              <h3>Adaptive levels</h3>
+              <p>
+                Start at 1-back and climb as your accuracy holds. The app tracks
+                your current level so the difficulty grows with you.
+              </p>
+            </div>
+            <div class="nb-feature">
+              <h3>Progress tracking</h3>
+              <p>
+                Average accuracy, total sessions, a 7-day accuracy trend and an
+                activity chart — see your working memory improve over time.
+              </p>
+            </div>
+            <div class="nb-feature">
+              <h3>Streaks &amp; XP</h3>
+              <p>
+                Consecutive training days, a user level and XP keep daily
+                practice rewarding without turning into a slot machine.
+              </p>
+            </div>
+            <div class="nb-feature">
+              <h3>Focus-optimized UX</h3>
+              <p>
+                A calm session view with quick Position / Audio controls, a live
+                progress bar and an easy "end session early" — built to keep you
+                in flow.
+              </p>
+            </div>
+            <div class="nb-feature">
+              <h3>Practice mode</h3>
+              <p>
+                A no-pressure mode to warm up or learn the mechanics before a
+                scored session counts toward your stats.
+              </p>
+            </div>
+            <div class="nb-feature">
+              <h3>Open source</h3>
+              <p>
+                No ads, no tracking, no accounts. The whole thing is free and
+                open source — inspect it, build it, make it yours.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Closing CTA -->
+    <section id="get">
+      <div class="wrap">
+        <div class="sec fade">
+          <div class="nb-cta">
+            <h2>train your working memory</h2>
+            <p>
+              A few minutes a day. Two streams, one focused mind. n-back is open
+              source and built in the open — grab the code, file an issue, or
+              just give your brain a workout.
+            </p>
+            <div class="nb-cta-actions">
+              <a
+                class="btn btn-fill"
+                href="https://github.com/leotrax3d"
+                target="_blank"
+                >github.com/leotrax3d</a
+              >
+              <a class="btn btn-ghost" href="index.html#projects"
+                >more projects</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <a href="index.html">&lt;- back to leotrax3d</a>
+      <a href="https://github.com/leotrax3d" target="_blank"
+        >github.com/leotrax3d</a
+      >
+    </footer>
+
+    <!-- Lightbox for full-resolution screenshots. -->
+    <div class="nb-lightbox" id="nb-lightbox" aria-hidden="true">
+      <button class="nb-lb-close" type="button">esc · close</button>
+      <img src="" alt="n-back screenshot, full size" />
+    </div>
+
+    <script>
+      /* Screenshot lightbox — clicking a shot opens the full-res PNG. */
+      (function () {
+        const lb = document.getElementById("nb-lightbox");
+        if (!lb) return;
+        const img = lb.querySelector("img");
+        const closeBtn = lb.querySelector(".nb-lb-close");
+
+        const open = (src) => {
+          img.src = src;
+          lb.classList.add("is-open");
+          lb.setAttribute("aria-hidden", "false");
+        };
+        const close = () => {
+          lb.classList.remove("is-open");
+          lb.setAttribute("aria-hidden", "true");
+          img.src = "";
+        };
+
+        document.querySelectorAll(".nb-shot").forEach((fig) => {
+          fig.addEventListener("click", () => open(fig.dataset.full));
+        });
+        closeBtn.addEventListener("click", close);
+        lb.addEventListener("click", (e) => {
+          if (e.target === lb) close();
+        });
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape" && lb.classList.contains("is-open")) close();
+        });
+      })();
+    </script>
+
+    <script src="site.js"></script>
+  </body>
+</html>

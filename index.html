@@ -28,25 +28,52 @@
         color: var(--text);
         font-family: var(--mono);
         font-size: 13px;
-        line-height: 1.95;
+        line-height: 1.7;
+        /* Real console: text flows from the top, not vertically centered. */
         display: flex;
         flex-direction: column;
-        justify-content: center;
-        padding: clamp(1.5rem, 6vw, 5rem);
+        justify-content: flex-start;
+        overflow: hidden;
+        padding: clamp(1.6rem, 6vh, 3.5rem) clamp(1.4rem, 6vw, 4.5rem)
+          clamp(3.2rem, 8vh, 4.5rem);
         opacity: 1;
-        transition: opacity 0.5s ease;
+        transition: opacity 0.4s ease;
       }
       #boot.boot-hide {
         opacity: 0;
       }
+      .boot-console {
+        width: 100%;
+        max-width: 820px;
+      }
       .boot-lines {
         width: 100%;
-        max-width: 640px;
+      }
+      /* ASCII progress bar [####----]  — shows how much boot is left. */
+      .boot-status {
+        display: flex;
+        align-items: baseline;
+        gap: 0.8rem;
+        margin-top: 1.4rem;
+      }
+      .boot-bar {
+        white-space: pre;
+      }
+      .boot-fill {
+        color: var(--accent);
+      }
+      .boot-empty,
+      .boot-bracket {
+        color: var(--muted);
+      }
+      .boot-pct {
+        min-width: 3em;
+        color: var(--text);
+        font-variant-numeric: tabular-nums;
       }
       .boot-line {
         white-space: pre-wrap;
         word-break: break-word;
-        min-height: 1.95em;
       }
       .boot-head {
         color: var(--text);
@@ -106,7 +133,13 @@
          out a faux boot log, then fades into the site. Skipped on reload /
          within-session navigation and for prefers-reduced-motion. -->
     <div id="boot" role="status" aria-label="Booting">
-      <div class="boot-lines"></div>
+      <div class="boot-console">
+        <div class="boot-lines"></div>
+        <div class="boot-status">
+          <span class="boot-bar"><span class="boot-bracket">[</span><span class="boot-fill"></span><span class="boot-empty"></span><span class="boot-bracket">]</span></span>
+          <span class="boot-pct">0%</span>
+        </div>
+      </div>
       <div class="boot-skip">press any key to skip</div>
     </div>
     <script>
@@ -135,32 +168,78 @@
         rootEl.style.overflow = "hidden";
         if (document.body) document.body.style.overflow = "hidden";
 
+        // dmesg-style kernel timestamp, e.g. [    1.482301]
+        function ts(t) {
+          var s = t.toFixed(6);
+          while (s.length < 11) s = " " + s;
+          return '<span class="boot-muted">[' + s + "]</span> ";
+        }
         var OK = '<span class="boot-ok">[  OK  ]</span> ';
+        var MUTE = function (s) {
+          return '<span class="boot-muted">' + s + "</span>";
+        };
+
+        // Each entry: [html, delay-after-in-ms]. Uneven pacing (and a couple
+        // of longer pauses) makes it read like a real boot instead of a timer.
         var lines = [
-          '<span class="boot-head">leotrax3d OS v4.8</span>' +
-            ' <span class="boot-muted">— booting</span>',
-          OK + 'mounting <span class="boot-muted">/home/leotrax3d</span>',
-          OK + 'starting <span class="boot-muted">soldering-iron.service</span>',
-          OK + 'loading <span class="boot-muted">robot-arm firmware</span>',
-          OK +
-            'connecting homelab <span class="boot-muted">(docker, pi-hole, n8n)</span>',
-          OK + 'reticulating <span class="boot-muted">splines</span>',
-          '<span class="boot-done">[ DONE ]</span> welcome.',
+          ['<span class="boot-head">leotrax3d OS 4.8.0-arch1-1</span> ' + MUTE("(tty1)"), 320],
+          [ts(0.0) + "Linux version 4.8.0-arch1-1 " + MUTE("(leotrax3d@workbench)"), 150],
+          [ts(0.143661) + "Command line: " + MUTE("BOOT_IMAGE=/vmlinuz-linux root=/dev/nvme0n1p2 rw quiet"), 230],
+          [ts(0.512004) + "Memory: 32G available, " + MUTE("8 CPUs detected"), 170],
+          [ts(0.884217) + "systemd[1]: " + MUTE("Detected architecture x86-64"), 260],
+          [OK + "Mounted " + MUTE("/home/leotrax3d"), 300],
+          [OK + "Reached target " + MUTE("Local File Systems"), 200],
+          [OK + "Started " + MUTE("soldering-iron.service"), 240],
+          [OK + "Started " + MUTE("robot-arm-firmware.service"), 380],
+          [OK + "Started homelab.target " + MUTE("(docker · pi-hole · n8n)"), 300],
+          [OK + "Started " + MUTE("blender-render.service"), 230],
+          [ts(3.880142) + "reticulating splines " + MUTE("..."), 560],
+          [OK + "Reached target " + MUTE("Graphical Interface"), 280],
+          ['<span class="boot-done">[ DONE ]</span> welcome, leotrax3d.', 0],
         ];
 
+        var BAR_W = 26; // width of the ASCII [####----] bar, in chars
+        var INITIAL = 200; // delay before the first line paints
+        var HOLD = 650; // pause on 100% before fading out
+
         var linesEl = boot.querySelector(".boot-lines");
+        var fillEl = boot.querySelector(".boot-fill");
+        var emptyEl = boot.querySelector(".boot-empty");
+        var pctEl = boot.querySelector(".boot-pct");
         var cursorEl = document.createElement("span");
         cursorEl.className = "boot-cursor";
 
         var i = 0;
         var finished = false;
         var typeTimer = null;
+        var rafId = null;
+        var target = 0; // goal fill 0..1 (set from how many lines are done)
+        var shown = 0; // currently rendered fill, eased toward target
+
+        function drawBar(p) {
+          var f = Math.round(p * BAR_W);
+          if (f > BAR_W) f = BAR_W;
+          if (fillEl) fillEl.textContent = new Array(f + 1).join("#");
+          if (emptyEl) emptyEl.textContent = new Array(BAR_W - f + 1).join("-");
+          if (pctEl) pctEl.textContent = Math.round(p * 100) + "%";
+        }
+
+        // One rAF eases the bar toward its target so it always creeps forward
+        // (visible "time left"), instead of jumping a chunk per line.
+        function renderProgress() {
+          shown += (target - shown) * 0.12;
+          if (target - shown < 0.004) shown = target;
+          drawBar(shown);
+          if (!finished) rafId = requestAnimationFrame(renderProgress);
+        }
 
         function finish() {
           if (finished) return;
           finished = true;
           if (typeTimer) clearTimeout(typeTimer);
           clearTimeout(failSafe);
+          if (rafId) cancelAnimationFrame(rafId);
+          drawBar(1);
           document.removeEventListener("keydown", onKey, true);
           boot.removeEventListener("click", finish);
           boot.classList.add("boot-hide");
@@ -168,7 +247,7 @@
             rootEl.style.overflow = prevHtmlOverflow;
             if (document.body) document.body.style.overflow = "";
             if (boot.parentNode) boot.parentNode.removeChild(boot);
-          }, 550);
+          }, 450);
         }
 
         function onKey() {
@@ -176,7 +255,10 @@
         }
 
         // Hard guarantee: the overlay never stays up, even if typing breaks.
-        var failSafe = setTimeout(finish, 4000);
+        // Sized from the planned run (sum of delays) plus a safety margin.
+        var planned = INITIAL + HOLD;
+        for (var k = 0; k < lines.length; k++) planned += lines[k][1];
+        var failSafe = setTimeout(finish, planned + 2500);
         document.addEventListener("keydown", onKey, true);
         boot.addEventListener("click", finish);
 
@@ -184,20 +266,25 @@
           if (finished) return;
           if (i >= lines.length) {
             if (cursorEl.parentNode) cursorEl.parentNode.removeChild(cursorEl);
-            typeTimer = setTimeout(finish, 450);
+            target = 1; // top the bar off, then settle and fade
+            typeTimer = setTimeout(finish, HOLD);
             return;
           }
           var row = document.createElement("div");
           row.className = "boot-line";
-          row.innerHTML = lines[i];
+          row.innerHTML = lines[i][0];
           row.appendChild(cursorEl);
           linesEl.appendChild(row);
+          var delay = lines[i][1];
           i++;
-          typeTimer = setTimeout(addLine, 120 + Math.random() * 130);
+          target = i / lines.length;
+          typeTimer = setTimeout(addLine, delay);
         }
 
         // Small initial delay so the empty overlay paints before the log runs.
-        typeTimer = setTimeout(addLine, 220);
+        drawBar(0);
+        rafId = requestAnimationFrame(renderProgress);
+        typeTimer = setTimeout(addLine, INITIAL);
       })();
     </script>
 
@@ -278,24 +365,10 @@
           <div class="about-grid">
             <div class="about-text">
               <p>
-                hey, i'm <b>leotrax3d</b>. i like building things — hardware or
-                software. if it involves a soldering iron or a terminal, i'm
-                probably already interested.
+                hey, i'm <b>leotrax3d</b>. i like building things you can check them out below.
               </p>
               <p>
-                right now i'm working on a <b>robot arm</b> from scratch,
-                managing a homelab that's gotten a bit out of hand, and
-                occasionally rendering marble runs in Blender just because it is
-                satisfying.
-              </p>
-              <p>
-                i contribute to the <b>3D printing open-source community</b> and
-                try to document things properly — so other people do not have to
-                figure it out the hard way like i did.
-              </p>
-              <p>
-                most of what i build starts as "this probably won't work" and
-                ends up running in Docker somewhere.
+                right now i'm working on an <b>Android App</b> from scratch and on my Homelab, which runs various self-hosted services. i also do a lot of 3D printing projects.
               </p>
             </div>
             <div>
@@ -335,7 +408,6 @@
         </div>
       </div>
     </section>
-
     <section id="skills">
       <div class="wrap">
         <div class="sec fade">
@@ -398,6 +470,15 @@
             <h2>projects</h2>
           </div>
           <div class="project-list">
+            <a href="n-back.html" class="project">
+              <div class="project-name">n-back</div>
+              <div class="project-desc">
+                minimalist dual n-back trainer for your phone — a
+                science-backed working-memory workout. open source, with
+                progress tracking, streaks and adaptive difficulty.
+              </div>
+              <div class="project-tag">app</div>
+            </a>
             <a
               href="https://github.com/leotrax3d"
               target="_blank"
@@ -819,7 +900,6 @@ Last updated: 09.06.2024
         const infoList = aboutSec
           ? aboutSec.querySelector(".info-list")
           : null;
-        const projects = [...document.querySelectorAll(".project")];
 
         if (document.fonts && document.fonts.ready) {
           document.fonts.ready.then(() => apply());
@@ -841,15 +921,6 @@ Last updated: 09.06.2024
             const r = aboutSec.getBoundingClientRect();
             const p = clamp01((vh - r.top) / (vh + r.height));
             infoList.style.transform = `translate3d(0, ${((0.5 - p) * 70).toFixed(1)}px, 0)`;
-          }
-
-          for (let i = 0; i < projects.length; i++) {
-            const r = projects[i].getBoundingClientRect();
-            const p = clamp01((vh - r.top) / (vh * 0.45));
-            const dir = i % 2 ? 1 : -1;
-            projects[i].style.transform =
-              `translate3d(${((1 - p) * 80 * dir).toFixed(1)}px, 0, 0)`;
-            projects[i].style.opacity = (0.1 + p * 0.9).toFixed(3);
           }
         };
         window.addEventListener(

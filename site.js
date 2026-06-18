@@ -37,6 +37,7 @@
     ["internship", "internship.html"],
     ["qr", "qr.html"],
     ["ClassChat", "ClassChat.html"],
+    ["n-back", "n-back.html"],
     ["showcase", "showcase.html"],
     ["blog", "blog.html"],
   ];
@@ -66,7 +67,10 @@
     const items = NAV_ITEMS.map(([label, href]) => {
       const isSection = href.includes("#");
       const active = !isSection && href === file ? " active" : "";
-      return `<li><a class="easter-trigger${active}" href="${href}">${label}</a></li>`;
+      // n-back is the freshest project: its nav tab gets a subtle pulsing
+      // "ping" dot (styled in styles.css) so it quietly draws the eye.
+      const flag = label === "n-back" ? " nav-pulse" : "";
+      return `<li><a class="easter-trigger${active}${flag}" href="${href}">${label}</a></li>`;
     }).join("");
     return (
       "<nav>" +
@@ -223,8 +227,8 @@
         const extra = Object.keys(custom);
         addTerminalLine(
           "commands: help, about, skills, projects, github, internship, " +
-            "blog, qr, classchat, home, whoami, uptime, date, theme, ascii, " +
-            "echo, coin, rps, guess, clear, exit" +
+            "blog, qr, classchat, nback, home, whoami, uptime, date, theme, " +
+            "ascii, echo, coin, rps, guess, clear, exit" +
             (extra.length ? ", " + extra.join(", ") : ""),
         );
         return;
@@ -247,6 +251,8 @@
         qr: "qr.html",
         classchat: "ClassChat.html",
         showcase: "showcase.html",
+        "n-back": "n-back.html",
+        nback: "n-back.html",
       };
       if (jumps[command]) {
         addTerminalLine(`opening ${command}...`);
@@ -453,7 +459,11 @@
   --------------------------------------------------------------- */
   function initScramble() {
     const reduceMotionMQ = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const GLYPHS = "abcdefghijklmnopqrstuvwxyz0123456789#$%&/<>_";
+    // Letters + digits only: every glyph is one fixed-width mono cell, so a
+    // scrambled word always occupies exactly the real word's footprint.
+    // (Symbols like < > / # would form JetBrains Mono coding ligatures and
+    // flicker/render wider than a single cell.)
+    const GLYPHS = "abcdefghijklmnopqrstuvwxyz0123456789";
 
     const scrambleText = (el, duration = 550) => {
       if (reduceMotionMQ.matches) return;
