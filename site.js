@@ -226,7 +226,7 @@
       if (command === "help") {
         const extra = Object.keys(custom);
         addTerminalLine(
-          "commands: help, about, skills, projects, github, internship, " +
+          "commands: help, about, skills, projects, github, contact, internship, " +
             "blog, qr, classchat, nback, home, whoami, uptime, date, theme, " +
             "ascii, echo, coin, rps, guess, clear, exit" +
             (extra.length ? ", " + extra.join(", ") : ""),
@@ -263,6 +263,11 @@
       if (command === "github") {
         addTerminalLine("opening github...");
         window.open("https://github.com/leotrax3d", "_blank");
+        return;
+      }
+      if (command === "contact") {
+        addTerminalLine("github.com/leotrax3d");
+        addTerminalLine("no other contact — open an issue or a discussion.");
         return;
       }
       if (

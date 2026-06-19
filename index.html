@@ -4,6 +4,18 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>leotrax3d</title>
+    <meta name="description" content="leotrax3d — robots, web apps, physics simulations, home servers. personal portfolio." />
+    <meta name="author" content="leotrax3d" />
+    <link rel="canonical" href="https://leotrax3d.github.io/About_Me/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://leotrax3d.github.io/About_Me/" />
+    <meta property="og:title" content="leotrax3d" />
+    <meta property="og:description" content="robots, web apps, physics simulations, home servers. mostly for fun. sometimes it even works on the first try." />
+    <meta property="og:site_name" content="leotrax3d" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="leotrax3d" />
+    <meta name="twitter:description" content="robots, web apps, physics simulations, home servers. mostly for fun." />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
       href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&family=Space+Grotesk:wght@500;600;700&display=swap"
@@ -16,6 +28,7 @@
     <link rel="stylesheet" href="styles.css" />
 
     <link rel="stylesheet" href="xp.css" id="xp-theme-link" disabled />
+
 
     <!-- Boot sequence (index.html only). Inline so the overlay is styled
          before first paint and can never be left behind by a slow stylesheet. -->
@@ -365,7 +378,7 @@
           <div class="about-grid">
             <div class="about-text">
               <p>
-                hey, i'm <b>leotrax3d</b>. i like building things you can check them out below.
+                hey, i'm <b>leotrax3d</b>. i like building things — check them out below.
               </p>
               <p>
                 right now i'm working on an <b>Android App</b> from scratch and on my Homelab, which runs various self-hosted services. i also do a lot of 3D printing projects.
@@ -382,7 +395,7 @@
                 </div>
                 <div class="info-row">
                   <span class="k">current thing</span
-                  ><span class="v">robot arm</span>
+                  ><span class="v">android app</span>
                 </div>
                 <div class="info-row">
                   <span class="k">daily driver</span
@@ -938,5 +951,142 @@ Last updated: 09.06.2024
     </script>
 
     <script src="site.js"></script>
+
+    <div id="scroll-hint" aria-hidden="true">
+      <span class="scroll-hint-label">↓ &nbsp;showcase</span>
+      <div class="scroll-hint-bar"><div class="scroll-hint-fill"></div></div>
+    </div>
+
+    <style>
+      #scroll-hint {
+        position: fixed;
+        bottom: 6.5rem;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 200;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        opacity: 0;
+        transition: opacity 0.5s ease;
+        pointer-events: none;
+      }
+      #scroll-hint.visible { opacity: 1; }
+      .scroll-hint-label {
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .scroll-hint-bar {
+        width: 80px;
+        height: 1px;
+        background: color-mix(in srgb, var(--accent) 20%, transparent);
+      }
+      .scroll-hint-fill {
+        height: 100%;
+        width: 0%;
+        background: var(--accent);
+        transition: width 0.05s linear;
+      }
+    </style>
+
+    <script>
+      /*
+        Scroll-exit: accumulate wheel/touch delta past the page bottom.
+        Once the threshold is reached, all visible content fades out (dots
+        stay, because the canvas is at z-index:-1 behind everything) and the
+        browser navigates to showcase.html.
+
+        Elements are targeted by selector, NOT via a body class + !important,
+        so closed overlays like .terminal-overlay keep their own opacity untouched.
+      */
+      (function () {
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+        var THRESHOLD = 1000;
+        var accumulated = 0;
+        var navigated = false;
+        var hint = document.getElementById("scroll-hint");
+        var hintFill = hint && hint.querySelector(".scroll-hint-fill");
+
+        var TARGETS = [
+          "header", ".marquee", "#about", "#skills", "#projects",
+          "footer", ".hit-counter", "#promo-popup", "#mobile-notice",
+        ];
+        var els = null;
+        function getEls() {
+          if (els) return els;
+          els = [];
+          TARGETS.forEach(function (sel) {
+            var el = document.querySelector(sel);
+            if (el) els.push(el);
+          });
+          // .nav is injected by site.js after this script — resolved lazily
+          var nav = document.querySelector(".nav");
+          if (nav) els.push(nav);
+          return els;
+        }
+
+        function setOpacity(v) {
+          getEls().forEach(function (el) { el.style.opacity = v; });
+        }
+
+        function atBottom() {
+          return window.scrollY + window.innerHeight >= document.body.scrollHeight - 4;
+        }
+
+        function apply(delta) {
+          if (navigated) return;
+          if (delta > 0 && atBottom()) {
+            accumulated = Math.min(THRESHOLD, accumulated + delta);
+          } else if (delta < 0) {
+            accumulated = Math.max(0, accumulated + delta);
+          } else {
+            return;
+          }
+
+          var p = accumulated / THRESHOLD;
+          setOpacity((1 - p).toFixed(3));
+          if (hintFill) hintFill.style.width = (p * 100).toFixed(1) + "%";
+
+          if (p >= 1) {
+            navigated = true;
+            if (hint) hint.classList.remove("visible");
+            window.location.href = "showcase.html";
+          }
+        }
+
+        // Show/hide hint + reset on scroll
+        window.addEventListener("scroll", function () {
+          if (navigated) return;
+          var bottom = atBottom();
+          if (hint) hint.classList.toggle("visible", bottom);
+          if (!bottom && accumulated > 0) {
+            accumulated = 0;
+            setOpacity(1);
+            if (hintFill) hintFill.style.width = "0%";
+            els = null;
+          }
+        }, { passive: true });
+
+        window.addEventListener("wheel", function (e) {
+          apply(e.deltaY);
+        }, { passive: true });
+
+        // Touch support
+        var touchY = 0;
+        window.addEventListener("touchstart", function (e) {
+          touchY = e.touches[0].clientY;
+        }, { passive: true });
+        window.addEventListener("touchmove", function (e) {
+          var dy = (touchY - e.touches[0].clientY) * 2.5;
+          touchY = e.touches[0].clientY;
+          apply(dy);
+        }, { passive: true });
+      })();
+    </script>
   </body>
 </html>
