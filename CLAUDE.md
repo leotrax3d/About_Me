@@ -7,6 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Static personal portfolio/landing site for "leotrax3d", deployed via GitHub Pages at https://leotrax3d.github.io/About_Me/. There is no build step, package manager, or test suite — pages are hand-written HTML files, mostly self-contained but sharing one runtime script. Edit files directly and open them in a browser to verify (e.g. `xdg-open index.html`).
 
 Note: some features fetch at runtime (`blog.html`), so they only work over `http://` (a local static server), not a bare `file://` open — see the Blog section.
+harald ritz
 
 ## Structure
 
@@ -30,6 +31,7 @@ Note: some features fetch at runtime (`blog.html`), so they only work over `http
 The pages `index.html`, `internship.html`, `ClassChat.html`, `qr.html`, `gute-besserung.html`, and `blog.html` each include `<script src="site.js"></script>` and let it inject and wire up all shared chrome at runtime (`insertAdjacentHTML` into `<body>`; no fetch/CORS, so it works from `file://` too). This **replaces** the old pattern of copy-pasting the same HTML/JS into every page. When changing shared behaviour, edit `site.js` once — do not re-add inline copies.
 
 What `site.js` provides (`init()` at the bottom calls each):
+
 - **Nav** — logo, hamburger `.nav-menu` toggling `.nav-open`, links built from the `NAV_ITEMS` array (about/skills/projects/internship/qr/ClassChat/showcase/blog + GitHub). The active link is derived from the current filename.
 - **Custom cursor** — `.cursor` ring + lagging `.cursor-dot`, `requestAnimationFrame`-driven; adds `custom-cursor` to `<body>`.
 - **Background point-field** — a `<canvas id="bg-field">` grid of dots that breathe, flee the cursor, and emit an accent-coloured shockwave on `pointerdown`. Pure canvas + rAF, paused when the tab is hidden, rebuilt on resize, static fallback under `prefers-reduced-motion`. (Replaced the old static dot grid.)
@@ -44,7 +46,11 @@ A page can define `window.terminalCommands` **before** `site.js` runs to add or 
 
 ```js
 window.terminalCommands = {
-  overview(args, t) { t.print("jumping..."); t.close(); document.querySelector("#overview")?.scrollIntoView(); },
+  overview(args, t) {
+    t.print("jumping...");
+    t.close();
+    document.querySelector("#overview")?.scrollIntoView();
+  },
 };
 ```
 
