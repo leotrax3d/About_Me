@@ -35,8 +35,7 @@
     ["skills", "index.html#skills"],
     ["projects", "index.html#projects"],
     ["internship", "internship.html"],
-    ["qr", "qr.html"],
-    ["url hider", "urlhider.html"],
+    ["tools", "tools.html"],
     ["ClassChat", "ClassChat.html"],
     ["n-back", "n-back.html"],
     ["showcase", "showcase.html"],
@@ -63,11 +62,25 @@
     return location.pathname.split("/").pop() || "index.html";
   }
 
+  // Sub-pages that live under the "tools" hub — visiting any of them keeps
+  // the single "tools" nav tab highlighted.
+  const TOOL_PAGES = [
+    "tools.html",
+    "qr.html",
+    "urlhider.html",
+    "checksum.html",
+    "base64.html",
+  ];
+
   function buildNav() {
     const file = currentFile();
     const items = NAV_ITEMS.map(([label, href]) => {
       const isSection = href.includes("#");
-      const active = !isSection && href === file ? " active" : "";
+      const isActive =
+        !isSection &&
+        (href === file ||
+          (href === "tools.html" && TOOL_PAGES.indexOf(file) !== -1));
+      const active = isActive ? " active" : "";
       // n-back is the freshest project: its nav tab gets a subtle pulsing
       // "ping" dot (styled in styles.css) so it quietly draws the eye.
       const flag = label === "n-back" ? " nav-pulse" : "";

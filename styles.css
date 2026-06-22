@@ -1041,6 +1041,185 @@ h2 {
   border-color: rgba(197, 241, 62, 0.4);
 }
 
+/* Tools hub — a grid of cards, each linking to a standalone tool page.
+   Same frosted-glass material and accent numbering as projects/skills,
+   but as discrete cards so the hub reads as a launcher. */
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.2rem;
+  counter-reset: tool;
+}
+
+.tool-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  padding: 1.7rem 1.6rem 1.8rem;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+  overflow: hidden;
+  counter-increment: tool;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    transform 0.15s;
+}
+
+.tool-card::before {
+  content: "0" counter(tool);
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.25em;
+  color: var(--accent);
+}
+
+.tool-card::after {
+  content: "↗";
+  position: absolute;
+  top: 1.4rem;
+  right: 1.4rem;
+  font-family: var(--display);
+  font-size: 1.25rem;
+  color: var(--muted);
+  transition:
+    color 0.2s,
+    transform 0.2s;
+}
+
+.tool-card:hover {
+  background: var(--glass-strong);
+  border-color: rgba(197, 241, 62, 0.4);
+  transform: translateY(-2px);
+}
+
+.tool-card:hover::after {
+  color: var(--accent);
+  transform: translate(3px, -3px);
+}
+
+.tool-name {
+  font-family: var(--display);
+  font-size: clamp(1.15rem, 2vw, 1.5rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  line-height: 1.05;
+  color: var(--text);
+  transition: color 0.2s;
+}
+
+.tool-card:hover .tool-name {
+  color: var(--accent);
+}
+
+.tool-desc {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.85;
+  flex: 1;
+}
+
+.tool-tag {
+  align-self: flex-start;
+  margin-top: 0.2rem;
+  font-size: 9px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  border: 1px solid var(--border2);
+  padding: 5px 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+  transition:
+    color 0.2s,
+    border-color 0.2s;
+}
+
+.tool-card:hover .tool-tag {
+  color: var(--accent);
+  border-color: rgba(197, 241, 62, 0.4);
+}
+
+/* Shared result/output styling for tool pages (checksum, base64, …).
+   Builds on the existing .qr-* form primitives. */
+.tool-output {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.75rem;
+  font-size: 12px;
+  color: var(--text);
+  word-break: break-all;
+  line-height: 1.8;
+  min-height: 2.6rem;
+}
+
+.tool-output.is-empty {
+  color: var(--muted);
+}
+
+.tool-hashrow {
+  display: flex;
+  gap: 0.5rem;
+  align-items: stretch;
+  margin-bottom: 0.75rem;
+}
+
+.tool-hashrow .tool-output {
+  flex: 1;
+}
+
+.tool-hash-label {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.4rem;
+}
+
+.tool-match {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  margin-top: 0.6rem;
+  min-height: 1.2rem;
+}
+
+.tool-match.ok {
+  color: var(--accent);
+}
+
+.tool-match.bad {
+  color: #ff6b6b;
+}
+
+.tool-dropzone {
+  border: 1px dashed var(--border2);
+  border-radius: 8px;
+  padding: 1.4rem;
+  text-align: center;
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+  cursor: pointer;
+}
+
+.tool-dropzone.is-drag {
+  border-color: var(--accent);
+  background: rgba(197, 241, 62, 0.05);
+  color: var(--text);
+}
+
 /* Page header */
 .page-header {
   padding-top: 130px;
