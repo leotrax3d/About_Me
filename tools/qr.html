@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>qr generator — leotrax3d</title>
+    <meta name="description" content="turn any text or URL into a QR code. pick size, error correction and colours, download as PNG, JPG or SVG." />
+    <meta name="author" content="leotrax3d" />
+    <link rel="canonical" href="https://leotrax3d.github.io/About_Me/tools/qr.html" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://leotrax3d.github.io/About_Me/tools/qr.html" />
+    <meta property="og:title" content="qr generator — leotrax3d" />
+    <meta property="og:description" content="turn any text or URL into a QR code, client-side." />
+    <meta property="og:site_name" content="leotrax3d" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="qr generator — leotrax3d" />
+    <meta name="twitter:description" content="generate QR codes client-side." />
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=menu"
+    />
+    <link rel="stylesheet" href="../styles.css" />
+  </head>
+  <body class="page-qr custom-cursor">
+    <!-- Shared chrome injected by site.js -->
+
+    <div class="page-header">
+      <div class="wrap">
+        <div class="page-eyebrow">
+          leotrax3d &nbsp;·&nbsp; <span>qr generator</span>
+        </div>
+        <h1>QR<br /><span class="dim">Generator</span></h1>
+        <p class="page-sub">
+          paste any text or URL, pick the size and error correction, and
+          download your QR code as PNG, JPG or SVG.
+        </p>
+      </div>
+    </div>
+
+    <section id="generator">
+      <div class="wrap">
+        <div class="sec fade">
+          <div class="sec-head">
+            <span class="sec-num">01</span>
+            <h2>generate</h2>
+          </div>
+          <div class="qr-grid">
+            <div class="qr-panel">
+              <form class="qr-form" action="#" autocomplete="off">
+                <div class="qr-field">
+                  <label>mode</label>
+                  <div class="qr-toggle" role="tablist">
+                    <button class="btn btn-ghost is-active" type="button" data-mode="url">website</button>
+                    <button class="btn btn-ghost" type="button" data-mode="text">text</button>
+                  </div>
+                </div>
+                <div class="qr-field">
+                  <label for="qr-text">text / url</label>
+                  <textarea id="qr-text" class="qr-textarea" placeholder="https://example.com"></textarea>
+                  <div class="qr-meta"><span id="qr-count">0</span> chars</div>
+                </div>
+                <div class="qr-row">
+                  <div class="qr-field">
+                    <label for="qr-size">size</label>
+                    <select id="qr-size" class="qr-select">
+                      <option value="200">200 px</option>
+                      <option value="260" selected>260 px</option>
+                      <option value="320">320 px</option>
+                      <option value="400">400 px</option>
+                    </select>
+                  </div>
+                  <div class="qr-field">
+                    <label for="qr-ecc">error correction</label>
+                    <select id="qr-ecc" class="qr-select">
+                      <option value="L">L (7%)</option>
+                      <option value="M" selected>M (15%)</option>
+                      <option value="Q">Q (25%)</option>
+                      <option value="H">H (30%)</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="qr-field">
+                  <label for="qr-margin">quiet zone</label>
+                  <select id="qr-margin" class="qr-select">
+                    <option value="1">1 unit</option>
+                    <option value="2" selected>2 units</option>
+                    <option value="3">3 units</option>
+                    <option value="4">4 units</option>
+                  </select>
+                </div>
+                <div class="qr-row">
+                  <div class="qr-field">
+                    <label for="qr-fg">qr color</label>
+                    <input id="qr-fg" class="qr-color" type="color" value="#0d0e0f" />
+                  </div>
+                  <div class="qr-field">
+                    <label for="qr-bg">background</label>
+                    <input id="qr-bg" class="qr-color" type="color" value="#e8e6e0" />
+                  </div>
+                </div>
+                <div class="qr-field">
+                  <label class="qr-check">
+                    <input id="qr-transparent" type="checkbox" />
+                    transparent background
+                  </label>
+                </div>
+                <div class="qr-actions">
+                  <button class="btn btn-ghost" id="qr-copy" type="button">copy link</button>
+                  <button class="btn btn-ghost" id="qr-clear" type="button">clear</button>
+                  <select id="qr-format" class="qr-select">
+                    <option value="png" selected>png</option>
+                    <option value="jpg">jpg</option>
+                    <option value="svg">svg</option>
+                  </select>
+                  <button class="btn btn-fill" id="qr-download" type="button" disabled>download</button>
+                </div>
+              </form>
+            </div>
+            <div class="qr-preview">
+              <div class="qr-canvas-wrap">
+                <div id="qrcode"></div>
+              </div>
+              <div class="qr-status" id="qr-status">enter text to generate a QR code.</div>
+              <div class="qr-link-row is-hidden" id="qr-link-row">
+                <a class="btn btn-ghost" id="qr-link" href="#" target="_blank" rel="noopener">open link</a>
+              </div>
+              <div class="qr-lib">library: QRCode.js (qrcodejs)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <a href="../tools.html">← tools</a>
+      <a href="../index.html">leotrax3d</a>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+      const qrText = document.querySelector("#qr-text");
+      const qrSize = document.querySelector("#qr-size");
+      const qrEcc = document.querySelector("#qr-ecc");
+      const qrMargin = document.querySelector("#qr-margin");
+      const qrFg = document.querySelector("#qr-fg");
+      const qrBg = document.querySelector("#qr-bg");
+      const qrTransparent = document.querySelector("#qr-transparent");
+      const qrFormat = document.querySelector("#qr-format");
+      const qrContainer = document.querySelector("#qrcode");
+      const qrCanvasWrap = document.querySelector(".qr-canvas-wrap");
+      const qrStatus = document.querySelector("#qr-status");
+      const qrLinkRow = document.querySelector("#qr-link-row");
+      const qrLink = document.querySelector("#qr-link");
+      const qrCopy = document.querySelector("#qr-copy");
+      const qrCount = document.querySelector("#qr-count");
+      const qrPreview = document.querySelector(".qr-preview");
+      const qrDownload = document.querySelector("#qr-download");
+      const qrClear = document.querySelector("#qr-clear");
+      const modeButtons = document.querySelectorAll("[data-mode]");
+      let qrMode = "url";
+      let lastRender = null;
+
+      const setStatus = (text) => { qrStatus.textContent = text; };
+
+      const setMode = (mode) => {
+        qrMode = mode;
+        modeButtons.forEach((b) => b.classList.toggle("is-active", b.dataset.mode === mode));
+        qrCopy.textContent = qrMode === "url" ? "copy link" : "copy text";
+        renderQr();
+      };
+
+      const updateDownloadLabel = () => { qrDownload.textContent = `download ${qrFormat.value}`; };
+
+      const updateBackgroundState = () => {
+        const t = qrTransparent.checked;
+        qrBg.disabled = t;
+        qrBg.setAttribute("aria-disabled", t ? "true" : "false");
+      };
+
+      const normalizeUrl = (v) => {
+        const t = v.trim();
+        if (!t) return "";
+        if (/^[a-zA-Z][a-zA-Z\d+.-]*:/.test(t)) return t;
+        return "https://" + t;
+      };
+
+      const getCorrectLevel = (v) => QRCode.CorrectLevel[v] || QRCode.CorrectLevel.M;
+
+      const updateCount = () => { qrCount.textContent = qrText.value.length; };
+
+      const getMaxQrSize = (req, margin, pb) => {
+        if (!qrPreview) return req;
+        const w = qrPreview.clientWidth;
+        if (!w) return req;
+        return Math.max(140, Math.min(req, Math.floor(w - margin * pb * 2 - 10)));
+      };
+
+      const renderQr = () => {
+        const raw = qrText.value.trim();
+        if (!raw) {
+          qrContainer.innerHTML = "";
+          setStatus("enter text to generate a QR code.");
+          qrDownload.disabled = true;
+          qrLinkRow.classList.add("is-hidden");
+          lastRender = null;
+          return;
+        }
+        if (!window.QRCode) { setStatus("QR library failed to load."); return; }
+        const text = qrMode === "url" ? normalizeUrl(raw) : raw;
+        const size = Number(qrSize.value);
+        const margin = Number(qrMargin.value);
+        const ecc = qrEcc.value;
+        const pb = 6;
+        const finalSize = getMaxQrSize(size, margin, pb);
+        const fg = qrFg.value;
+        const bg = qrBg.value;
+        const transparent = qrTransparent.checked;
+        qrCanvasWrap.style.padding = `${margin * pb}px`;
+        qrCanvasWrap.style.background = transparent ? "transparent" : bg;
+        qrContainer.innerHTML = "";
+        new QRCode(qrContainer, { text, width: finalSize, height: finalSize, colorDark: fg, colorLight: transparent ? "rgba(0,0,0,0)" : bg, correctLevel: getCorrectLevel(ecc) });
+        if (qrMode === "url") { qrLink.href = text; qrLinkRow.classList.remove("is-hidden"); }
+        else { qrLinkRow.classList.add("is-hidden"); }
+        setStatus(`${text.length} chars · ${finalSize}px · ECC ${ecc}`);
+        qrDownload.disabled = false;
+        lastRender = { text, size: finalSize, margin, paddingBase: pb, fg, bg, transparent };
+      };
+
+      const buildExportCanvas = () => {
+        if (!lastRender) return null;
+        const node = qrContainer.querySelector("canvas, img");
+        if (!node) return null;
+        const padding = lastRender.margin * lastRender.paddingBase;
+        const exportSize = lastRender.size + padding * 2;
+        const canvas = document.createElement("canvas");
+        canvas.width = exportSize; canvas.height = exportSize;
+        const ctx = canvas.getContext("2d");
+        if (qrFormat.value === "jpg" || !lastRender.transparent) { ctx.fillStyle = lastRender.bg; ctx.fillRect(0, 0, exportSize, exportSize); }
+        ctx.drawImage(node, padding, padding);
+        return canvas;
+      };
+
+      const exportSvg = (pngDataUrl, size) => {
+        const bg = lastRender.transparent ? "none" : lastRender.bg;
+        const svg = `<?xml version="1.0" encoding="UTF-8"?>\n<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}"><rect width="100%" height="100%" fill="${bg}" /><image href="${pngDataUrl}" width="${size}" height="${size}" /></svg>`;
+        return new Blob([svg], { type: "image/svg+xml" });
+      };
+
+      const copyQrText = async () => {
+        const raw = qrText.value.trim();
+        if (!raw) return;
+        const text = qrMode === "url" ? normalizeUrl(raw) : raw;
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) await navigator.clipboard.writeText(text);
+          setStatus("copied to clipboard.");
+        } catch { setStatus("copy failed."); }
+      };
+
+      const downloadQr = () => {
+        if (qrDownload.disabled) return;
+        const canvas = buildExportCanvas();
+        if (!canvas) return;
+        const format = qrFormat.value;
+        const link = document.createElement("a");
+        if (format === "svg") {
+          const blob = exportSvg(canvas.toDataURL("image/png"), canvas.width);
+          const url = URL.createObjectURL(blob);
+          link.download = "qr.svg"; link.href = url; link.click();
+          URL.revokeObjectURL(url);
+          return;
+        }
+        link.download = `qr.${format}`;
+        link.href = canvas.toDataURL(format === "jpg" ? "image/jpeg" : "image/png", 0.95);
+        link.click();
+      };
+
+      qrText.addEventListener("input", () => { updateCount(); renderQr(); });
+      qrSize.addEventListener("change", renderQr);
+      qrEcc.addEventListener("change", renderQr);
+      qrMargin.addEventListener("change", renderQr);
+      qrFg.addEventListener("input", renderQr);
+      qrBg.addEventListener("input", renderQr);
+      qrTransparent.addEventListener("change", () => { updateBackgroundState(); renderQr(); });
+      qrFormat.addEventListener("change", updateDownloadLabel);
+      qrCopy.addEventListener("click", copyQrText);
+      qrDownload.addEventListener("click", downloadQr);
+      qrClear.addEventListener("click", () => { qrText.value = ""; updateCount(); renderQr(); });
+      window.addEventListener("resize", () => requestAnimationFrame(renderQr));
+      modeButtons.forEach((b) => b.addEventListener("click", () => setMode(b.dataset.mode)));
+      updateCount(); updateBackgroundState(); updateDownloadLabel(); setMode(qrMode);
+    </script>
+    <script src="../site.js"></script>
+  </body>
+</html>

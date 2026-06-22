@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>json formatter — leotrax3d</title>
+    <meta name="description" content="format, validate and minify JSON with syntax highlighting, entirely in your browser." />
+    <meta name="author" content="leotrax3d" />
+    <link rel="canonical" href="https://leotrax3d.github.io/About_Me/tools/json.html" />
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=menu"
+    />
+    <link rel="stylesheet" href="../styles.css" />
+    <style>
+      .json-out {
+        background: var(--bg3);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 0.85rem 1rem;
+        font-size: 12px;
+        line-height: 1.9;
+        white-space: pre;
+        overflow-x: auto;
+        min-height: 5rem;
+        max-height: 60vh;
+        overflow-y: auto;
+        word-break: normal;
+      }
+      .json-out.is-empty { color: var(--muted); white-space: normal; }
+      .json-out .jk { color: #79b8ff; }
+      .json-out .js { color: #c5f13e; }
+      .json-out .jn { color: #f97583; }
+      .json-out .jb { color: #ffab70; }
+      .json-out .jnull { color: var(--muted); }
+      .json-error { color: #ff6b6b; font-size: 11px; margin-top: 0.4rem; min-height: 1rem; }
+      .json-stats { font-size: 10px; color: var(--muted); margin-top: 0.4rem; letter-spacing: 0.06em; }
+      .json-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 0.75rem; }
+      .json-indent-row { display: flex; align-items: center; gap: 0.75rem; }
+    </style>
+  </head>
+  <body class="page-json custom-cursor">
+    <!-- Shared chrome injected by site.js -->
+
+    <div class="page-header">
+      <div class="wrap">
+        <div class="page-eyebrow">
+          leotrax3d &nbsp;·&nbsp; <span>json formatter</span>
+        </div>
+        <h1>JSON<br /><span class="dim">Formatter</span></h1>
+        <p class="page-sub">
+          paste raw or minified JSON to format and validate it with syntax
+          highlighting. also minifies and sorts keys. runs entirely in-browser.
+        </p>
+      </div>
+    </div>
+
+    <section id="formatter">
+      <div class="wrap">
+        <div class="sec fade">
+          <div class="sec-head">
+            <span class="sec-num">01</span>
+            <h2>format</h2>
+          </div>
+
+          <div class="qr-panel" style="max-width: 760px">
+            <form class="qr-form" action="#" autocomplete="off">
+              <div class="qr-field">
+                <label for="json-input">json input</label>
+                <textarea id="json-input" class="qr-textarea" rows="8" placeholder='{"key": "value"}' spellcheck="false"></textarea>
+              </div>
+
+              <div class="qr-field">
+                <label>options</label>
+                <div class="json-indent-row">
+                  <label style="font-size:11px;color:var(--muted)">indent</label>
+                  <select id="json-indent" class="qr-select" style="width:auto">
+                    <option value="2" selected>2 spaces</option>
+                    <option value="4">4 spaces</option>
+                    <option value="	">tab</option>
+                  </select>
+                  <label class="qr-check" style="margin:0"><input type="checkbox" id="json-sort" /> sort keys</label>
+                </div>
+              </div>
+
+              <div style="display:flex;gap:0.6rem;flex-wrap:wrap">
+                <button type="button" id="json-format-btn" class="btn btn-fill">format</button>
+                <button type="button" id="json-minify-btn" class="btn btn-ghost">minify</button>
+                <button type="button" id="json-clear-btn" class="btn btn-ghost">clear</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="qr-panel" style="max-width: 760px; margin-top: 1.5rem">
+            <span class="tool-hash-label">output</span>
+            <div class="json-out is-empty" id="json-out">output appears here.</div>
+            <div class="json-error" id="json-error"></div>
+            <div class="json-stats" id="json-stats"></div>
+            <div class="json-actions">
+              <button type="button" id="json-copy" class="btn btn-ghost" disabled>copy</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <a href="../tools.html">← tools</a>
+      <a href="../index.html">leotrax3d</a>
+    </footer>
+
+    <script>
+      (function () {
+        var inputEl = document.getElementById("json-input");
+        var indentEl = document.getElementById("json-indent");
+        var sortEl = document.getElementById("json-sort");
+        var outEl = document.getElementById("json-out");
+        var errorEl = document.getElementById("json-error");
+        var statsEl = document.getElementById("json-stats");
+        var copyBtn = document.getElementById("json-copy");
+        var lastOut = "";
+
+        function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+
+        function syntaxHL(json) {
+          return json.replace(
+            /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+\.?\d*(?:[eE][+-]?\d+)?)/g,
+            function (match) {
+              if (/^"/.test(match)) {
+                if (/:$/.test(match)) return '<span class="jk">' + esc(match) + "</span>";
+                return '<span class="js">' + esc(match) + "</span>";
+              }
+              if (/true|false/.test(match)) return '<span class="jb">' + match + "</span>";
+              if (/null/.test(match)) return '<span class="jnull">' + match + "</span>";
+              return '<span class="jn">' + match + "</span>";
+            }
+          );
+        }
+
+        function sortKeys(obj) {
+          if (Array.isArray(obj)) return obj.map(sortKeys);
+          if (obj !== null && typeof obj === "object") {
+            return Object.keys(obj).sort().reduce(function (acc, k) { acc[k] = sortKeys(obj[k]); return acc; }, {});
+          }
+          return obj;
+        }
+
+        function process(minify) {
+          errorEl.textContent = "";
+          var raw = inputEl.value.trim();
+          if (!raw) {
+            outEl.innerHTML = "output appears here."; outEl.className = "json-out is-empty";
+            statsEl.textContent = ""; copyBtn.disabled = true; lastOut = "";
+            return;
+          }
+          var parsed;
+          try { parsed = JSON.parse(raw); } catch (e) {
+            errorEl.textContent = "parse error: " + e.message;
+            outEl.innerHTML = "invalid JSON."; outEl.className = "json-out is-empty";
+            statsEl.textContent = ""; copyBtn.disabled = true; lastOut = "";
+            return;
+          }
+
+          if (sortEl.checked) parsed = sortKeys(parsed);
+
+          if (minify) {
+            lastOut = JSON.stringify(parsed);
+          } else {
+            var indent = indentEl.value === "	" ? "\t" : parseInt(indentEl.value, 10);
+            lastOut = JSON.stringify(parsed, null, indent);
+          }
+
+          outEl.innerHTML = syntaxHL(lastOut);
+          outEl.className = "json-out";
+          var lines = lastOut.split("\n").length;
+          var bytes = new TextEncoder().encode(lastOut).length;
+          statsEl.textContent = lines + " lines · " + bytes + " bytes";
+          copyBtn.disabled = false;
+        }
+
+        document.getElementById("json-format-btn").addEventListener("click", function () { process(false); });
+        document.getElementById("json-minify-btn").addEventListener("click", function () { process(true); });
+        document.getElementById("json-clear-btn").addEventListener("click", function () {
+          inputEl.value = ""; outEl.innerHTML = "output appears here."; outEl.className = "json-out is-empty";
+          errorEl.textContent = ""; statsEl.textContent = ""; copyBtn.disabled = true; lastOut = "";
+        });
+
+        copyBtn.addEventListener("click", function () {
+          var done = function () { copyBtn.textContent = "copied!"; setTimeout(function () { copyBtn.textContent = "copy"; }, 2000); };
+          if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(lastOut).then(done); else done();
+        });
+
+        inputEl.addEventListener("input", function () { if (inputEl.value.trim()) process(false); else {
+          outEl.innerHTML = "output appears here."; outEl.className = "json-out is-empty"; errorEl.textContent = ""; statsEl.textContent = ""; copyBtn.disabled = true; lastOut = "";
+        }});
+        sortEl.addEventListener("change", function () { if (inputEl.value.trim()) process(false); });
+        indentEl.addEventListener("change", function () { if (inputEl.value.trim()) process(false); });
+      })();
+    </script>
+    <script src="../site.js"></script>
+  </body>
+</html>

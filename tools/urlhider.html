@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>url hider — leotrax3d</title>
+    <meta name="description" content="URL redirect obfuscator — create a forwarding link that hides the destination." />
+    <meta name="author" content="leotrax3d" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=menu"
+    />
+    <link rel="stylesheet" href="../styles.css" />
+    <style>
+      .uh-output { margin-top: 2rem; }
+      .uh-link-row { display: flex; gap: 0.5rem; align-items: stretch; }
+      .uh-link-row .qr-input { flex: 1; font-size: 11px; letter-spacing: 0; }
+      .uh-copy-row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.75rem; margin-bottom: 0.5rem; }
+      .uh-actions { display: flex; gap: 0.75rem; margin-top: 0.5rem; flex-wrap: wrap; align-items: center; }
+      .uh-actions-hint { font-size: 10px; color: var(--muted); letter-spacing: 0.06em; }
+      .uh-divider { margin: 1.5rem 0; border: none; border-top: 1px solid var(--border); }
+      .uh-qr-label { display: block; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.75rem; }
+      .uh-qr-wrap { background: #e8e6e0; border-radius: 8px; padding: 0.75rem; display: inline-block; line-height: 0; }
+      .uh-qr-wrap img, .uh-qr-wrap canvas { display: block; border-radius: 2px; }
+      .uh-disclaimer p { font-size: 12px; line-height: 2; color: var(--muted); }
+      .uh-disclaimer strong { color: var(--text); }
+      .uh-disclaimer .accent { color: var(--accent); }
+      .uh-mode-hint { font-size: 10px; color: var(--muted); margin-top: 0.4rem; line-height: 1.6; }
+    </style>
+  </head>
+  <body class="page-urlhider custom-cursor">
+    <!-- Shared chrome injected by site.js -->
+
+    <div class="page-header">
+      <div class="wrap">
+        <div class="page-eyebrow">
+          leotrax3d &nbsp;·&nbsp; <span>url hider</span>
+        </div>
+        <h1>URL<br /><span class="dim">Hider</span></h1>
+        <p class="page-sub">
+          paste a url and get a forwarding link that hides the destination —
+          the shared link points to this domain instead of the target.
+        </p>
+      </div>
+    </div>
+
+    <section id="generator">
+      <div class="wrap">
+        <div class="sec fade">
+          <div class="sec-head">
+            <span class="sec-num">01</span>
+            <h2>generate</h2>
+          </div>
+
+          <div class="qr-panel" style="max-width: 560px">
+            <form class="qr-form" id="hider-form" action="#" autocomplete="off">
+              <div class="qr-field">
+                <label for="target-url">destination url</label>
+                <input type="text" id="target-url" class="qr-input" placeholder="https://example.com" spellcheck="false" />
+              </div>
+
+              <div class="qr-row">
+                <div class="qr-field">
+                  <label for="redirect-delay">redirect after</label>
+                  <select id="redirect-delay" class="qr-select">
+                    <option value="0">immediately</option>
+                    <option value="3">3 seconds</option>
+                    <option value="5" selected>5 seconds</option>
+                    <option value="10">10 seconds</option>
+                    <option value="30">30 seconds</option>
+                    <option value="60">60 seconds</option>
+                  </select>
+                </div>
+
+                <div class="qr-field">
+                  <label>mode</label>
+                  <div class="qr-toggle" id="mode-toggle" role="group" aria-label="Redirect mode">
+                    <button type="button" class="btn btn-ghost is-active" data-mode="auto">auto</button>
+                    <button type="button" class="btn btn-ghost" data-mode="confirm">confirm</button>
+                  </div>
+                  <div class="uh-mode-hint" id="mode-hint">visitor is redirected automatically after the chosen delay.</div>
+                </div>
+              </div>
+
+              <button type="button" id="generate-btn" class="btn btn-fill">generate link</button>
+            </form>
+          </div>
+
+          <div id="output-panel" class="uh-output" hidden>
+            <div class="qr-panel" style="max-width: 560px">
+              <div class="qr-field">
+                <label>your obfuscated link</label>
+                <div class="uh-link-row">
+                  <input type="text" id="link-output" class="qr-input" readonly aria-label="Generated redirect link" />
+                </div>
+              </div>
+
+              <div class="qr-field">
+                <label for="link-text">link text <span style="color: var(--muted); font-weight: 400">(used in markdown / html export)</span></label>
+                <input type="text" id="link-text" class="qr-input" placeholder="click here" spellcheck="false" />
+              </div>
+
+              <div class="uh-copy-row">
+                <button type="button" id="copy-url-btn" class="btn btn-fill" title="Copy the raw URL">copy url</button>
+                <button type="button" id="copy-md-btn" class="btn btn-ghost" title="Copy as [text](url)">copy markdown</button>
+                <button type="button" id="copy-html-btn" class="btn btn-ghost" title="Copy as &lt;a href=&quot;url&quot;&gt;text&lt;/a&gt;">copy html</button>
+              </div>
+
+              <div class="uh-actions">
+                <a id="test-link" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-ghost">open ↗</a>
+                <a id="inspect-link" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-ghost" title="Preview without redirect">inspect ↗</a>
+                <span class="uh-actions-hint">inspect = preview without redirect</span>
+              </div>
+
+              <hr class="uh-divider" />
+              <span class="uh-qr-label">qr code</span>
+              <div class="uh-qr-wrap"><div id="uh-qr"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="disclaimer">
+      <div class="wrap">
+        <div class="sec fade">
+          <div class="sec-head">
+            <span class="sec-num">02</span>
+            <h2>disclaimer</h2>
+          </div>
+          <div class="qr-panel uh-disclaimer" style="max-width: 640px">
+            <p>This tool generates redirect links that forward visitors to a destination URL of your choosing. The destination URL is encoded directly in the link itself using Base64 — <strong>no data is stored on any server.</strong></p>
+            <br />
+            <p><strong>Permitted use only.</strong> This service must not be used for phishing, social engineering, malware distribution, impersonating other services, or any other illegal or harmful activity.</p>
+            <br />
+            <p>The operator of this site accepts <strong>no liability</strong> for content found at redirect destinations. All generated links are technically functional as long as this page exists, but their continued availability is not guaranteed and they may be blocked without notice if abuse becomes known.</p>
+            <br />
+            <p class="accent">By generating and sharing a link with this tool, you accept full responsibility for how that link is used.</p>
+            <br />
+            <p style="font-size: 10px; letter-spacing: 0.08em">Last updated: June 2025</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <a href="../tools.html">← tools</a>
+      <a href="../index.html">leotrax3d</a>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+      (function () {
+        var BASE = "https://leotrax3d.github.io/About_Me/go.html#";
+        var INSPECT_BASE = "https://leotrax3d.github.io/About_Me/go.html?inspect#";
+        var mode = "auto";
+        var currentLink = "";
+
+        var MODE_HINTS = {
+          auto: "visitor is redirected automatically after the chosen delay.",
+          confirm: "visitor must click a button to proceed — no automatic redirect.",
+        };
+
+        document.querySelectorAll("#mode-toggle .btn").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            document.querySelectorAll("#mode-toggle .btn").forEach(function (b) { b.classList.remove("is-active"); });
+            this.classList.add("is-active");
+            mode = this.dataset.mode;
+            var hint = document.getElementById("mode-hint");
+            if (hint) hint.textContent = MODE_HINTS[mode] || "";
+          });
+        });
+
+        function encodePayload(data) { return btoa(encodeURIComponent(JSON.stringify(data))); }
+
+        function copyText(text) {
+          if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(text);
+          var ta = document.createElement("textarea");
+          ta.value = text; ta.style.cssText = "position:fixed;opacity:0;top:0;left:0";
+          document.body.appendChild(ta); ta.select();
+          try { document.execCommand("copy"); } catch (e) {}
+          document.body.removeChild(ta);
+          return Promise.resolve();
+        }
+
+        function flashBtn(btn, label) {
+          var orig = btn.textContent;
+          btn.textContent = label;
+          setTimeout(function () { btn.textContent = orig; }, 2000);
+        }
+
+        function generateQR(link) {
+          var container = document.getElementById("uh-qr");
+          if (!container || !window.QRCode) return;
+          container.innerHTML = "";
+          new QRCode(container, { text: link, width: 180, height: 180, colorDark: "#0d0e0f", colorLight: "#e8e6e0", correctLevel: QRCode.CorrectLevel.M });
+        }
+
+        document.getElementById("generate-btn").addEventListener("click", function () {
+          var url = document.getElementById("target-url").value.trim();
+          if (!url) { document.getElementById("target-url").focus(); return; }
+          if (!/^https?:\/\//i.test(url)) url = "https://" + url;
+          var delay = parseInt(document.getElementById("redirect-delay").value, 10);
+          var isConfirm = mode === "confirm";
+          var hash = encodePayload({ u: url, d: delay, c: isConfirm });
+          currentLink = BASE + hash;
+          document.getElementById("link-output").value = currentLink;
+          document.getElementById("test-link").href = currentLink;
+          document.getElementById("inspect-link").href = INSPECT_BASE + hash;
+          generateQR(currentLink);
+          var panel = document.getElementById("output-panel");
+          panel.removeAttribute("hidden");
+          setTimeout(function () { panel.scrollIntoView({ behavior: "smooth", block: "nearest" }); }, 60);
+        });
+
+        document.getElementById("copy-url-btn").addEventListener("click", function () {
+          copyText(currentLink).then(function () { flashBtn(document.getElementById("copy-url-btn"), "copied!"); });
+        });
+        document.getElementById("copy-md-btn").addEventListener("click", function () {
+          var text = document.getElementById("link-text").value.trim() || "click here";
+          copyText("[" + text + "](" + currentLink + ")").then(function () { flashBtn(document.getElementById("copy-md-btn"), "copied!"); });
+        });
+        document.getElementById("copy-html-btn").addEventListener("click", function () {
+          var text = document.getElementById("link-text").value.trim() || "click here";
+          copyText('<a href="' + currentLink.replace(/"/g, "&quot;") + '">' + text + "</a>").then(function () { flashBtn(document.getElementById("copy-html-btn"), "copied!"); });
+        });
+        document.getElementById("target-url").addEventListener("keydown", function (e) {
+          if (e.key === "Enter") document.getElementById("generate-btn").click();
+        });
+      })();
+    </script>
+    <script src="../site.js"></script>
+  </body>
+</html>

@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>uuid generator — leotrax3d</title>
+    <meta name="description" content="generate RFC 4122 UUID v4 identifiers using the Web Crypto API, entirely in your browser." />
+    <meta name="author" content="leotrax3d" />
+    <link rel="canonical" href="https://leotrax3d.github.io/About_Me/tools/uuid.html" />
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=menu"
+    />
+    <link rel="stylesheet" href="../styles.css" />
+    <style>
+      .uuid-list { display: flex; flex-direction: column; gap: 0.5rem; }
+      .uuid-item {
+        display: flex; align-items: center; gap: 0.75rem;
+        background: var(--bg3); border: 1px solid var(--border); border-radius: 8px;
+        padding: 0.65rem 0.85rem; font-size: 13px; letter-spacing: 0.04em; color: var(--accent);
+        cursor: pointer; transition: border-color 0.15s, background 0.15s;
+      }
+      .uuid-item:hover { border-color: rgba(197, 241, 62, 0.4); background: var(--glass-strong); }
+      .uuid-item .uuid-val { flex: 1; word-break: break-all; }
+      .uuid-item .uuid-hint { font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); flex-shrink: 0; }
+      .uuid-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 0.75rem; }
+      .uuid-count-row { display: flex; align-items: center; gap: 0.75rem; }
+      .uuid-count-row input[type=range] { flex: 1; accent-color: var(--accent); }
+      .uuid-count-val { font-size: 13px; color: var(--accent); font-weight: 700; min-width: 2rem; text-align: right; }
+    </style>
+  </head>
+  <body class="page-uuid custom-cursor">
+    <!-- Shared chrome injected by site.js -->
+
+    <div class="page-header">
+      <div class="wrap">
+        <div class="page-eyebrow">
+          leotrax3d &nbsp;·&nbsp; <span>uuid generator</span>
+        </div>
+        <h1>UUID<br /><span class="dim">Generator</span></h1>
+        <p class="page-sub">
+          generate RFC 4122 v4 UUIDs using the Web Crypto API.
+          click any UUID to copy it instantly.
+        </p>
+      </div>
+    </div>
+
+    <section id="generator">
+      <div class="wrap">
+        <div class="sec fade">
+          <div class="sec-head">
+            <span class="sec-num">01</span>
+            <h2>generate</h2>
+          </div>
+
+          <div class="qr-panel" style="max-width: 640px">
+            <form class="qr-form" action="#" autocomplete="off">
+              <div class="qr-field">
+                <label>count</label>
+                <div class="uuid-count-row">
+                  <input type="range" id="uuid-count" min="1" max="20" value="5" />
+                  <span class="uuid-count-val" id="uuid-count-val">5</span>
+                </div>
+              </div>
+
+              <div class="qr-field">
+                <label>format</label>
+                <div class="qr-toggle" id="fmt-toggle" role="group">
+                  <button type="button" class="btn btn-ghost is-active" data-fmt="lower">lowercase</button>
+                  <button type="button" class="btn btn-ghost" data-fmt="upper">UPPERCASE</button>
+                  <button type="button" class="btn btn-ghost" data-fmt="bare">no dashes</button>
+                </div>
+              </div>
+
+              <button type="button" id="uuid-generate" class="btn btn-fill">generate</button>
+            </form>
+          </div>
+
+          <div class="qr-panel" style="max-width: 640px; margin-top: 1.5rem">
+            <span class="tool-hash-label">results <span style="color:var(--muted);font-size:9px;letter-spacing:0.06em;text-transform:none">(click to copy)</span></span>
+            <div class="uuid-list" id="uuid-list"></div>
+            <div class="uuid-actions">
+              <button type="button" id="uuid-copy-all" class="btn btn-ghost" disabled>copy all</button>
+              <button type="button" id="uuid-regen" class="btn btn-ghost">regenerate</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <a href="../tools.html">← tools</a>
+      <a href="../index.html">leotrax3d</a>
+    </footer>
+
+    <script>
+      (function () {
+        var countEl = document.getElementById("uuid-count");
+        var countVal = document.getElementById("uuid-count-val");
+        var listEl = document.getElementById("uuid-list");
+        var copyAllBtn = document.getElementById("uuid-copy-all");
+        var fmt = "lower";
+        var current = [];
+
+        countEl.addEventListener("input", function () { countVal.textContent = countEl.value; });
+
+        document.querySelectorAll("#fmt-toggle .btn").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            document.querySelectorAll("#fmt-toggle .btn").forEach(function (b) { b.classList.remove("is-active"); });
+            this.classList.add("is-active");
+            fmt = this.dataset.fmt;
+            if (current.length) render();
+          });
+        });
+
+        function v4() {
+          if (crypto.randomUUID) return crypto.randomUUID();
+          var b = new Uint8Array(16);
+          crypto.getRandomValues(b);
+          b[6] = (b[6] & 0x0f) | 0x40;
+          b[8] = (b[8] & 0x3f) | 0x80;
+          var h = Array.from(b).map(function (x) { return x.toString(16).padStart(2,"0"); }).join("");
+          return h.slice(0,8)+"-"+h.slice(8,12)+"-"+h.slice(12,16)+"-"+h.slice(16,20)+"-"+h.slice(20);
+        }
+
+        function applyFmt(uuid) {
+          if (fmt === "upper") return uuid.toUpperCase();
+          if (fmt === "bare") return uuid.replace(/-/g,"");
+          return uuid;
+        }
+
+        function render() {
+          listEl.innerHTML = "";
+          current.forEach(function (uuid, i) {
+            var displayed = applyFmt(uuid);
+            var item = document.createElement("div");
+            item.className = "uuid-item";
+            item.innerHTML = '<span class="uuid-val">' + displayed + '</span><span class="uuid-hint">click to copy</span>';
+            item.addEventListener("click", function () {
+              if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(displayed).then(function () {
+                  item.querySelector(".uuid-hint").textContent = "copied!";
+                  setTimeout(function () { item.querySelector(".uuid-hint").textContent = "click to copy"; }, 1500);
+                });
+              }
+            });
+            listEl.appendChild(item);
+          });
+          copyAllBtn.disabled = current.length === 0;
+        }
+
+        function generate() {
+          var n = parseInt(countEl.value, 10);
+          current = Array.from({ length: n }, v4);
+          render();
+        }
+
+        copyAllBtn.addEventListener("click", function () {
+          var text = current.map(applyFmt).join("\n");
+          var done = function () { copyAllBtn.textContent = "copied!"; setTimeout(function () { copyAllBtn.textContent = "copy all"; }, 2000); };
+          if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done); else done();
+        });
+
+        document.getElementById("uuid-generate").addEventListener("click", generate);
+        document.getElementById("uuid-regen").addEventListener("click", generate);
+        generate();
+      })();
+    </script>
+    <script src="../site.js"></script>
+  </body>
+</html>

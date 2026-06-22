@@ -59,21 +59,44 @@
     "</div></div>";
 
   function currentFile() {
-    return location.pathname.split("/").pop() || "index.html";
+    const parts = location.pathname.split("/").filter(Boolean);
+    const rootIdx = parts.indexOf("About_Me");
+    if (rootIdx !== -1) {
+      const rel = parts.slice(rootIdx + 1).join("/");
+      return rel || "index.html";
+    }
+    return parts[parts.length - 1] || "index.html";
+  }
+
+  // Returns "../" when the current page is one directory below site root
+  // (e.g. /About_Me/tools/foo.html), so nav hrefs stay correct.
+  function getNavPrefix() {
+    const parts = location.pathname.split("/").filter(Boolean);
+    const rootIdx = parts.indexOf("About_Me");
+    if (rootIdx !== -1 && parts.length > rootIdx + 2) return "../";
+    return "";
   }
 
   // Sub-pages that live under the "tools" hub — visiting any of them keeps
   // the single "tools" nav tab highlighted.
   const TOOL_PAGES = [
     "tools.html",
-    "qr.html",
-    "urlhider.html",
-    "checksum.html",
-    "base64.html",
+    "tools/qr.html",
+    "tools/urlhider.html",
+    "tools/checksum.html",
+    "tools/base64.html",
+    "tools/password.html",
+    "tools/regex.html",
+    "tools/json.html",
+    "tools/timestamp.html",
+    "tools/color.html",
+    "tools/jwt.html",
+    "tools/uuid.html",
   ];
 
   function buildNav() {
     const file = currentFile();
+    const prefix = getNavPrefix();
     const items = NAV_ITEMS.map(([label, href]) => {
       const isSection = href.includes("#");
       const isActive =
@@ -84,11 +107,11 @@
       // n-back is the freshest project: its nav tab gets a subtle pulsing
       // "ping" dot (styled in styles.css) so it quietly draws the eye.
       const flag = label === "n-back" ? " nav-pulse" : "";
-      return `<li><a class="easter-trigger${active}${flag}" href="${href}">${label}</a></li>`;
+      return `<li><a class="easter-trigger${active}${flag}" href="${prefix}${href}">${label}</a></li>`;
     }).join("");
     return (
       "<nav>" +
-      '<a href="index.html" class="nav-logo">leotrax3d</a>' +
+      `<a href="${prefix}index.html" class="nav-logo">leotrax3d</a>` +
       '<button class="nav-menu" type="button" aria-label="Open menu" ' +
       'aria-expanded="false" aria-controls="site-nav">' +
       '<span class="material-symbols-outlined">menu</span></button>' +
@@ -241,8 +264,8 @@
         const extra = Object.keys(custom);
         addTerminalLine(
           "commands: help, about, skills, projects, github, contact, internship, " +
-            "blog, qr, classchat, nback, home, whoami, uptime, date, theme, " +
-            "ascii, echo, coin, rps, guess, clear, exit" +
+            "blog, tools, qr, urlhider, checksum, base64, classchat, nback, home, " +
+            "whoami, uptime, date, theme, ascii, echo, coin, rps, guess, clear, exit" +
             (extra.length ? ", " + extra.join(", ") : ""),
         );
         return;
@@ -262,7 +285,11 @@
         home: "index.html",
         internship: "internship.html",
         blog: "blog.html",
-        qr: "qr.html",
+        tools: "tools.html",
+        qr: "tools/qr.html",
+        urlhider: "tools/urlhider.html",
+        checksum: "tools/checksum.html",
+        base64: "tools/base64.html",
         classchat: "ClassChat.html",
         showcase: "showcase.html",
         "n-back": "n-back.html",
@@ -271,7 +298,7 @@
       if (jumps[command]) {
         addTerminalLine(`opening ${command}...`);
         closeTerminal();
-        window.location.href = jumps[command];
+        window.location.href = getNavPrefix() + jumps[command];
         return;
       }
       if (command === "github") {
