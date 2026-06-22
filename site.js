@@ -36,6 +36,7 @@
     ["projects", "index.html#projects"],
     ["internship", "internship.html"],
     ["qr", "qr.html"],
+    ["url hider", "urlhider.html"],
     ["ClassChat", "ClassChat.html"],
     ["n-back", "n-back.html"],
     ["showcase", "showcase.html"],
