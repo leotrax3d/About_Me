@@ -57,6 +57,19 @@
         color: var(--accent);
       }
 
+      /* pill badge next to eyebrow label */
+      .go-badge {
+        display: inline-block;
+        background: rgba(197, 241, 62, 0.12);
+        border: 1px solid rgba(197, 241, 62, 0.3);
+        color: var(--accent);
+        font-size: 8px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        padding: 2px 7px;
+        border-radius: 999px;
+      }
+
       .go-heading {
         font-family: var(--display);
         font-size: clamp(1.6rem, 4vw, 2.2rem);
@@ -167,6 +180,35 @@
         flex-shrink: 0;
         margin-top: 1px;
       }
+
+      /* Inspect mode */
+      .go-inspect-notice {
+        background: rgba(197, 241, 62, 0.06);
+        border: 1px solid rgba(197, 241, 62, 0.18);
+        border-radius: 8px;
+        padding: 0.7rem 0.85rem;
+        font-size: 11px;
+        color: var(--muted);
+        line-height: 1.7;
+        margin-bottom: 1.5rem;
+      }
+
+      .go-inspect-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1.75rem;
+      }
+
+      .go-inspect-val {
+        font-size: 12px;
+        color: var(--text);
+        margin-top: 0.3rem;
+      }
+
+      .go-inspect-val.accent {
+        color: var(--accent);
+      }
     </style>
   </head>
   <body class="page-redirect custom-cursor">
@@ -188,6 +230,7 @@
     <script>
       (function () {
         var card = document.getElementById("go-card");
+        var isInspect = window.location.search.indexOf("inspect") !== -1;
 
         function esc(s) {
           return s
@@ -217,12 +260,8 @@
         function showError(title, body) {
           card.innerHTML =
             '<div class="go-eyebrow"><span>error</span></div>' +
-            '<div class="go-heading">' +
-            esc(title) +
-            "</div>" +
-            '<p style="color:var(--muted);font-size:12px;line-height:1.9;margin-bottom:1.5rem">' +
-            body +
-            "</p>" +
+            '<div class="go-heading">' + esc(title) + "</div>" +
+            '<p style="color:var(--muted);font-size:12px;line-height:1.9;margin-bottom:1.5rem">' + body + "</p>" +
             '<div class="go-actions">' +
             '<a href="urlhider.html" class="btn btn-fill">create a link</a>' +
             '<a href="index.html" class="btn btn-ghost">← home</a>' +
@@ -263,8 +302,8 @@
 
         var NOTE =
           '<div class="go-note">' +
-          'This link was created with the <a href="urlhider.html">URL Hider</a> tool on leotrax3d.github.io. ' +
-          "The operator is not responsible for the content at the destination." +
+          'Link created with <a href="urlhider.html">URL Hider</a> on leotrax3d.github.io. ' +
+          "The operator is not responsible for destination content." +
           "</div>";
 
         var WARNING =
@@ -279,15 +318,73 @@
           window.location.replace(targetUrl);
         }
 
-        /* ---- confirm mode: no auto-redirect, user must click ---- */
+        /* ============================================================
+           INSPECT MODE — show link details without redirecting.
+           Activated by ?inspect in the URL query string.
+        ============================================================ */
+        if (isInspect) {
+          if (isInspect) document.title = "inspect — " + document.title;
+
+          var delayLabel = delay === 0
+            ? "immediately"
+            : delay + " second" + (delay !== 1 ? "s" : "");
+          var modeLabel = isConfirm ? "confirm (button)" : "auto";
+          var redirectHref = location.pathname + location.hash;
+
+          card.innerHTML =
+            '<div class="go-eyebrow"><span>inspect</span> <span class="go-badge">no redirect</span></div>' +
+            '<div class="go-heading">Link<br>Inspector</div>' +
+            '<div class="go-inspect-notice">' +
+            "Inspect mode is active — this link will <strong>not</strong> redirect you. " +
+            "Review where it leads before deciding to open it." +
+            "</div>" +
+            '<div class="go-dest-label">destination</div>' +
+            '<div class="go-dest">' + esc(targetUrl) + "</div>" +
+            '<div class="go-inspect-grid">' +
+            "<div>" +
+            '<div class="go-dest-label">redirect delay</div>' +
+            '<div class="go-inspect-val">' + delayLabel + "</div>" +
+            "</div>" +
+            "<div>" +
+            '<div class="go-dest-label">mode</div>' +
+            '<div class="go-inspect-val' + (isConfirm ? "" : " accent") + '">' + modeLabel + "</div>" +
+            "</div>" +
+            "</div>" +
+            '<div class="go-actions">' +
+            '<a href="' + esc(targetUrl) + '" class="btn btn-fill" target="_blank" rel="noopener noreferrer">open destination ↗</a>' +
+            '<a href="' + esc(redirectHref) + '" class="btn btn-ghost">go to redirect</a>' +
+            "</div>" +
+            NOTE;
+
+          /* Copy destination URL */
+          var copyBtn = document.createElement("button");
+          copyBtn.type = "button";
+          copyBtn.className = "btn btn-ghost";
+          copyBtn.textContent = "copy url";
+          copyBtn.style.marginTop = "0.5rem";
+          copyBtn.addEventListener("click", function () {
+            var btn = this;
+            (navigator.clipboard
+              ? navigator.clipboard.writeText(targetUrl)
+              : Promise.resolve()
+            ).then(function () {
+              btn.textContent = "copied!";
+              setTimeout(function () { btn.textContent = "copy url"; }, 2000);
+            });
+          });
+          card.querySelector(".go-actions").appendChild(copyBtn);
+          return;
+        }
+
+        /* ============================================================
+           CONFIRM MODE — no auto-redirect, user must click.
+        ============================================================ */
         if (isConfirm) {
           card.innerHTML =
             '<div class="go-eyebrow"><span>redirect</span></div>' +
             '<div class="go-heading">Leaving<br>this site</div>' +
             '<div class="go-dest-label">destination</div>' +
-            '<div class="go-dest">' +
-            esc(targetUrl) +
-            "</div>" +
+            '<div class="go-dest">' + esc(targetUrl) + "</div>" +
             WARNING +
             '<div class="go-actions">' +
             '<button type="button" id="proceed-btn" class="btn btn-fill">proceed →</button>' +
@@ -295,49 +392,40 @@
             "</div>" +
             NOTE;
 
-          document
-            .getElementById("proceed-btn")
-            .addEventListener("click", goNow);
+          document.getElementById("proceed-btn").addEventListener("click", goNow);
           return;
         }
 
-        /* ---- auto mode: countdown + automatic redirect ---- */
+        /* ============================================================
+           AUTO MODE — countdown + automatic redirect.
+        ============================================================ */
         if (delay === 0) {
           card.innerHTML =
             '<div class="go-eyebrow"><span>redirect</span></div>' +
             '<div class="go-heading">Redirecting...</div>' +
             '<div class="go-dest-label">destination</div>' +
-            '<div class="go-dest">' +
-            esc(targetUrl) +
-            "</div>" +
+            '<div class="go-dest">' + esc(targetUrl) + "</div>" +
             '<div class="go-actions">' +
             '<button type="button" id="go-now-btn" class="btn btn-fill">go now →</button>' +
             '<a href="index.html" class="btn btn-ghost">cancel</a>' +
             "</div>" +
             NOTE;
 
-          document
-            .getElementById("go-now-btn")
-            .addEventListener("click", goNow);
-
+          document.getElementById("go-now-btn").addEventListener("click", goNow);
           setTimeout(goNow, 80);
           return;
         }
 
-        /* ---- auto mode with countdown ---- */
+        /* Auto mode with countdown */
         var remaining = delay;
 
         card.innerHTML =
           '<div class="go-eyebrow"><span>redirect</span></div>' +
           '<div class="go-heading">Redirecting...</div>' +
           '<div class="go-dest-label">destination</div>' +
-          '<div class="go-dest">' +
-          esc(targetUrl) +
-          "</div>" +
+          '<div class="go-dest">' + esc(targetUrl) + "</div>" +
           '<div class="go-count-label">redirecting in</div>' +
-          '<div class="go-count-num" id="count-num">' +
-          remaining +
-          "</div>" +
+          '<div class="go-count-num" id="count-num">' + remaining + "</div>" +
           '<div class="go-bar-wrap"><div class="go-bar-fill" id="bar-fill"></div></div>' +
           '<div class="go-actions">' +
           '<button type="button" id="go-now-btn" class="btn btn-fill">go now →</button>' +
@@ -345,9 +433,7 @@
           "</div>" +
           NOTE;
 
-        document
-          .getElementById("go-now-btn")
-          .addEventListener("click", goNow);
+        document.getElementById("go-now-btn").addEventListener("click", goNow);
 
         var numEl = document.getElementById("count-num");
         var barEl = document.getElementById("bar-fill");
@@ -363,13 +449,10 @@
           });
         });
 
-        var redirectTimer = setTimeout(goNow, delay * 1000);
+        setTimeout(goNow, delay * 1000);
 
         var tickTimer = setInterval(function () {
-          if (done) {
-            clearInterval(tickTimer);
-            return;
-          }
+          if (done) { clearInterval(tickTimer); return; }
           remaining--;
           if (numEl) numEl.textContent = Math.max(0, remaining);
           if (remaining <= 0) clearInterval(tickTimer);
