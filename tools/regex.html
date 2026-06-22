@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>regex tester — leotrax3d</title>
+    <meta name="description" content="test regular expressions live with match highlighting, group capture and flag support." />
+    <meta name="author" content="leotrax3d" />
+    <link rel="canonical" href="https://leotrax3d.github.io/About_Me/tools/regex.html" />
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=menu"
+    />
+    <link rel="stylesheet" href="../styles.css" />
+    <style>
+      .rx-pattern-row { display: flex; align-items: center; gap: 0; }
+      .rx-delim { font-size: 18px; color: var(--accent); padding: 0 6px; line-height: 1; user-select: none; }
+      .rx-pattern-row .qr-input { flex: 1; border-radius: 0; border-left: none; border-right: none; }
+      .rx-flags-input { width: 60px; background: var(--bg3); border: 1px solid var(--border); color: var(--text); font-family: var(--mono); font-size: 12px; padding: 0.65rem 0.5rem; border-radius: 0 8px 8px 0; }
+      .rx-flags-start { background: var(--bg3); border: 1px solid var(--border); border-radius: 8px 0 0 8px; padding: 0.65rem 0.75rem; font-size: 12px; color: var(--muted); }
+      .rx-highlighted { background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem; font-size: 12px; line-height: 2; min-height: 5rem; word-break: break-all; white-space: pre-wrap; }
+      .rx-highlighted mark { background: rgba(197, 241, 62, 0.3); color: var(--text); border-radius: 2px; padding: 0 1px; outline: 1px solid rgba(197, 241, 62, 0.5); }
+      .rx-highlighted mark.rx-m0 { background: rgba(197, 241, 62, 0.45); }
+      .rx-error { color: #ff6b6b; font-size: 11px; min-height: 1rem; margin-top: 0.4rem; }
+      .rx-status { font-size: 11px; color: var(--muted); margin-top: 0.5rem; }
+      .rx-groups { margin-top: 1rem; }
+      .rx-groups-label { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.5rem; }
+      .rx-group-row { display: flex; gap: 0.5rem; align-items: baseline; font-size: 11px; line-height: 1.9; }
+      .rx-group-idx { color: var(--accent); min-width: 1.5rem; }
+      .rx-group-val { color: var(--text); word-break: break-all; }
+      .rx-replace-out { background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem; font-size: 12px; color: var(--text); min-height: 3rem; word-break: break-all; white-space: pre-wrap; line-height: 1.8; }
+      .rx-replace-out.is-empty { color: var(--muted); }
+    </style>
+  </head>
+  <body class="page-regex custom-cursor">
+    <!-- Shared chrome injected by site.js -->
+
+    <div class="page-header">
+      <div class="wrap">
+        <div class="page-eyebrow">
+          leotrax3d &nbsp;·&nbsp; <span>regex tester</span>
+        </div>
+        <h1>Regex<br /><span class="dim">Tester</span></h1>
+        <p class="page-sub">
+          write a regular expression, paste test text, and see matches
+          highlighted live. supports flags, capture groups and replace.
+        </p>
+      </div>
+    </div>
+
+    <section id="tester">
+      <div class="wrap">
+        <div class="sec fade">
+          <div class="sec-head">
+            <span class="sec-num">01</span>
+            <h2>match</h2>
+          </div>
+
+          <div class="qr-panel" style="max-width: 680px">
+            <form class="qr-form" action="#" autocomplete="off">
+
+              <div class="qr-field">
+                <label>pattern</label>
+                <div class="rx-pattern-row">
+                  <span class="rx-flags-start">/</span>
+                  <input type="text" id="rx-pattern" class="qr-input" placeholder="[a-z]+" spellcheck="false" autocomplete="off" />
+                  <span class="rx-delim">/</span>
+                  <input type="text" id="rx-flags" class="rx-flags-input" value="gi" placeholder="gi" spellcheck="false" maxlength="8" />
+                </div>
+                <div class="rx-error" id="rx-error"></div>
+              </div>
+
+              <div class="qr-field">
+                <label for="rx-text">test text</label>
+                <textarea id="rx-text" class="qr-textarea" placeholder="paste your test string here…" spellcheck="false" rows="5"></textarea>
+              </div>
+            </form>
+          </div>
+
+          <div class="qr-panel" style="max-width: 680px; margin-top: 1.5rem">
+            <span class="tool-hash-label">matches</span>
+            <div class="rx-highlighted" id="rx-highlighted">matches appear here.</div>
+            <div class="rx-status" id="rx-status"></div>
+            <div class="rx-groups" id="rx-groups" hidden>
+              <div class="rx-groups-label">capture groups (first match)</div>
+              <div id="rx-groups-list"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="replace-section">
+      <div class="wrap">
+        <div class="sec fade">
+          <div class="sec-head">
+            <span class="sec-num">02</span>
+            <h2>replace</h2>
+          </div>
+          <div class="qr-panel" style="max-width: 680px">
+            <div class="qr-field">
+              <label for="rx-replacement">replacement string</label>
+              <input type="text" id="rx-replacement" class="qr-input" placeholder="$1 or literal text" spellcheck="false" />
+            </div>
+            <span class="tool-hash-label" style="margin-top: 1rem;">output</span>
+            <div class="rx-replace-out is-empty" id="rx-replace-out">set a pattern and replacement above.</div>
+            <div style="margin-top: 0.75rem; display: flex; gap: 0.6rem; flex-wrap: wrap;">
+              <button type="button" id="rx-copy-replace" class="btn btn-ghost" disabled>copy result</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <a href="../tools.html">← tools</a>
+      <a href="../index.html">leotrax3d</a>
+    </footer>
+
+    <script>
+      (function () {
+        var patternEl = document.getElementById("rx-pattern");
+        var flagsEl = document.getElementById("rx-flags");
+        var textEl = document.getElementById("rx-text");
+        var highlightedEl = document.getElementById("rx-highlighted");
+        var errorEl = document.getElementById("rx-error");
+        var statusEl = document.getElementById("rx-status");
+        var groupsEl = document.getElementById("rx-groups");
+        var groupsList = document.getElementById("rx-groups-list");
+        var replacementEl = document.getElementById("rx-replacement");
+        var replaceOut = document.getElementById("rx-replace-out");
+        var copyReplaceBtn = document.getElementById("rx-copy-replace");
+
+        function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+
+        function update() {
+          errorEl.textContent = "";
+          var pattern = patternEl.value;
+          var flags = flagsEl.value.replace(/[^gimsuy]/g, "");
+          var text = textEl.value;
+
+          if (!pattern) {
+            highlightedEl.textContent = text || "matches appear here.";
+            statusEl.textContent = "";
+            groupsEl.hidden = true;
+            replaceOut.textContent = "set a pattern and replacement above.";
+            replaceOut.classList.add("is-empty");
+            copyReplaceBtn.disabled = true;
+            return;
+          }
+
+          var rx;
+          try {
+            var safeFlags = flags.includes("g") ? flags : "g" + flags;
+            rx = new RegExp(pattern, safeFlags);
+          } catch (e) {
+            errorEl.textContent = e.message;
+            highlightedEl.textContent = text || "matches appear here.";
+            statusEl.textContent = "";
+            groupsEl.hidden = true;
+            return;
+          }
+
+          if (!text) {
+            highlightedEl.textContent = "matches appear here.";
+            statusEl.textContent = "";
+            groupsEl.hidden = true;
+            return;
+          }
+
+          var matches = Array.from(text.matchAll(rx));
+          var count = matches.length;
+
+          /* Build highlighted HTML */
+          var html = "";
+          var last = 0;
+          var idx = 0;
+          for (var i = 0; i < matches.length; i++) {
+            var m = matches[i];
+            html += esc(text.slice(last, m.index));
+            html += '<mark class="' + (idx === 0 ? "rx-m0" : "") + '">' + esc(m[0]) + "</mark>";
+            last = m.index + m[0].length;
+            idx++;
+          }
+          html += esc(text.slice(last));
+          highlightedEl.innerHTML = html;
+
+          statusEl.textContent = count === 0 ? "no matches" : count + " match" + (count !== 1 ? "es" : "");
+
+          /* Capture groups for first match */
+          if (count > 0 && matches[0].length > 1) {
+            groupsList.innerHTML = "";
+            for (var g = 1; g < matches[0].length; g++) {
+              var val = matches[0][g];
+              var row = document.createElement("div");
+              row.className = "rx-group-row";
+              row.innerHTML = '<span class="rx-group-idx">$' + g + "</span>" +
+                '<span class="rx-group-val">' + (val === undefined ? "<em style=\"color:var(--muted)\">undefined</em>" : esc(val)) + "</span>";
+              groupsList.appendChild(row);
+            }
+            groupsEl.hidden = false;
+          } else {
+            groupsEl.hidden = true;
+          }
+
+          /* Replace */
+          var replacement = replacementEl.value;
+          try {
+            var replaced = text.replace(rx, replacement);
+            replaceOut.textContent = replaced;
+            replaceOut.classList.toggle("is-empty", replaced === text && count === 0);
+            copyReplaceBtn.disabled = false;
+          } catch (e) {
+            replaceOut.textContent = "replacement error: " + e.message;
+            replaceOut.classList.add("is-empty");
+            copyReplaceBtn.disabled = true;
+          }
+        }
+
+        copyReplaceBtn.addEventListener("click", function () {
+          var done = function () { copyReplaceBtn.textContent = "copied!"; setTimeout(function () { copyReplaceBtn.textContent = "copy result"; }, 2000); };
+          if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(replaceOut.textContent).then(done); else done();
+        });
+
+        patternEl.addEventListener("input", update);
+        flagsEl.addEventListener("input", update);
+        textEl.addEventListener("input", update);
+        replacementEl.addEventListener("input", update);
+      })();
+    </script>
+    <script src="../site.js"></script>
+  </body>
+</html>

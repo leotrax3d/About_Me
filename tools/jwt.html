@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>jwt inspector — leotrax3d</title>
+    <meta name="description" content="decode and inspect JWT tokens without signature verification, entirely in your browser." />
+    <meta name="author" content="leotrax3d" />
+    <link rel="canonical" href="https://leotrax3d.github.io/About_Me/tools/jwt.html" />
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=menu"
+    />
+    <link rel="stylesheet" href="../styles.css" />
+    <style>
+      .jwt-parts { display: flex; gap: 4px; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; }
+      .jwt-dot { color: var(--muted); font-size: 18px; line-height: 1; }
+      .jwt-part { font-size: 11px; word-break: break-all; padding: 4px 8px; border-radius: 4px; line-height: 1.7; cursor: pointer; transition: opacity 0.15s; }
+      .jwt-part:hover { opacity: 0.8; }
+      .jwt-part.header { background: rgba(121, 184, 255, 0.15); color: #79b8ff; border: 1px solid rgba(121, 184, 255, 0.25); }
+      .jwt-part.payload { background: rgba(197, 241, 62, 0.1); color: var(--accent); border: 1px solid rgba(197, 241, 62, 0.2); }
+      .jwt-part.sig { background: rgba(249, 117, 131, 0.1); color: #f97583; border: 1px solid rgba(249, 117, 131, 0.2); }
+      .jwt-section { margin-bottom: 1.5rem; }
+      .jwt-section-label { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 0.5rem; }
+      .jwt-section-label.header { color: #79b8ff; }
+      .jwt-section-label.payload { color: var(--accent); }
+      .jwt-section-label.sig { color: #f97583; }
+      .jwt-json { background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 0.85rem 1rem; font-size: 12px; line-height: 1.9; white-space: pre; overflow-x: auto; }
+      .jwt-json .jk { color: #79b8ff; }
+      .jwt-json .js { color: var(--accent); }
+      .jwt-json .jn { color: #f97583; }
+      .jwt-json .jb { color: #ffab70; }
+      .jwt-json .jnull { color: var(--muted); }
+      .jwt-claims { margin-top: 0.75rem; display: flex; flex-direction: column; gap: 0.4rem; }
+      .jwt-claim { display: flex; gap: 0.75rem; font-size: 11px; }
+      .jwt-claim-key { color: var(--muted); min-width: 3rem; flex-shrink: 0; }
+      .jwt-claim-val { color: var(--text); }
+      .jwt-exp-ok { color: var(--accent); }
+      .jwt-exp-bad { color: #ff6b6b; }
+      .jwt-error { color: #ff6b6b; font-size: 11px; margin-top: 0.4rem; }
+      .jwt-warning { background: rgba(249, 117, 131, 0.07); border: 1px solid rgba(249, 117, 131, 0.2); border-radius: 8px; padding: 0.65rem 0.85rem; font-size: 11px; color: var(--muted); margin-bottom: 1.5rem; line-height: 1.7; }
+    </style>
+  </head>
+  <body class="page-jwt custom-cursor">
+    <!-- Shared chrome injected by site.js -->
+
+    <div class="page-header">
+      <div class="wrap">
+        <div class="page-eyebrow">
+          leotrax3d &nbsp;·&nbsp; <span>jwt inspector</span>
+        </div>
+        <h1>JWT<br /><span class="dim">Inspector</span></h1>
+        <p class="page-sub">
+          paste a JSON Web Token to decode its header, payload and standard
+          claims. signature is <em>not</em> verified — inspection only.
+        </p>
+      </div>
+    </div>
+
+    <section id="inspector">
+      <div class="wrap">
+        <div class="sec fade">
+          <div class="sec-head">
+            <span class="sec-num">01</span>
+            <h2>decode</h2>
+          </div>
+
+          <div class="qr-panel" style="max-width: 720px">
+            <div class="jwt-warning">
+              ⚠ Signature is <strong>not</strong> verified. Do not trust decoded claims without independent verification.
+              Never paste tokens from production systems into untrusted tools.
+            </div>
+
+            <div class="qr-field">
+              <label for="jwt-input">jwt token</label>
+              <textarea id="jwt-input" class="qr-textarea" rows="4" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgNryP4J3jVmNHl0w5N_XgL0n3I9PlFUP0THsR8U" spellcheck="false"></textarea>
+              <div class="jwt-error" id="jwt-error"></div>
+            </div>
+          </div>
+
+          <div class="qr-panel" style="max-width: 720px; margin-top: 1.5rem" id="jwt-result" hidden>
+            <div class="jwt-parts" id="jwt-parts"></div>
+
+            <div class="jwt-section">
+              <div class="jwt-section-label header">header</div>
+              <div class="jwt-json" id="jwt-header-json"></div>
+            </div>
+
+            <div class="jwt-section">
+              <div class="jwt-section-label payload">payload</div>
+              <div class="jwt-json" id="jwt-payload-json"></div>
+              <div class="jwt-claims" id="jwt-claims"></div>
+            </div>
+
+            <div class="jwt-section">
+              <div class="jwt-section-label sig">signature</div>
+              <div class="jwt-json" id="jwt-sig-val" style="word-break:break-all;white-space:normal"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <a href="../tools.html">← tools</a>
+      <a href="../index.html">leotrax3d</a>
+    </footer>
+
+    <script>
+      (function () {
+        var inputEl = document.getElementById("jwt-input");
+        var errorEl = document.getElementById("jwt-error");
+        var resultEl = document.getElementById("jwt-result");
+
+        function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+
+        function syntaxHL(obj) {
+          return JSON.stringify(obj, null, 2).replace(
+            /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+\.?\d*(?:[eE][+-]?\d+)?)/g,
+            function (m) {
+              if (/^"/.test(m)) { if (/:$/.test(m)) return '<span class="jk">' + esc(m) + "</span>"; return '<span class="js">' + esc(m) + "</span>"; }
+              if (/true|false/.test(m)) return '<span class="jb">' + m + "</span>";
+              if (/null/.test(m)) return '<span class="jnull">' + m + "</span>";
+              return '<span class="jn">' + m + "</span>";
+            }
+          );
+        }
+
+        function b64urlDecode(s) {
+          var p = s.replace(/-/g, "+").replace(/_/g, "/");
+          while (p.length % 4) p += "=";
+          return atob(p);
+        }
+
+        function parseJWT(token) {
+          var parts = token.trim().split(".");
+          if (parts.length !== 3) throw new Error("a JWT must have exactly 3 parts separated by dots");
+          var header, payload;
+          try { header = JSON.parse(b64urlDecode(parts[0])); } catch (e) { throw new Error("header is not valid base64url JSON: " + e.message); }
+          try { payload = JSON.parse(b64urlDecode(parts[1])); } catch (e) { throw new Error("payload is not valid base64url JSON: " + e.message); }
+          return { header: header, payload: payload, sig: parts[2], parts: parts };
+        }
+
+        function formatClaim(key, val) {
+          if (key === "exp" || key === "iat" || key === "nbf") {
+            var d = new Date(val * 1000);
+            var now = Date.now();
+            var extra = d.toUTCString();
+            if (key === "exp") {
+              var ok = val * 1000 > now;
+              extra += ok ? ' <span class="jwt-exp-ok">(valid)</span>' : ' <span class="jwt-exp-bad">(expired)</span>';
+            }
+            return extra;
+          }
+          return esc(String(val));
+        }
+
+        var CLAIM_NAMES = { sub: "subject", iss: "issuer", aud: "audience", exp: "expires", iat: "issued at", nbf: "not before", jti: "JWT ID" };
+
+        function decode() {
+          errorEl.textContent = "";
+          var raw = inputEl.value.trim();
+          if (!raw) { resultEl.hidden = true; return; }
+
+          var parsed;
+          try { parsed = parseJWT(raw); } catch (e) { errorEl.textContent = e.message; resultEl.hidden = true; return; }
+
+          /* Color-coded parts bar */
+          var partsEl = document.getElementById("jwt-parts");
+          partsEl.innerHTML =
+            '<span class="jwt-part header" title="click to copy">' + esc(parsed.parts[0]) + "</span>" +
+            '<span class="jwt-dot">.</span>' +
+            '<span class="jwt-part payload" title="click to copy">' + esc(parsed.parts[1]) + "</span>" +
+            '<span class="jwt-dot">.</span>' +
+            '<span class="jwt-part sig" title="click to copy">' + esc(parsed.parts[2]) + "</span>";
+
+          partsEl.querySelectorAll(".jwt-part").forEach(function (el, i) {
+            el.addEventListener("click", function () {
+              var text = parsed.parts[i];
+              if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text);
+            });
+          });
+
+          document.getElementById("jwt-header-json").innerHTML = syntaxHL(parsed.header);
+          document.getElementById("jwt-payload-json").innerHTML = syntaxHL(parsed.payload);
+          document.getElementById("jwt-sig-val").textContent = parsed.sig;
+
+          /* Readable claims */
+          var claimsEl = document.getElementById("jwt-claims");
+          claimsEl.innerHTML = "";
+          var hasClaims = false;
+          Object.keys(CLAIM_NAMES).forEach(function (key) {
+            if (!(key in parsed.payload)) return;
+            hasClaims = true;
+            var row = document.createElement("div");
+            row.className = "jwt-claim";
+            row.innerHTML = '<span class="jwt-claim-key">' + key + '</span><span class="jwt-claim-val">' + formatClaim(key, parsed.payload[key]) + "</span>";
+            claimsEl.appendChild(row);
+          });
+          claimsEl.hidden = !hasClaims;
+
+          resultEl.hidden = false;
+        }
+
+        inputEl.addEventListener("input", decode);
+      })();
+    </script>
+    <script src="../site.js"></script>
+  </body>
+</html>

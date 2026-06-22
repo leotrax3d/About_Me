@@ -706,6 +706,15 @@ header {
   border-color: var(--accent);
 }
 
+button.btn {
+  cursor: pointer;
+}
+
+button.btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
 /* Sections */
 .sec {
   padding: 6.5rem 0;
@@ -1220,6 +1229,38 @@ h2 {
   color: var(--text);
 }
 
+.tool-star {
+  position: absolute;
+  top: 1rem;
+  right: 2.8rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  line-height: 1;
+  padding: 3px;
+  color: var(--muted);
+  transition: color 0.15s, transform 0.15s;
+  z-index: 2;
+}
+
+.tool-star:hover {
+  color: var(--accent);
+  transform: scale(1.25);
+}
+
+.tool-star.is-starred {
+  color: var(--accent);
+}
+
+.tool-favorites-head {
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.9rem;
+}
+
 /* Page header */
 .page-header {
   padding-top: 130px;
@@ -1315,6 +1356,12 @@ h2 {
   color: #0d0e0f;
   border-color: var(--accent);
   font-weight: 700;
+}
+
+.qr-toggle .btn.is-active:hover {
+  background: var(--accent);
+  color: #0d0e0f;
+  border-color: var(--accent);
 }
 
 .qr-field label {
