@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>base64 — leotrax3d</title>
+    <meta name="description" content="encode and decode Base64 with full UTF-8 support, entirely in your browser." />
+    <meta name="author" content="leotrax3d" />
+    <link rel="canonical" href="https://leotrax3d.github.io/About_Me/base64.html" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://leotrax3d.github.io/About_Me/base64.html" />
+    <meta property="og:title" content="base64 — leotrax3d" />
+    <meta property="og:description" content="encode and decode Base64 with full UTF-8 support, client-side." />
+    <meta property="og:site_name" content="leotrax3d" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="base64 — leotrax3d" />
+    <meta name="twitter:description" content="encode and decode Base64, client-side." />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=menu"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      .qr-toggle {
+        display: flex;
+        gap: 0.4rem;
+        flex-wrap: wrap;
+      }
+      .qr-toggle .btn {
+        border-radius: 999px;
+        padding: 8px 18px;
+      }
+      .b64-actions {
+        display: flex;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+        margin-top: 0.75rem;
+      }
+      .b64-error {
+        color: #ff6b6b;
+        font-size: 11px;
+        margin-top: 0.5rem;
+        min-height: 1rem;
+      }
+    </style>
+  </head>
+  <body class="page-base64 custom-cursor">
+    <!-- Shared chrome injected by site.js -->
+
+    <div class="page-header">
+      <div class="wrap">
+        <div class="page-eyebrow">
+          leotrax3d &nbsp;·&nbsp; <span>base64</span>
+        </div>
+        <h1>Base<br /><span class="dim">64</span></h1>
+        <p class="page-sub">
+          encode text to Base64 and decode it back, with full UTF-8 support
+          and an optional URL-safe alphabet. converts as you type, locally.
+        </p>
+      </div>
+    </div>
+
+    <section id="generator">
+      <div class="wrap">
+        <div class="sec fade">
+          <div class="sec-head">
+            <span class="sec-num">01</span>
+            <h2>convert</h2>
+          </div>
+
+          <div class="qr-panel" style="max-width: 600px">
+            <form class="qr-form" id="b64-form" action="#" autocomplete="off">
+              <!-- direction -->
+              <div class="qr-field">
+                <label>mode</label>
+                <div
+                  class="qr-toggle"
+                  id="mode-toggle"
+                  role="group"
+                  aria-label="Conversion mode"
+                >
+                  <button
+                    type="button"
+                    class="btn btn-ghost is-active"
+                    data-mode="encode"
+                  >
+                    encode
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-ghost"
+                    data-mode="decode"
+                  >
+                    decode
+                  </button>
+                </div>
+              </div>
+
+              <!-- input -->
+              <div class="qr-field">
+                <label for="b64-input" id="input-label">text</label>
+                <textarea
+                  id="b64-input"
+                  class="qr-textarea"
+                  placeholder="type or paste anything…"
+                  spellcheck="false"
+                ></textarea>
+              </div>
+
+              <!-- url-safe option -->
+              <div class="qr-field">
+                <label class="qr-check">
+                  <input id="b64-urlsafe" type="checkbox" />
+                  URL-safe alphabet (<code>-_</code>, no padding)
+                </label>
+              </div>
+            </form>
+          </div>
+
+          <div class="qr-panel" style="max-width: 600px; margin-top: 1.5rem">
+            <span class="tool-hash-label" id="output-label">base64</span>
+            <div class="tool-output is-empty" id="b64-output">
+              output appears here as you type.
+            </div>
+            <div class="b64-error" id="b64-error"></div>
+            <div class="b64-actions">
+              <button type="button" id="b64-copy" class="btn btn-ghost" disabled>
+                copy
+              </button>
+              <button type="button" id="b64-swap" class="btn btn-ghost" disabled>
+                use as input ↺
+              </button>
+              <button type="button" id="b64-clear" class="btn btn-ghost">
+                clear
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <a href="tools.html">← tools</a>
+      <a href="index.html">leotrax3d</a>
+    </footer>
+
+    <script>
+      (function () {
+        var mode = "encode";
+        var inputEl = document.getElementById("b64-input");
+        var outputEl = document.getElementById("b64-output");
+        var errorEl = document.getElementById("b64-error");
+        var urlsafeEl = document.getElementById("b64-urlsafe");
+        var copyBtn = document.getElementById("b64-copy");
+        var swapBtn = document.getElementById("b64-swap");
+        var clearBtn = document.getElementById("b64-clear");
+        var inputLabel = document.getElementById("input-label");
+        var outputLabel = document.getElementById("output-label");
+        var currentOut = "";
+
+        /* ---- UTF-8 safe Base64 ---- */
+        function encode(str) {
+          var bytes = new TextEncoder().encode(str);
+          var bin = "";
+          for (var i = 0; i < bytes.length; i++) {
+            bin += String.fromCharCode(bytes[i]);
+          }
+          return btoa(bin);
+        }
+
+        function decode(b64) {
+          // tolerate URL-safe input and missing padding
+          var s = b64.trim().replace(/-/g, "+").replace(/_/g, "/");
+          while (s.length % 4) s += "=";
+          var bin = atob(s);
+          var bytes = new Uint8Array(bin.length);
+          for (var i = 0; i < bin.length; i++) {
+            bytes[i] = bin.charCodeAt(i);
+          }
+          return new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+        }
+
+        function toUrlSafe(b64) {
+          return b64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+        }
+
+        function setOutput(text, isPlaceholder) {
+          currentOut = isPlaceholder ? "" : text;
+          outputEl.textContent = text;
+          outputEl.classList.toggle("is-empty", !!isPlaceholder);
+          copyBtn.disabled = !!isPlaceholder;
+          swapBtn.disabled = !!isPlaceholder;
+        }
+
+        function convert() {
+          errorEl.textContent = "";
+          var input = inputEl.value;
+          if (!input) {
+            setOutput("output appears here as you type.", true);
+            return;
+          }
+          try {
+            if (mode === "encode") {
+              var out = encode(input);
+              if (urlsafeEl.checked) out = toUrlSafe(out);
+              setOutput(out, false);
+            } else {
+              setOutput(decode(input), false);
+            }
+          } catch (e) {
+            setOutput("—", true);
+            errorEl.textContent =
+              mode === "decode"
+                ? "invalid Base64 input — check for stray characters."
+                : "could not encode this input.";
+          }
+        }
+
+        /* ---- mode toggle ---- */
+        document.querySelectorAll("#mode-toggle .btn").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            document
+              .querySelectorAll("#mode-toggle .btn")
+              .forEach(function (b) {
+                b.classList.remove("is-active");
+              });
+            this.classList.add("is-active");
+            mode = this.dataset.mode;
+            if (mode === "encode") {
+              inputLabel.textContent = "text";
+              outputLabel.textContent = "base64";
+              inputEl.placeholder = "type or paste anything…";
+            } else {
+              inputLabel.textContent = "base64";
+              outputLabel.textContent = "text";
+              inputEl.placeholder = "paste Base64 to decode…";
+            }
+            convert();
+          });
+        });
+
+        /* ---- actions ---- */
+        copyBtn.addEventListener("click", function () {
+          var done = function () {
+            copyBtn.textContent = "copied!";
+            setTimeout(function () { copyBtn.textContent = "copy"; }, 2000);
+          };
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(currentOut).then(done);
+          } else {
+            done();
+          }
+        });
+
+        swapBtn.addEventListener("click", function () {
+          if (!currentOut) return;
+          inputEl.value = currentOut;
+          // flip direction: output of one mode is input of the other
+          var target = mode === "encode" ? "decode" : "encode";
+          document
+            .querySelector('#mode-toggle .btn[data-mode="' + target + '"]')
+            .click();
+        });
+
+        clearBtn.addEventListener("click", function () {
+          inputEl.value = "";
+          convert();
+          inputEl.focus();
+        });
+
+        inputEl.addEventListener("input", convert);
+        urlsafeEl.addEventListener("change", convert);
+      })();
+    </script>
+
+    <script src="site.js"></script>
+  </body>
+</html>

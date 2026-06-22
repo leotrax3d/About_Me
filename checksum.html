@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>checksum — leotrax3d</title>
+    <meta name="description" content="compute and verify SHA-1/256/384/512 checksums of text or files, entirely in your browser." />
+    <meta name="author" content="leotrax3d" />
+    <link rel="canonical" href="https://leotrax3d.github.io/About_Me/checksum.html" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://leotrax3d.github.io/About_Me/checksum.html" />
+    <meta property="og:title" content="checksum — leotrax3d" />
+    <meta property="og:description" content="compute and verify SHA checksums of text or files, client-side." />
+    <meta property="og:site_name" content="leotrax3d" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="checksum — leotrax3d" />
+    <meta name="twitter:description" content="compute and verify SHA checksums, client-side." />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=menu"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      .qr-toggle {
+        display: flex;
+        gap: 0.4rem;
+        flex-wrap: wrap;
+      }
+      .qr-toggle .btn {
+        border-radius: 999px;
+        padding: 8px 18px;
+      }
+      .cs-filemeta {
+        font-size: 10px;
+        color: var(--muted);
+        letter-spacing: 0.06em;
+        margin-top: 0.5rem;
+        min-height: 1rem;
+      }
+      .cs-actions {
+        display: flex;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+        margin-top: 0.5rem;
+      }
+    </style>
+  </head>
+  <body class="page-checksum custom-cursor">
+    <!-- Shared chrome injected by site.js -->
+
+    <div class="page-header">
+      <div class="wrap">
+        <div class="page-eyebrow">
+          leotrax3d &nbsp;·&nbsp; <span>checksum</span>
+        </div>
+        <h1>Check<br /><span class="dim">sum</span></h1>
+        <p class="page-sub">
+          hash text or a file with SHA-1 / 256 / 384 / 512 and verify it
+          against an expected value — computed locally via the Web Crypto
+          API, nothing is uploaded.
+        </p>
+      </div>
+    </div>
+
+    <section id="generator">
+      <div class="wrap">
+        <div class="sec fade">
+          <div class="sec-head">
+            <span class="sec-num">01</span>
+            <h2>hash</h2>
+          </div>
+
+          <div class="qr-panel" style="max-width: 600px">
+            <form class="qr-form" id="cs-form" action="#" autocomplete="off">
+              <!-- input mode -->
+              <div class="qr-field">
+                <label>input</label>
+                <div
+                  class="qr-toggle"
+                  id="mode-toggle"
+                  role="group"
+                  aria-label="Input mode"
+                >
+                  <button
+                    type="button"
+                    class="btn btn-ghost is-active"
+                    data-mode="text"
+                  >
+                    text
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-ghost"
+                    data-mode="file"
+                  >
+                    file
+                  </button>
+                </div>
+              </div>
+
+              <!-- text input -->
+              <div class="qr-field" id="text-field">
+                <label for="cs-text">text</label>
+                <textarea
+                  id="cs-text"
+                  class="qr-textarea"
+                  placeholder="type or paste anything…"
+                  spellcheck="false"
+                ></textarea>
+              </div>
+
+              <!-- file input -->
+              <div class="qr-field" id="file-field" hidden>
+                <label>file</label>
+                <div class="tool-dropzone" id="dropzone" tabindex="0">
+                  drop a file here, or click to choose
+                </div>
+                <input id="cs-file" type="file" hidden />
+                <div class="cs-filemeta" id="file-meta"></div>
+              </div>
+
+              <!-- algorithm -->
+              <div class="qr-field">
+                <label for="cs-algo">algorithm</label>
+                <select id="cs-algo" class="qr-select">
+                  <option value="SHA-256" selected>SHA-256</option>
+                  <option value="SHA-1">SHA-1</option>
+                  <option value="SHA-384">SHA-384</option>
+                  <option value="SHA-512">SHA-512</option>
+                </select>
+              </div>
+            </form>
+          </div>
+
+          <div class="qr-panel" style="max-width: 600px; margin-top: 1.5rem">
+            <span class="tool-hash-label">checksum</span>
+            <div class="tool-hashrow">
+              <div class="tool-output is-empty" id="cs-output">
+                enter text or pick a file to compute a hash.
+              </div>
+            </div>
+            <div class="cs-actions">
+              <button type="button" id="cs-copy" class="btn btn-ghost" disabled>
+                copy
+              </button>
+              <button type="button" id="cs-upper" class="btn btn-ghost" disabled>
+                UPPERCASE
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="verify">
+      <div class="wrap">
+        <div class="sec fade">
+          <div class="sec-head">
+            <span class="sec-num">02</span>
+            <h2>verify</h2>
+          </div>
+
+          <div class="qr-panel" style="max-width: 600px">
+            <div class="qr-field">
+              <label for="cs-expected">expected checksum</label>
+              <input
+                type="text"
+                id="cs-expected"
+                class="qr-input"
+                placeholder="paste the hash you expect…"
+                spellcheck="false"
+              />
+            </div>
+            <div class="tool-match" id="cs-match"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <a href="tools.html">← tools</a>
+      <a href="index.html">leotrax3d</a>
+    </footer>
+
+    <script>
+      (function () {
+        var mode = "text";
+        var fileBuffer = null; // ArrayBuffer of the chosen file
+        var currentHash = ""; // last computed hex (lowercase)
+
+        var textEl = document.getElementById("cs-text");
+        var algoEl = document.getElementById("cs-algo");
+        var outEl = document.getElementById("cs-output");
+        var copyBtn = document.getElementById("cs-copy");
+        var upperBtn = document.getElementById("cs-upper");
+        var expectedEl = document.getElementById("cs-expected");
+        var matchEl = document.getElementById("cs-match");
+        var fileMeta = document.getElementById("file-meta");
+        var fileInput = document.getElementById("cs-file");
+        var dropzone = document.getElementById("dropzone");
+        var upper = false;
+
+        /* ---- mode toggle ---- */
+        document.querySelectorAll("#mode-toggle .btn").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            document
+              .querySelectorAll("#mode-toggle .btn")
+              .forEach(function (b) {
+                b.classList.remove("is-active");
+              });
+            this.classList.add("is-active");
+            mode = this.dataset.mode;
+            document
+              .getElementById("text-field")
+              .toggleAttribute("hidden", mode !== "text");
+            document
+              .getElementById("file-field")
+              .toggleAttribute("hidden", mode !== "file");
+            compute();
+          });
+        });
+
+        /* ---- hex helper ---- */
+        function toHex(buffer) {
+          var bytes = new Uint8Array(buffer);
+          var hex = "";
+          for (var i = 0; i < bytes.length; i++) {
+            hex += bytes[i].toString(16).padStart(2, "0");
+          }
+          return hex;
+        }
+
+        function fmtSize(n) {
+          if (n < 1024) return n + " B";
+          if (n < 1048576) return (n / 1024).toFixed(1) + " KB";
+          return (n / 1048576).toFixed(1) + " MB";
+        }
+
+        function setEmpty(msg) {
+          currentHash = "";
+          outEl.textContent = msg;
+          outEl.classList.add("is-empty");
+          copyBtn.disabled = true;
+          upperBtn.disabled = true;
+          checkMatch();
+        }
+
+        function render() {
+          if (!currentHash) return;
+          outEl.textContent = upper ? currentHash.toUpperCase() : currentHash;
+          outEl.classList.remove("is-empty");
+          copyBtn.disabled = false;
+          upperBtn.disabled = false;
+          checkMatch();
+        }
+
+        var token = 0; // guards against out-of-order async results
+        async function compute() {
+          var myToken = ++token;
+          var algo = algoEl.value;
+          var data;
+
+          if (mode === "text") {
+            var text = textEl.value;
+            if (!text) {
+              setEmpty("enter text or pick a file to compute a hash.");
+              return;
+            }
+            data = new TextEncoder().encode(text);
+          } else {
+            if (!fileBuffer) {
+              setEmpty("drop or choose a file to compute a hash.");
+              return;
+            }
+            data = fileBuffer;
+          }
+
+          try {
+            outEl.textContent = "computing…";
+            outEl.classList.add("is-empty");
+            var digest = await crypto.subtle.digest(algo, data);
+            if (myToken !== token) return; // a newer compute() superseded us
+            currentHash = toHex(digest);
+            render();
+          } catch (e) {
+            if (myToken !== token) return;
+            setEmpty("could not compute hash: " + e.message);
+          }
+        }
+
+        /* ---- verify ---- */
+        function checkMatch() {
+          var expected = expectedEl.value.trim().toLowerCase().replace(/\s+/g, "");
+          if (!expected || !currentHash) {
+            matchEl.textContent = "";
+            matchEl.className = "tool-match";
+            return;
+          }
+          if (expected === currentHash) {
+            matchEl.textContent = "✓ match — the checksum is identical.";
+            matchEl.className = "tool-match ok";
+          } else {
+            matchEl.textContent = "✗ no match — the checksums differ.";
+            matchEl.className = "tool-match bad";
+          }
+        }
+
+        /* ---- file handling ---- */
+        function loadFile(file) {
+          if (!file) return;
+          fileMeta.textContent = "reading " + file.name + "…";
+          var reader = new FileReader();
+          reader.onload = function () {
+            fileBuffer = reader.result;
+            fileMeta.textContent =
+              file.name + " · " + fmtSize(file.size);
+            compute();
+          };
+          reader.onerror = function () {
+            fileMeta.textContent = "could not read file.";
+            fileBuffer = null;
+            setEmpty("drop or choose a file to compute a hash.");
+          };
+          reader.readAsArrayBuffer(file);
+        }
+
+        dropzone.addEventListener("click", function () {
+          fileInput.click();
+        });
+        dropzone.addEventListener("keydown", function (e) {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            fileInput.click();
+          }
+        });
+        fileInput.addEventListener("change", function () {
+          loadFile(fileInput.files[0]);
+        });
+        ["dragenter", "dragover"].forEach(function (ev) {
+          dropzone.addEventListener(ev, function (e) {
+            e.preventDefault();
+            dropzone.classList.add("is-drag");
+          });
+        });
+        ["dragleave", "drop"].forEach(function (ev) {
+          dropzone.addEventListener(ev, function (e) {
+            e.preventDefault();
+            dropzone.classList.remove("is-drag");
+          });
+        });
+        dropzone.addEventListener("drop", function (e) {
+          if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+            loadFile(e.dataTransfer.files[0]);
+          }
+        });
+
+        /* ---- copy / case ---- */
+        copyBtn.addEventListener("click", function () {
+          var val = outEl.textContent;
+          var done = function () {
+            copyBtn.textContent = "copied!";
+            setTimeout(function () { copyBtn.textContent = "copy"; }, 2000);
+          };
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(val).then(done);
+          } else {
+            done();
+          }
+        });
+        upperBtn.addEventListener("click", function () {
+          upper = !upper;
+          render();
+        });
+
+        /* ---- live recompute ---- */
+        textEl.addEventListener("input", compute);
+        algoEl.addEventListener("change", compute);
+        expectedEl.addEventListener("input", checkMatch);
+      })();
+    </script>
+
+    <script src="site.js"></script>
+  </body>
+</html>
