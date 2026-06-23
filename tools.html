@@ -23,7 +23,7 @@
     />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=menu"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=article,casino,compare_arrows,fingerprint,history,lock,menu,palette,search,security,speed,star"
     />
     <link rel="stylesheet" href="styles.css" />
     <style>
@@ -54,11 +54,12 @@
           <!-- Search + category filter -->
           <div class="tool-controls">
             <div class="tool-search-wrap">
+              <span class="tool-search-icon material-symbols-outlined" aria-hidden="true">search</span>
               <input
                 type="search"
                 id="tool-search"
                 class="tool-search"
-                placeholder="search tools by name or keyword…  (press / to focus)"
+                placeholder="search tools…  (press / to focus)"
                 spellcheck="false"
                 autocomplete="off"
                 aria-label="Search tools"
@@ -72,13 +73,14 @@
               <button type="button" class="tool-filter" data-cat="convert">convert</button>
               <button type="button" class="tool-filter" data-cat="random">random</button>
               <button type="button" class="tool-filter" data-cat="design">design</button>
+              <button type="button" class="tool-filter" data-cat="perf">benchmark</button>
             </div>
           </div>
 
           <!-- Favourites — shown only when at least one tool is starred -->
           <div id="fav-section" hidden>
             <div class="sec-head">
-              <span class="sec-num">★</span>
+              <span class="sec-num sec-num-icon"><span class="material-symbols-outlined">star</span></span>
               <h2>favourites</h2>
             </div>
             <div class="tool-grid" id="fav-grid"></div>
@@ -87,7 +89,7 @@
           <!-- Recently used — shown only when there is history -->
           <div id="recent-section" hidden>
             <div class="sec-head" style="margin-top: 3.5rem">
-              <span class="sec-num">↺</span>
+              <span class="sec-num sec-num-icon"><span class="material-symbols-outlined">history</span></span>
               <h2>recently used</h2>
             </div>
             <div class="tool-grid" id="recent-grid"></div>
@@ -101,8 +103,8 @@
           <div class="tool-grid" id="tool-grid">
 
             <a href="tools/qr.html" class="tool-card" data-tool-id="qr" data-tool-cat="encoding" data-tool-keywords="qr code png svg image generator scan barcode">
-              <button class="tool-star" type="button" aria-label="Star QR Generator">☆</button>
-              <div class="tool-name">QR Generator</div>
+              <button class="tool-star" type="button" aria-label="Star QR Generator"><span class="material-symbols-outlined" aria-hidden="true">star</span></button>
+              <div class="tool-name-row"><span class="tool-cat-icon material-symbols-outlined" aria-hidden="true">lock</span><div class="tool-name">QR Generator</div></div>
               <div class="tool-desc">
                 turn any text or URL into a QR code. pick size, error
                 correction and colours, then download as PNG, JPG or SVG.
@@ -111,8 +113,8 @@
             </a>
 
             <a href="tools/urlhider.html" class="tool-card" data-tool-id="urlhider" data-tool-cat="encoding" data-tool-keywords="url redirect link obfuscate hide forward shorten base64">
-              <button class="tool-star" type="button" aria-label="Star URL Hider">☆</button>
-              <div class="tool-name">URL Hider</div>
+              <button class="tool-star" type="button" aria-label="Star URL Hider"><span class="material-symbols-outlined" aria-hidden="true">star</span></button>
+              <div class="tool-name-row"><span class="tool-cat-icon material-symbols-outlined" aria-hidden="true">lock</span><div class="tool-name">URL Hider</div></div>
               <div class="tool-desc">
                 generate a forwarding link that hides its destination. choose
                 a redirect delay or require a confirmation click. includes a
@@ -122,8 +124,8 @@
             </a>
 
             <a href="tools/checksum.html" class="tool-card" data-tool-id="checksum" data-tool-cat="crypto" data-tool-keywords="sha hash checksum sha1 sha256 sha384 sha512 verify integrity digest">
-              <button class="tool-star" type="button" aria-label="Star Checksum">☆</button>
-              <div class="tool-name">Checksum</div>
+              <button class="tool-star" type="button" aria-label="Star Checksum"><span class="material-symbols-outlined" aria-hidden="true">star</span></button>
+              <div class="tool-name-row"><span class="tool-cat-icon material-symbols-outlined" aria-hidden="true">fingerprint</span><div class="tool-name">Checksum</div></div>
               <div class="tool-desc">
                 compute SHA-1 / 256 / 384 / 512 hashes of text or a dropped
                 file via the Web Crypto API, and verify a download against an
@@ -133,8 +135,8 @@
             </a>
 
             <a href="tools/base64.html" class="tool-card" data-tool-id="base64" data-tool-cat="encoding" data-tool-keywords="base64 encode decode utf8 url-safe alphabet">
-              <button class="tool-star" type="button" aria-label="Star Base64">☆</button>
-              <div class="tool-name">Base64</div>
+              <button class="tool-star" type="button" aria-label="Star Base64"><span class="material-symbols-outlined" aria-hidden="true">star</span></button>
+              <div class="tool-name-row"><span class="tool-cat-icon material-symbols-outlined" aria-hidden="true">lock</span><div class="tool-name">Base64</div></div>
               <div class="tool-desc">
                 encode text to Base64 and decode it back, with full UTF-8
                 support and a URL-safe alphabet option. converts as you type.
@@ -143,8 +145,8 @@
             </a>
 
             <a href="tools/regex.html" class="tool-card" data-tool-id="regex" data-tool-cat="text" data-tool-keywords="regex regular expression match replace pattern test flags capture group">
-              <button class="tool-star" type="button" aria-label="Star Regex Tester">☆</button>
-              <div class="tool-name">Regex Tester</div>
+              <button class="tool-star" type="button" aria-label="Star Regex Tester"><span class="material-symbols-outlined" aria-hidden="true">star</span></button>
+              <div class="tool-name-row"><span class="tool-cat-icon material-symbols-outlined" aria-hidden="true">article</span><div class="tool-name">Regex Tester</div></div>
               <div class="tool-desc">
                 write a regular expression and see matches highlighted live.
                 supports flags, capture group inspection and a replace mode.
@@ -153,8 +155,8 @@
             </a>
 
             <a href="tools/json.html" class="tool-card" data-tool-id="json" data-tool-cat="text" data-tool-keywords="json format validate minify pretty beautify sort keys">
-              <button class="tool-star" type="button" aria-label="Star JSON Formatter">☆</button>
-              <div class="tool-name">JSON Formatter</div>
+              <button class="tool-star" type="button" aria-label="Star JSON Formatter"><span class="material-symbols-outlined" aria-hidden="true">star</span></button>
+              <div class="tool-name-row"><span class="tool-cat-icon material-symbols-outlined" aria-hidden="true">article</span><div class="tool-name">JSON Formatter</div></div>
               <div class="tool-desc">
                 paste raw or minified JSON to format, validate and syntax-
                 highlight it. also minifies and sorts keys alphabetically.
@@ -163,8 +165,8 @@
             </a>
 
             <a href="tools/timestamp.html" class="tool-card" data-tool-id="timestamp" data-tool-cat="convert" data-tool-keywords="timestamp unix epoch date time convert utc iso milliseconds">
-              <button class="tool-star" type="button" aria-label="Star Timestamp Converter">☆</button>
-              <div class="tool-name">Timestamp Converter</div>
+              <button class="tool-star" type="button" aria-label="Star Timestamp Converter"><span class="material-symbols-outlined" aria-hidden="true">star</span></button>
+              <div class="tool-name-row"><span class="tool-cat-icon material-symbols-outlined" aria-hidden="true">compare_arrows</span><div class="tool-name">Timestamp Converter</div></div>
               <div class="tool-desc">
                 convert unix timestamps to human-readable dates and back.
                 supports seconds and milliseconds, local and UTC. live clock.
@@ -173,8 +175,8 @@
             </a>
 
             <a href="tools/color.html" class="tool-card" data-tool-id="color" data-tool-cat="convert" data-tool-keywords="color colour hex rgb hsl converter picker css swatch">
-              <button class="tool-star" type="button" aria-label="Star Color Converter">☆</button>
-              <div class="tool-name">Color Converter</div>
+              <button class="tool-star" type="button" aria-label="Star Color Converter"><span class="material-symbols-outlined" aria-hidden="true">star</span></button>
+              <div class="tool-name-row"><span class="tool-cat-icon material-symbols-outlined" aria-hidden="true">compare_arrows</span><div class="tool-name">Color Converter</div></div>
               <div class="tool-desc">
                 convert colors between hex, rgb, hsl and css formats with a
                 live preview swatch. supports any valid css color input.
@@ -183,8 +185,8 @@
             </a>
 
             <a href="tools/jwt.html" class="tool-card" data-tool-id="jwt" data-tool-cat="encoding" data-tool-keywords="jwt token decode json web token claims jose header payload">
-              <button class="tool-star" type="button" aria-label="Star JWT Inspector">☆</button>
-              <div class="tool-name">JWT Inspector</div>
+              <button class="tool-star" type="button" aria-label="Star JWT Inspector"><span class="material-symbols-outlined" aria-hidden="true">star</span></button>
+              <div class="tool-name-row"><span class="tool-cat-icon material-symbols-outlined" aria-hidden="true">lock</span><div class="tool-name">JWT Inspector</div></div>
               <div class="tool-desc">
                 decode and inspect JSON Web Tokens — header, payload and
                 standard claims with expiry check. signature is not verified.
@@ -193,8 +195,8 @@
             </a>
 
             <a href="tools/uuid.html" class="tool-card" data-tool-id="uuid" data-tool-cat="crypto" data-tool-keywords="uuid guid v4 identifier random generate unique">
-              <button class="tool-star" type="button" aria-label="Star UUID Generator">☆</button>
-              <div class="tool-name">UUID Generator</div>
+              <button class="tool-star" type="button" aria-label="Star UUID Generator"><span class="material-symbols-outlined" aria-hidden="true">star</span></button>
+              <div class="tool-name-row"><span class="tool-cat-icon material-symbols-outlined" aria-hidden="true">fingerprint</span><div class="tool-name">UUID Generator</div></div>
               <div class="tool-desc">
                 generate RFC 4122 v4 UUIDs via the Web Crypto API. bulk
                 generate up to 20 at once, click any to copy instantly.
@@ -203,8 +205,8 @@
             </a>
 
             <a href="tools/random.html" class="tool-card" data-tool-id="random" data-tool-cat="random" data-tool-keywords="random number range integer decimal unique generate rng">
-              <button class="tool-star" type="button" aria-label="Star Random Number">☆</button>
-              <div class="tool-name">Random Number</div>
+              <button class="tool-star" type="button" aria-label="Star Random Number"><span class="material-symbols-outlined" aria-hidden="true">star</span></button>
+              <div class="tool-name-row"><span class="tool-cat-icon material-symbols-outlined" aria-hidden="true">casino</span><div class="tool-name">Random Number</div></div>
               <div class="tool-desc">
                 generate random numbers in any range — choose count, decimals
                 and whether values must be unique. crypto-random.
@@ -213,8 +215,8 @@
             </a>
 
             <a href="tools/dice.html" class="tool-card" data-tool-id="dice" data-tool-cat="random" data-tool-keywords="dice roll d6 d20 d100 polyhedral tabletop rpg modifier">
-              <button class="tool-star" type="button" aria-label="Star Dice Roller">☆</button>
-              <div class="tool-name">Dice Roller</div>
+              <button class="tool-star" type="button" aria-label="Star Dice Roller"><span class="material-symbols-outlined" aria-hidden="true">star</span></button>
+              <div class="tool-name-row"><span class="tool-cat-icon material-symbols-outlined" aria-hidden="true">casino</span><div class="tool-name">Dice Roller</div></div>
               <div class="tool-desc">
                 roll polyhedral dice (d4–d100) with a modifier and see every
                 face plus the total. fair rolls via the Web Crypto API.
@@ -223,8 +225,8 @@
             </a>
 
             <a href="tools/coin.html" class="tool-card" data-tool-id="coin" data-tool-cat="random" data-tool-keywords="coin flip heads tails toss decision 50 50 probability">
-              <button class="tool-star" type="button" aria-label="Star Coin Flip">☆</button>
-              <div class="tool-name">Coin Flip</div>
+              <button class="tool-star" type="button" aria-label="Star Coin Flip"><span class="material-symbols-outlined" aria-hidden="true">star</span></button>
+              <div class="tool-name-row"><span class="tool-cat-icon material-symbols-outlined" aria-hidden="true">casino</span><div class="tool-name">Coin Flip</div></div>
               <div class="tool-desc">
                 flip one coin for a quick decision, or many at once and see the
                 heads/tails tally. fair 50/50 via the Web Crypto API.
@@ -233,8 +235,8 @@
             </a>
 
             <a href="tools/shuffle.html" class="tool-card" data-tool-id="shuffle" data-tool-cat="random" data-tool-keywords="list randomizer shuffle order fisher yates draw raffle">
-              <button class="tool-star" type="button" aria-label="Star List Randomizer">☆</button>
-              <div class="tool-name">List Randomizer</div>
+              <button class="tool-star" type="button" aria-label="Star List Randomizer"><span class="material-symbols-outlined" aria-hidden="true">star</span></button>
+              <div class="tool-name-row"><span class="tool-cat-icon material-symbols-outlined" aria-hidden="true">casino</span><div class="tool-name">List Randomizer</div></div>
               <div class="tool-desc">
                 paste a list, one item per line, and shuffle it into a random
                 order with a fair Fisher–Yates shuffle.
@@ -243,8 +245,8 @@
             </a>
 
             <a href="tools/groups.html" class="tool-card" data-tool-id="groups" data-tool-cat="random" data-tool-keywords="group splitter teams random split balanced names assign">
-              <button class="tool-star" type="button" aria-label="Star Group Splitter">☆</button>
-              <div class="tool-name">Group Splitter</div>
+              <button class="tool-star" type="button" aria-label="Star Group Splitter"><span class="material-symbols-outlined" aria-hidden="true">star</span></button>
+              <div class="tool-name-row"><span class="tool-cat-icon material-symbols-outlined" aria-hidden="true">casino</span><div class="tool-name">Group Splitter</div></div>
               <div class="tool-desc">
                 split a list of names or items randomly into a set number of
                 groups, or into groups of a fixed size. balanced and fair.
@@ -253,8 +255,8 @@
             </a>
 
             <a href="tools/count.html" class="tool-card" data-tool-id="count" data-tool-cat="text" data-tool-keywords="character counter words lines sentences paragraphs reading time length">
-              <button class="tool-star" type="button" aria-label="Star Character Counter">☆</button>
-              <div class="tool-name">Character Counter</div>
+              <button class="tool-star" type="button" aria-label="Star Character Counter"><span class="material-symbols-outlined" aria-hidden="true">star</span></button>
+              <div class="tool-name-row"><span class="tool-cat-icon material-symbols-outlined" aria-hidden="true">article</span><div class="tool-name">Character Counter</div></div>
               <div class="tool-desc">
                 live breakdown of any text — characters, words, lines,
                 sentences, paragraphs and estimated reading time.
@@ -263,8 +265,8 @@
             </a>
 
             <a href="tools/diff.html" class="tool-card" data-tool-id="diff" data-tool-cat="text" data-tool-keywords="text diff compare difference changes lcs added removed">
-              <button class="tool-star" type="button" aria-label="Star Text Diff">☆</button>
-              <div class="tool-name">Text Diff</div>
+              <button class="tool-star" type="button" aria-label="Star Text Diff"><span class="material-symbols-outlined" aria-hidden="true">star</span></button>
+              <div class="tool-name-row"><span class="tool-cat-icon material-symbols-outlined" aria-hidden="true">article</span><div class="tool-name">Text Diff</div></div>
               <div class="tool-desc">
                 compare two versions of a text line by line — additions in
                 lime, removals in red. computed locally with an LCS diff.
@@ -273,8 +275,8 @@
             </a>
 
             <a href="tools/lorem.html" class="tool-card" data-tool-id="lorem" data-tool-cat="text" data-tool-keywords="lorem ipsum placeholder dummy text filler paragraphs words">
-              <button class="tool-star" type="button" aria-label="Star Lorem Ipsum">☆</button>
-              <div class="tool-name">Lorem Ipsum</div>
+              <button class="tool-star" type="button" aria-label="Star Lorem Ipsum"><span class="material-symbols-outlined" aria-hidden="true">star</span></button>
+              <div class="tool-name-row"><span class="tool-cat-icon material-symbols-outlined" aria-hidden="true">article</span><div class="tool-name">Lorem Ipsum</div></div>
               <div class="tool-desc">
                 generate classic lorem ipsum placeholder text — by paragraphs,
                 sentences or words, with one click to copy.
@@ -283,8 +285,8 @@
             </a>
 
             <a href="tools/markdown.html" class="tool-card" data-tool-id="markdown" data-tool-cat="text" data-tool-keywords="markdown preview render md html headings lists code">
-              <button class="tool-star" type="button" aria-label="Star Markdown Preview">☆</button>
-              <div class="tool-name">Markdown Preview</div>
+              <button class="tool-star" type="button" aria-label="Star Markdown Preview"><span class="material-symbols-outlined" aria-hidden="true">star</span></button>
+              <div class="tool-name-row"><span class="tool-cat-icon material-symbols-outlined" aria-hidden="true">article</span><div class="tool-name">Markdown Preview</div></div>
               <div class="tool-desc">
                 write markdown and watch it render live, side by side.
                 supports headings, lists, code, quotes, links and emphasis.
@@ -293,8 +295,8 @@
             </a>
 
             <a href="tools/unit.html" class="tool-card" data-tool-id="unit" data-tool-cat="convert" data-tool-keywords="unit converter length mass weight temperature volume area speed data time">
-              <button class="tool-star" type="button" aria-label="Star Unit Converter">☆</button>
-              <div class="tool-name">Unit Converter</div>
+              <button class="tool-star" type="button" aria-label="Star Unit Converter"><span class="material-symbols-outlined" aria-hidden="true">star</span></button>
+              <div class="tool-name-row"><span class="tool-cat-icon material-symbols-outlined" aria-hidden="true">compare_arrows</span><div class="tool-name">Unit Converter</div></div>
               <div class="tool-desc">
                 convert between units of length, mass, temperature, volume,
                 area, speed, digital storage and time — instantly.
@@ -303,8 +305,8 @@
             </a>
 
             <a href="tools/base.html" class="tool-card" data-tool-id="base" data-tool-cat="convert" data-tool-keywords="base converter binary octal decimal hexadecimal radix number system bigint">
-              <button class="tool-star" type="button" aria-label="Star Base Converter">☆</button>
-              <div class="tool-name">Base Converter</div>
+              <button class="tool-star" type="button" aria-label="Star Base Converter"><span class="material-symbols-outlined" aria-hidden="true">star</span></button>
+              <div class="tool-name-row"><span class="tool-cat-icon material-symbols-outlined" aria-hidden="true">compare_arrows</span><div class="tool-name">Base Converter</div></div>
               <div class="tool-desc">
                 convert whole numbers between binary, octal, decimal, hex and
                 any base 2–36. uses BigInt, so huge values work.
@@ -313,8 +315,8 @@
             </a>
 
             <a href="tools/percent.html" class="tool-card" data-tool-id="percent" data-tool-cat="convert" data-tool-keywords="percentage calculator percent of change increase decrease ratio">
-              <button class="tool-star" type="button" aria-label="Star Percentage Calculator">☆</button>
-              <div class="tool-name">Percentage Calculator</div>
+              <button class="tool-star" type="button" aria-label="Star Percentage Calculator"><span class="material-symbols-outlined" aria-hidden="true">star</span></button>
+              <div class="tool-name-row"><span class="tool-cat-icon material-symbols-outlined" aria-hidden="true">compare_arrows</span><div class="tool-name">Percentage Calculator</div></div>
               <div class="tool-desc">
                 the three percentage questions you actually ask — X% of Y, X is
                 what % of Y, and percent change between two numbers.
@@ -323,8 +325,8 @@
             </a>
 
             <a href="tools/contrast.html" class="tool-card" data-tool-id="contrast" data-tool-cat="design" data-tool-keywords="contrast checker wcag accessibility ratio aa aaa color a11y">
-              <button class="tool-star" type="button" aria-label="Star Contrast Checker">☆</button>
-              <div class="tool-name">Contrast Checker</div>
+              <button class="tool-star" type="button" aria-label="Star Contrast Checker"><span class="material-symbols-outlined" aria-hidden="true">star</span></button>
+              <div class="tool-name-row"><span class="tool-cat-icon material-symbols-outlined" aria-hidden="true">palette</span><div class="tool-name">Contrast Checker</div></div>
               <div class="tool-desc">
                 measure the WCAG contrast ratio between text and background,
                 with pass/fail marks for AA and AAA at both text sizes.
@@ -333,8 +335,8 @@
             </a>
 
             <a href="tools/gradient.html" class="tool-card" data-tool-id="gradient" data-tool-cat="design" data-tool-keywords="gradient generator css linear radial color stops background">
-              <button class="tool-star" type="button" aria-label="Star Gradient Generator">☆</button>
-              <div class="tool-name">Gradient Generator</div>
+              <button class="tool-star" type="button" aria-label="Star Gradient Generator"><span class="material-symbols-outlined" aria-hidden="true">star</span></button>
+              <div class="tool-name-row"><span class="tool-cat-icon material-symbols-outlined" aria-hidden="true">palette</span><div class="tool-name">Gradient Generator</div></div>
               <div class="tool-desc">
                 build a CSS gradient — linear or radial with any number of
                 colour stops — preview it live and copy the rule.
@@ -343,13 +345,24 @@
             </a>
 
             <a href="tools/shadow.html" class="tool-card" data-tool-id="shadow" data-tool-cat="design" data-tool-keywords="box shadow generator css offset blur spread inset elevation">
-              <button class="tool-star" type="button" aria-label="Star Box Shadow Generator">☆</button>
-              <div class="tool-name">Box Shadow</div>
+              <button class="tool-star" type="button" aria-label="Star Box Shadow Generator"><span class="material-symbols-outlined" aria-hidden="true">star</span></button>
+              <div class="tool-name-row"><span class="tool-cat-icon material-symbols-outlined" aria-hidden="true">palette</span><div class="tool-name">Box Shadow</div></div>
               <div class="tool-desc">
                 dial in a CSS box-shadow — offset, blur, spread, colour and
                 opacity — watch it live on the box and copy the code.
               </div>
               <span class="tool-tag">css · box-shadow</span>
+            </a>
+
+            <a href="tools/bench.html" class="tool-card" data-tool-id="bench" data-tool-cat="perf" data-tool-keywords="benchmark cpu gpu performance speed test score prime sort multicore worker memory bandwidth sha256 crypto webgl shader fps render">
+              <button class="tool-star" type="button" aria-label="Star Benchmark"><span class="material-symbols-outlined" aria-hidden="true">star</span></button>
+              <div class="tool-name-row"><span class="tool-cat-icon material-symbols-outlined" aria-hidden="true">speed</span><div class="tool-name">Benchmark</div></div>
+              <div class="tool-desc">
+                stress your CPU across all cores with Web Worker workloads,
+                memory and SHA-256 throughput, plus a heavy WebGL shader for
+                the GPU. fully local, no cookies.
+              </div>
+              <span class="tool-tag">cpu · gpu · multi-core</span>
             </a>
 
           </div>
@@ -397,9 +410,7 @@
 
         /* ---- star state ---- */
         function syncStar(btn, id) {
-          var starred = stars.indexOf(id) !== -1;
-          btn.textContent = starred ? "★" : "☆";
-          btn.classList.toggle("is-starred", starred);
+          btn.classList.toggle("is-starred", stars.indexOf(id) !== -1);
         }
 
         cards.forEach(function (card) {
@@ -427,9 +438,7 @@
           clone.style.display = "";
           var star = clone.querySelector(".tool-star");
           if (star) {
-            var starred = stars.indexOf(id) !== -1;
-            star.textContent = starred ? "★" : "☆";
-            star.classList.toggle("is-starred", starred);
+            star.classList.toggle("is-starred", stars.indexOf(id) !== -1);
             star.addEventListener("click", function (e) {
               e.preventDefault();
               e.stopPropagation();
