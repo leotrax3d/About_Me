@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>markdown preview — leotrax3d</title>
+    <meta name="description" content="write markdown and see it rendered live, side by side. client-side, no dependencies." />
+    <meta name="author" content="leotrax3d" />
+    <link rel="canonical" href="https://leotrax3d.github.io/About_Me/tools/markdown.html" />
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=menu"
+    />
+    <link rel="stylesheet" href="../styles.css" />
+    <style>
+      .md-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+      @media (max-width: 700px) { .md-cols { grid-template-columns: 1fr; } }
+      .md-preview { background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.25rem; min-height: 18rem; overflow-x: auto; font-size: 13px; line-height: 1.8; }
+      .md-preview h1, .md-preview h2, .md-preview h3 { font-family: var(--display); color: var(--text); line-height: 1.2; margin: 1rem 0 0.5rem; }
+      .md-preview h1 { font-size: 1.7rem; } .md-preview h2 { font-size: 1.35rem; } .md-preview h3 { font-size: 1.1rem; }
+      .md-preview h1:first-child, .md-preview h2:first-child, .md-preview h3:first-child { margin-top: 0; }
+      .md-preview p { margin: 0.6rem 0; }
+      .md-preview a { color: var(--accent); }
+      .md-preview code { background: rgba(255,255,255,0.07); padding: 1px 5px; border-radius: 4px; font-size: 12px; }
+      .md-preview pre { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 0.8rem 1rem; overflow-x: auto; margin: 0.8rem 0; }
+      .md-preview pre code { background: none; padding: 0; }
+      .md-preview blockquote { border-left: 2px solid var(--accent); padding-left: 1rem; color: var(--muted); margin: 0.8rem 0; }
+      .md-preview ul, .md-preview ol { padding-left: 1.4rem; margin: 0.6rem 0; }
+      .md-preview li { margin: 0.2rem 0; }
+      .md-preview hr { border: none; border-top: 1px solid var(--border); margin: 1.2rem 0; }
+      .md-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 0.75rem; }
+    </style>
+  </head>
+  <body class="page-markdown custom-cursor">
+    <div class="page-header">
+      <div class="wrap">
+        <div class="page-eyebrow">leotrax3d &nbsp;·&nbsp; <span>markdown preview</span></div>
+        <h1>Markdown<br /><span class="dim">Preview</span></h1>
+        <p class="page-sub">
+          write markdown on the left and watch it render live on the right.
+          supports headings, lists, code, quotes, links and emphasis.
+        </p>
+      </div>
+    </div>
+
+    <section id="preview">
+      <div class="wrap">
+        <div class="sec fade">
+          <div class="sec-head"><span class="sec-num">01</span><h2>write</h2></div>
+
+          <div class="qr-panel" style="max-width: 920px">
+            <div class="md-cols">
+              <div class="qr-field" style="margin:0">
+                <label for="md-input">markdown</label>
+                <textarea id="md-input" class="qr-textarea" rows="16" spellcheck="false"></textarea>
+              </div>
+              <div class="qr-field" style="margin:0">
+                <label>preview</label>
+                <div class="md-preview" id="md-preview"></div>
+              </div>
+            </div>
+            <div class="md-actions">
+              <button type="button" id="md-copy-html" class="btn btn-ghost">copy html</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <a href="../tools.html">← tools</a>
+      <a href="../index.html">leotrax3d</a>
+    </footer>
+
+    <script>
+      (function () {
+        var inputEl = document.getElementById("md-input");
+        var previewEl = document.getElementById("md-preview");
+
+        var SAMPLE = "# Hello, markdown\n\nThis is a **live** preview with _emphasis_, `inline code`, and [links](https://example.com).\n\n## A list\n\n- first item\n- second item\n- third item\n\n## A quote\n\n> Simplicity is the ultimate sophistication.\n\n```\ncode block\nstays monospaced\n```\n\n---\n\nThat's it.";
+
+        function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+
+        function safeUrl(u) {
+          return /^(https?:|mailto:|#|\/|\.)/i.test(u.trim()) ? u.trim() : "#";
+        }
+
+        function inline(t) {
+          t = t.replace(/`([^`]+)`/g, function (m, c) { return "<code>" + c + "</code>"; });
+          t = t.replace(/\[([^\]]+)\]\(([^)]+)\)/g, function (m, txt, url) {
+            return '<a href="' + esc(safeUrl(url)) + '" target="_blank" rel="noopener noreferrer">' + txt + "</a>";
+          });
+          t = t.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+          t = t.replace(/__([^_]+)__/g, "<strong>$1</strong>");
+          t = t.replace(/\*([^*]+)\*/g, "<em>$1</em>");
+          t = t.replace(/(^|[^\w])_([^_]+)_(?=[^\w]|$)/g, "$1<em>$2</em>");
+          return t;
+        }
+
+        function render(src) {
+          var lines = esc(src).replace(/\r\n/g, "\n").split("\n");
+          var html = "";
+          var i = 0;
+          while (i < lines.length) {
+            var line = lines[i];
+
+            /* fenced code block */
+            if (/^```/.test(line)) {
+              var code = [];
+              i++;
+              while (i < lines.length && !/^```/.test(lines[i])) { code.push(lines[i]); i++; }
+              i++; /* skip closing fence */
+              html += "<pre><code>" + code.join("\n") + "</code></pre>";
+              continue;
+            }
+            /* heading */
+            var h = /^(#{1,6})\s+(.*)$/.exec(line);
+            if (h) { var lvl = Math.min(h[1].length, 3); html += "<h" + lvl + ">" + inline(h[2]) + "</h" + lvl + ">"; i++; continue; }
+            /* hr */
+            if (/^(\s*)(---|\*\*\*|___)\s*$/.test(line)) { html += "<hr>"; i++; continue; }
+            /* blockquote (group) */
+            if (/^>\s?/.test(line)) {
+              var q = [];
+              while (i < lines.length && /^>\s?/.test(lines[i])) { q.push(lines[i].replace(/^>\s?/, "")); i++; }
+              html += "<blockquote>" + inline(q.join(" ")) + "</blockquote>";
+              continue;
+            }
+            /* unordered list (group) */
+            if (/^\s*[-*+]\s+/.test(line)) {
+              var items = [];
+              while (i < lines.length && /^\s*[-*+]\s+/.test(lines[i])) { items.push(inline(lines[i].replace(/^\s*[-*+]\s+/, ""))); i++; }
+              html += "<ul>" + items.map(function (x) { return "<li>" + x + "</li>"; }).join("") + "</ul>";
+              continue;
+            }
+            /* ordered list (group) */
+            if (/^\s*\d+\.\s+/.test(line)) {
+              var oitems = [];
+              while (i < lines.length && /^\s*\d+\.\s+/.test(lines[i])) { oitems.push(inline(lines[i].replace(/^\s*\d+\.\s+/, ""))); i++; }
+              html += "<ol>" + oitems.map(function (x) { return "<li>" + x + "</li>"; }).join("") + "</ol>";
+              continue;
+            }
+            /* blank line */
+            if (/^\s*$/.test(line)) { i++; continue; }
+            /* paragraph (group consecutive non-blank, non-special lines) */
+            var para = [];
+            while (i < lines.length && !/^\s*$/.test(lines[i]) && !/^(#{1,6}\s|>\s?|```|\s*[-*+]\s+|\s*\d+\.\s+)/.test(lines[i]) && !/^(\s*)(---|\*\*\*|___)\s*$/.test(lines[i])) {
+              para.push(lines[i]); i++;
+            }
+            html += "<p>" + inline(para.join("<br>")) + "</p>";
+          }
+          return html;
+        }
+
+        function update() { previewEl.innerHTML = render(inputEl.value); }
+
+        document.getElementById("md-copy-html").addEventListener("click", function () {
+          var btn = this;
+          var done = function () { btn.textContent = "copied!"; setTimeout(function () { btn.textContent = "copy html"; }, 2000); };
+          if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(previewEl.innerHTML).then(done); else done();
+        });
+
+        inputEl.addEventListener("input", update);
+        inputEl.value = SAMPLE;
+        update();
+      })();
+    </script>
+    <script src="../site.js"></script>
+  </body>
+</html>

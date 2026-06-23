@@ -91,6 +91,21 @@
     "tools/color.html",
     "tools/jwt.html",
     "tools/uuid.html",
+    "tools/random.html",
+    "tools/dice.html",
+    "tools/coin.html",
+    "tools/shuffle.html",
+    "tools/groups.html",
+    "tools/count.html",
+    "tools/diff.html",
+    "tools/lorem.html",
+    "tools/markdown.html",
+    "tools/unit.html",
+    "tools/base.html",
+    "tools/percent.html",
+    "tools/contrast.html",
+    "tools/gradient.html",
+    "tools/shadow.html",
   ];
 
   // Record a visit to a tool page so tools.html can show a "recently used"

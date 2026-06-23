@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>lorem ipsum — leotrax3d</title>
+    <meta name="description" content="generate lorem ipsum placeholder text by paragraphs, sentences or words. client-side." />
+    <meta name="author" content="leotrax3d" />
+    <link rel="canonical" href="https://leotrax3d.github.io/About_Me/tools/lorem.html" />
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=menu"
+    />
+    <link rel="stylesheet" href="../styles.css" />
+    <style>
+      .lorem-out { background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.15rem; font-size: 13px; line-height: 1.9; color: var(--text); min-height: 6rem; white-space: pre-wrap; }
+      .lorem-out.is-empty { color: var(--muted); }
+      .lorem-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 0.75rem; }
+    </style>
+  </head>
+  <body class="page-lorem custom-cursor">
+    <div class="page-header">
+      <div class="wrap">
+        <div class="page-eyebrow">leotrax3d &nbsp;·&nbsp; <span>lorem ipsum</span></div>
+        <h1>Lorem<br /><span class="dim">Ipsum</span></h1>
+        <p class="page-sub">
+          generate classic lorem ipsum placeholder text — choose paragraphs,
+          sentences or words, and how many.
+        </p>
+      </div>
+    </div>
+
+    <section id="generator">
+      <div class="wrap">
+        <div class="sec fade">
+          <div class="sec-head"><span class="sec-num">01</span><h2>generate</h2></div>
+
+          <div class="qr-panel" style="max-width: 600px">
+            <form class="qr-form" action="#" autocomplete="off">
+              <div class="qr-row">
+                <div class="qr-field">
+                  <label>unit</label>
+                  <div class="qr-toggle" id="lorem-unit" role="group">
+                    <button type="button" class="btn btn-ghost is-active" data-unit="paragraphs">paragraphs</button>
+                    <button type="button" class="btn btn-ghost" data-unit="sentences">sentences</button>
+                    <button type="button" class="btn btn-ghost" data-unit="words">words</button>
+                  </div>
+                </div>
+                <div class="qr-field">
+                  <label for="lorem-count">how many</label>
+                  <input type="number" id="lorem-count" class="qr-input" value="3" min="1" max="100" />
+                </div>
+              </div>
+              <div class="qr-field">
+                <label class="qr-check"><input type="checkbox" id="lorem-start" checked /> start with “Lorem ipsum dolor sit amet…”</label>
+              </div>
+              <button type="button" id="lorem-go" class="btn btn-fill">generate</button>
+            </form>
+          </div>
+
+          <div class="qr-panel" style="max-width: 600px; margin-top: 1.5rem">
+            <span class="tool-hash-label">output</span>
+            <div class="lorem-out is-empty" id="lorem-out">press generate.</div>
+            <div class="lorem-actions">
+              <button type="button" id="lorem-copy" class="btn btn-ghost" disabled>copy</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <a href="../tools.html">← tools</a>
+      <a href="../index.html">leotrax3d</a>
+    </footer>
+
+    <script>
+      (function () {
+        var WORDS = ("lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor " +
+          "incididunt ut labore et dolore magna aliqua enim ad minim veniam quis nostrud exercitation " +
+          "ullamco laboris nisi aliquip ex ea commodo consequat duis aute irure in reprehenderit voluptate " +
+          "velit esse cillum eu fugiat nulla pariatur excepteur sint occaecat cupidatat non proident sunt " +
+          "culpa qui officia deserunt mollit anim id est laborum").split(" ");
+        var START = "Lorem ipsum dolor sit amet, consectetur adipiscing elit";
+
+        var unit = "paragraphs";
+        var countEl = document.getElementById("lorem-count");
+        var startEl = document.getElementById("lorem-start");
+        var outEl = document.getElementById("lorem-out");
+        var copyBtn = document.getElementById("lorem-copy");
+
+        document.querySelectorAll("#lorem-unit .btn").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            document.querySelectorAll("#lorem-unit .btn").forEach(function (b) { b.classList.remove("is-active"); });
+            this.classList.add("is-active");
+            unit = this.dataset.unit;
+          });
+        });
+
+        function rnd(n) { return Math.floor(Math.random() * n); }
+        function word() { return WORDS[rnd(WORDS.length)]; }
+
+        function sentence() {
+          var len = 6 + rnd(10);
+          var w = [];
+          for (var i = 0; i < len; i++) w.push(word());
+          var s = w.join(" ");
+          /* occasional comma */
+          if (len > 8) { var c = 3 + rnd(len - 6); w[c] = w[c] + ","; s = w.join(" "); }
+          return s.charAt(0).toUpperCase() + s.slice(1) + ".";
+        }
+
+        function paragraph() {
+          var len = 3 + rnd(4);
+          var s = [];
+          for (var i = 0; i < len; i++) s.push(sentence());
+          return s.join(" ");
+        }
+
+        function generate() {
+          var count = Math.max(1, Math.min(100, parseInt(countEl.value, 10) || 1));
+          var out = "";
+          if (unit === "words") {
+            var w = [];
+            for (var i = 0; i < count; i++) w.push(word());
+            out = w.join(" ");
+            out = out.charAt(0).toUpperCase() + out.slice(1);
+          } else if (unit === "sentences") {
+            var arr = [];
+            for (var i = 0; i < count; i++) arr.push(sentence());
+            out = arr.join(" ");
+          } else {
+            var ps = [];
+            for (var i = 0; i < count; i++) ps.push(paragraph());
+            out = ps.join("\n\n");
+          }
+          if (startEl.checked && unit !== "words") {
+            out = START + ", " + out.charAt(0).toLowerCase() + out.slice(1);
+          } else if (startEl.checked) {
+            out = START;
+          }
+          outEl.textContent = out;
+          outEl.classList.remove("is-empty");
+          copyBtn.disabled = false;
+        }
+
+        copyBtn.addEventListener("click", function () {
+          var done = function () { copyBtn.textContent = "copied!"; setTimeout(function () { copyBtn.textContent = "copy"; }, 2000); };
+          if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(outEl.textContent).then(done); else done();
+        });
+        document.getElementById("lorem-go").addEventListener("click", generate);
+        generate();
+      })();
+    </script>
+    <script src="../site.js"></script>
+  </body>
+</html>

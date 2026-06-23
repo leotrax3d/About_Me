@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>coin flip — leotrax3d</title>
+    <meta name="description" content="flip one or many coins and see the tally of heads and tails. crypto-random, client-side." />
+    <meta name="author" content="leotrax3d" />
+    <link rel="canonical" href="https://leotrax3d.github.io/About_Me/tools/coin.html" />
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=menu"
+    />
+    <link rel="stylesheet" href="../styles.css" />
+    <style>
+      .coin-big { font-size: clamp(2.2rem, 9vw, 4rem); font-weight: 700; color: var(--accent); line-height: 1.1; text-transform: uppercase; letter-spacing: -0.02em; }
+      .coin-tally { display: flex; gap: 1.5rem; margin-top: 1rem; }
+      .coin-tally-item { font-size: 13px; color: var(--muted); }
+      .coin-tally-item b { color: var(--accent); font-size: 18px; font-variant-numeric: tabular-nums; }
+      .coin-seq { margin-top: 1rem; font-size: 12px; color: var(--muted); word-break: break-word; line-height: 1.9; letter-spacing: 0.1em; }
+      .coin-result.is-empty { color: var(--muted); font-size: 12px; }
+    </style>
+  </head>
+  <body class="page-coin custom-cursor">
+    <div class="page-header">
+      <div class="wrap">
+        <div class="page-eyebrow">leotrax3d &nbsp;·&nbsp; <span>coin flip</span></div>
+        <h1>Coin<br /><span class="dim">Flip</span></h1>
+        <p class="page-sub">
+          flip a single coin for a quick decision, or flip many at once and
+          see the heads/tails tally. fair 50/50 via the Web Crypto API.
+        </p>
+      </div>
+    </div>
+
+    <section id="flipper">
+      <div class="wrap">
+        <div class="sec fade">
+          <div class="sec-head"><span class="sec-num">01</span><h2>flip</h2></div>
+
+          <div class="qr-panel" style="max-width: 560px">
+            <form class="qr-form" action="#" autocomplete="off">
+              <div class="qr-field">
+                <label for="coin-count">how many coins</label>
+                <input type="number" id="coin-count" class="qr-input" value="1" min="1" max="10000" />
+              </div>
+              <button type="button" id="coin-go" class="btn btn-fill">flip</button>
+            </form>
+          </div>
+
+          <div class="qr-panel" style="max-width: 560px; margin-top: 1.5rem">
+            <span class="tool-hash-label">result</span>
+            <div class="coin-result is-empty" id="coin-result">press flip.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <a href="../tools.html">← tools</a>
+      <a href="../index.html">leotrax3d</a>
+    </footer>
+
+    <script>
+      (function () {
+        var countEl = document.getElementById("coin-count");
+        var resultEl = document.getElementById("coin-result");
+
+        function flipOne() {
+          var u = new Uint8Array(1);
+          crypto.getRandomValues(u);
+          return u[0] < 128 ? "H" : "T";
+        }
+
+        function flip() {
+          var count = Math.max(1, Math.min(10000, parseInt(countEl.value, 10) || 1));
+          var heads = 0, tails = 0, seq = [];
+          for (var i = 0; i < count; i++) {
+            var f = flipOne();
+            if (f === "H") heads++; else tails++;
+            if (seq.length < 500) seq.push(f === "H" ? "heads" : "tails");
+          }
+          resultEl.classList.remove("is-empty");
+          if (count === 1) {
+            resultEl.innerHTML = '<div class="coin-big">' + (heads ? "Heads" : "Tails") + "</div>";
+          } else {
+            var seqText = seq.join(" · ") + (count > 500 ? " …" : "");
+            resultEl.innerHTML =
+              '<div class="coin-tally">' +
+              '<div class="coin-tally-item">heads<br><b>' + heads + "</b></div>" +
+              '<div class="coin-tally-item">tails<br><b>' + tails + "</b></div>" +
+              '<div class="coin-tally-item">heads %<br><b>' + ((heads / count) * 100).toFixed(1) + "</b></div>" +
+              "</div>" +
+              '<div class="coin-seq">' + seqText + "</div>";
+          }
+        }
+
+        document.getElementById("coin-go").addEventListener("click", flip);
+      })();
+    </script>
+    <script src="../site.js"></script>
+  </body>
+</html>

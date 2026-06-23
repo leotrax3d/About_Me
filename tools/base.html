@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>base converter — leotrax3d</title>
+    <meta name="description" content="convert integers between binary, octal, decimal, hexadecimal and any base 2–36. client-side." />
+    <meta name="author" content="leotrax3d" />
+    <link rel="canonical" href="https://leotrax3d.github.io/About_Me/tools/base.html" />
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=menu"
+    />
+    <link rel="stylesheet" href="../styles.css" />
+    <style>
+      .base-out-item { background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 0.9rem; display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; margin-bottom: 0.6rem; }
+      .base-out-item .bl { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); flex-shrink: 0; width: 5.5rem; }
+      .base-out-item .bv { font-size: 13px; color: var(--accent); word-break: break-all; flex: 1; }
+      .base-copy { padding: 6px 12px; font-size: 9px; }
+      .base-error { color: #ff6b6b; font-size: 11px; min-height: 1rem; margin-top: 0.4rem; }
+    </style>
+  </head>
+  <body class="page-base custom-cursor">
+    <div class="page-header">
+      <div class="wrap">
+        <div class="page-eyebrow">leotrax3d &nbsp;·&nbsp; <span>base converter</span></div>
+        <h1>Base<br /><span class="dim">Converter</span></h1>
+        <p class="page-sub">
+          convert whole numbers between binary, octal, decimal, hexadecimal —
+          and any base from 2 to 36. uses BigInt, so very large values work.
+        </p>
+      </div>
+    </div>
+
+    <section id="converter">
+      <div class="wrap">
+        <div class="sec fade">
+          <div class="sec-head"><span class="sec-num">01</span><h2>convert</h2></div>
+
+          <div class="qr-panel" style="max-width: 600px">
+            <form class="qr-form" action="#" autocomplete="off">
+              <div class="qr-row">
+                <div class="qr-field">
+                  <label for="base-input">value</label>
+                  <input type="text" id="base-input" class="qr-input" value="255" placeholder="enter a number" spellcheck="false" />
+                </div>
+                <div class="qr-field">
+                  <label for="base-from">input base</label>
+                  <select id="base-from" class="qr-select">
+                    <option value="2">2 · binary</option>
+                    <option value="8">8 · octal</option>
+                    <option value="10" selected>10 · decimal</option>
+                    <option value="16">16 · hex</option>
+                  </select>
+                </div>
+              </div>
+              <div class="base-error" id="base-error"></div>
+            </form>
+          </div>
+
+          <div class="qr-panel" style="max-width: 600px; margin-top: 1.5rem">
+            <span class="tool-hash-label">results</span>
+            <div class="base-out-item"><span class="bl">binary</span><span class="bv" id="base-bin">—</span><button type="button" class="btn btn-ghost base-copy" data-t="base-bin">copy</button></div>
+            <div class="base-out-item"><span class="bl">octal</span><span class="bv" id="base-oct">—</span><button type="button" class="btn btn-ghost base-copy" data-t="base-oct">copy</button></div>
+            <div class="base-out-item"><span class="bl">decimal</span><span class="bv" id="base-dec">—</span><button type="button" class="btn btn-ghost base-copy" data-t="base-dec">copy</button></div>
+            <div class="base-out-item"><span class="bl">hex</span><span class="bv" id="base-hex">—</span><button type="button" class="btn btn-ghost base-copy" data-t="base-hex">copy</button></div>
+            <div class="qr-field" style="margin-top:1rem">
+              <label for="base-custom">custom base (2–36)</label>
+              <div style="display:flex;gap:0.5rem;align-items:center">
+                <input type="number" id="base-custom" class="qr-input" value="36" min="2" max="36" style="width:90px" />
+                <span class="bv" id="base-custom-out" style="color:var(--accent);font-size:13px;word-break:break-all">—</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <a href="../tools.html">← tools</a>
+      <a href="../index.html">leotrax3d</a>
+    </footer>
+
+    <script>
+      (function () {
+        var inputEl = document.getElementById("base-input");
+        var fromEl = document.getElementById("base-from");
+        var errorEl = document.getElementById("base-error");
+        var customEl = document.getElementById("base-custom");
+        var customOut = document.getElementById("base-custom-out");
+
+        var DIGITS = "0123456789abcdefghijklmnopqrstuvwxyz";
+
+        function parseBig(str, base) {
+          str = str.trim().toLowerCase().replace(/^0(b|o|x)/, "");
+          if (!str) return null;
+          var neg = false;
+          if (str[0] === "-") { neg = true; str = str.slice(1); }
+          var val = 0n;
+          var b = BigInt(base);
+          for (var i = 0; i < str.length; i++) {
+            var d = DIGITS.indexOf(str[i]);
+            if (d === -1 || d >= base) return null;
+            val = val * b + BigInt(d);
+          }
+          return neg ? -val : val;
+        }
+
+        function setAll(msg) {
+          ["base-bin", "base-oct", "base-dec", "base-hex"].forEach(function (id) { document.getElementById(id).textContent = msg; });
+          customOut.textContent = msg;
+        }
+
+        function convert() {
+          errorEl.textContent = "";
+          var base = parseInt(fromEl.value, 10);
+          var v = parseBig(inputEl.value, base);
+          if (v === null) {
+            if (inputEl.value.trim()) errorEl.textContent = "not a valid base-" + base + " integer.";
+            setAll("—");
+            return;
+          }
+          document.getElementById("base-bin").textContent = v.toString(2);
+          document.getElementById("base-oct").textContent = v.toString(8);
+          document.getElementById("base-dec").textContent = v.toString(10);
+          document.getElementById("base-hex").textContent = v.toString(16).toUpperCase();
+          var cb = Math.max(2, Math.min(36, parseInt(customEl.value, 10) || 36));
+          customOut.textContent = v.toString(cb);
+        }
+
+        document.querySelectorAll(".base-copy").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            var val = document.getElementById(btn.dataset.t).textContent;
+            if (val === "—") return;
+            var orig = btn.textContent;
+            if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(val).then(function () { btn.textContent = "copied!"; setTimeout(function () { btn.textContent = orig; }, 1500); });
+          });
+        });
+
+        inputEl.addEventListener("input", convert);
+        fromEl.addEventListener("change", convert);
+        customEl.addEventListener("input", convert);
+        convert();
+      })();
+    </script>
+    <script src="../site.js"></script>
+  </body>
+</html>

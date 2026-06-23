@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>character counter — leotrax3d</title>
+    <meta name="description" content="count characters, words, lines, sentences and reading time live as you type. client-side." />
+    <meta name="author" content="leotrax3d" />
+    <link rel="canonical" href="https://leotrax3d.github.io/About_Me/tools/count.html" />
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=menu"
+    />
+    <link rel="stylesheet" href="../styles.css" />
+    <style>
+      .cnt-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0.75rem; }
+      .cnt-stat { background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 0.85rem 1rem; }
+      .cnt-stat .cnt-val { font-size: 22px; font-weight: 700; color: var(--accent); line-height: 1; font-variant-numeric: tabular-nums; }
+      .cnt-stat .cnt-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-top: 6px; }
+    </style>
+  </head>
+  <body class="page-count custom-cursor">
+    <div class="page-header">
+      <div class="wrap">
+        <div class="page-eyebrow">leotrax3d &nbsp;·&nbsp; <span>character counter</span></div>
+        <h1>Character<br /><span class="dim">Counter</span></h1>
+        <p class="page-sub">
+          paste or type and get a live breakdown — characters, words, lines,
+          sentences, paragraphs and estimated reading time.
+        </p>
+      </div>
+    </div>
+
+    <section id="counter">
+      <div class="wrap">
+        <div class="sec fade">
+          <div class="sec-head"><span class="sec-num">01</span><h2>count</h2></div>
+
+          <div class="qr-panel" style="max-width: 720px">
+            <div class="qr-field">
+              <label for="cnt-input">text</label>
+              <textarea id="cnt-input" class="qr-textarea" rows="8" placeholder="start typing or paste your text…" spellcheck="false"></textarea>
+            </div>
+          </div>
+
+          <div class="qr-panel" style="max-width: 720px; margin-top: 1.5rem">
+            <span class="tool-hash-label">statistics</span>
+            <div class="cnt-grid">
+              <div class="cnt-stat"><div class="cnt-val" id="cnt-chars">0</div><div class="cnt-label">characters</div></div>
+              <div class="cnt-stat"><div class="cnt-val" id="cnt-nospace">0</div><div class="cnt-label">no spaces</div></div>
+              <div class="cnt-stat"><div class="cnt-val" id="cnt-words">0</div><div class="cnt-label">words</div></div>
+              <div class="cnt-stat"><div class="cnt-val" id="cnt-sentences">0</div><div class="cnt-label">sentences</div></div>
+              <div class="cnt-stat"><div class="cnt-val" id="cnt-lines">0</div><div class="cnt-label">lines</div></div>
+              <div class="cnt-stat"><div class="cnt-val" id="cnt-paragraphs">0</div><div class="cnt-label">paragraphs</div></div>
+              <div class="cnt-stat"><div class="cnt-val" id="cnt-reading">0s</div><div class="cnt-label">reading time</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <a href="../tools.html">← tools</a>
+      <a href="../index.html">leotrax3d</a>
+    </footer>
+
+    <script>
+      (function () {
+        var inputEl = document.getElementById("cnt-input");
+
+        function fmtTime(words) {
+          var secs = Math.round((words / 200) * 60); /* 200 wpm */
+          if (secs < 60) return secs + "s";
+          var m = Math.floor(secs / 60), s = secs % 60;
+          return m + "m" + (s ? " " + s + "s" : "");
+        }
+
+        function update() {
+          var text = inputEl.value;
+          var chars = text.length;
+          var nospace = text.replace(/\s/g, "").length;
+          var words = (text.trim().match(/\S+/g) || []).length;
+          var sentences = (text.match(/[^.!?]+[.!?]+/g) || []).length || (text.trim() ? (text.match(/[.!?]/g) ? 0 : 1) : 0);
+          var lines = text === "" ? 0 : text.split("\n").length;
+          var paragraphs = (text.split(/\n\s*\n/).filter(function (p) { return p.trim().length; })).length;
+
+          document.getElementById("cnt-chars").textContent = chars;
+          document.getElementById("cnt-nospace").textContent = nospace;
+          document.getElementById("cnt-words").textContent = words;
+          document.getElementById("cnt-sentences").textContent = sentences;
+          document.getElementById("cnt-lines").textContent = lines;
+          document.getElementById("cnt-paragraphs").textContent = paragraphs;
+          document.getElementById("cnt-reading").textContent = fmtTime(words);
+        }
+
+        inputEl.addEventListener("input", update);
+        update();
+      })();
+    </script>
+    <script src="../site.js"></script>
+  </body>
+</html>

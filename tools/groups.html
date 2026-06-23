@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>group splitter — leotrax3d</title>
+    <meta name="description" content="randomly split a list of names or items into balanced groups. client-side, crypto-random." />
+    <meta name="author" content="leotrax3d" />
+    <link rel="canonical" href="https://leotrax3d.github.io/About_Me/tools/groups.html" />
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=menu"
+    />
+    <link rel="stylesheet" href="../styles.css" />
+    <style>
+      .grp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; }
+      .grp-card { background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 0.85rem 1rem; }
+      .grp-card h3 { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.5rem; }
+      .grp-card ul { list-style: none; }
+      .grp-card li { font-size: 13px; color: var(--text); line-height: 1.9; }
+      .grp-empty { color: var(--muted); font-size: 12px; }
+      .grp-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 0.75rem; }
+    </style>
+  </head>
+  <body class="page-groups custom-cursor">
+    <div class="page-header">
+      <div class="wrap">
+        <div class="page-eyebrow">leotrax3d &nbsp;·&nbsp; <span>group splitter</span></div>
+        <h1>Group<br /><span class="dim">Splitter</span></h1>
+        <p class="page-sub">
+          paste a list of names or items and split them randomly into a set
+          number of groups, or into groups of a fixed size. balanced and fair.
+        </p>
+      </div>
+    </div>
+
+    <section id="splitter">
+      <div class="wrap">
+        <div class="sec fade">
+          <div class="sec-head"><span class="sec-num">01</span><h2>split</h2></div>
+
+          <div class="qr-panel" style="max-width: 600px">
+            <form class="qr-form" action="#" autocomplete="off">
+              <div class="qr-field">
+                <label for="grp-input">items (one per line)</label>
+                <textarea id="grp-input" class="qr-textarea" rows="7" placeholder="Alice&#10;Bob&#10;Carol&#10;Dave&#10;Erin&#10;Frank" spellcheck="false"></textarea>
+              </div>
+              <div class="qr-row">
+                <div class="qr-field">
+                  <label>split by</label>
+                  <div class="qr-toggle" id="grp-mode" role="group">
+                    <button type="button" class="btn btn-ghost is-active" data-mode="groups">number of groups</button>
+                    <button type="button" class="btn btn-ghost" data-mode="size">group size</button>
+                  </div>
+                </div>
+                <div class="qr-field">
+                  <label for="grp-n" id="grp-n-label">number of groups</label>
+                  <input type="number" id="grp-n" class="qr-input" value="2" min="1" max="100" />
+                </div>
+              </div>
+              <button type="button" id="grp-go" class="btn btn-fill">split</button>
+            </form>
+          </div>
+
+          <div class="qr-panel" style="max-width: 600px; margin-top: 1.5rem">
+            <span class="tool-hash-label">groups</span>
+            <div class="grp-empty" id="grp-empty">your groups appear here.</div>
+            <div class="grp-grid" id="grp-output"></div>
+            <div class="grp-actions">
+              <button type="button" id="grp-copy" class="btn btn-ghost" disabled>copy</button>
+              <button type="button" id="grp-again" class="btn btn-ghost" disabled>shuffle again</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <a href="../tools.html">← tools</a>
+      <a href="../index.html">leotrax3d</a>
+    </footer>
+
+    <script>
+      (function () {
+        var inputEl = document.getElementById("grp-input");
+        var nEl = document.getElementById("grp-n");
+        var nLabel = document.getElementById("grp-n-label");
+        var outEl = document.getElementById("grp-output");
+        var emptyEl = document.getElementById("grp-empty");
+        var copyBtn = document.getElementById("grp-copy");
+        var againBtn = document.getElementById("grp-again");
+        var mode = "groups";
+        var current = [];
+
+        document.querySelectorAll("#grp-mode .btn").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            document.querySelectorAll("#grp-mode .btn").forEach(function (b) { b.classList.remove("is-active"); });
+            this.classList.add("is-active");
+            mode = this.dataset.mode;
+            nLabel.textContent = mode === "groups" ? "number of groups" : "items per group";
+          });
+        });
+
+        function randInt(n) {
+          var u = new Uint32Array(1);
+          crypto.getRandomValues(u);
+          return Math.floor((u[0] / 4294967296) * n);
+        }
+
+        function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+
+        function split() {
+          var items = inputEl.value.split("\n").map(function (s) { return s.trim(); }).filter(function (s) { return s.length; });
+          if (!items.length) { emptyEl.hidden = false; emptyEl.textContent = "add at least one item above."; outEl.innerHTML = ""; copyBtn.disabled = true; againBtn.disabled = true; current = []; return; }
+
+          for (var i = items.length - 1; i > 0; i--) { var j = randInt(i + 1); var t = items[i]; items[i] = items[j]; items[j] = t; }
+
+          var n = Math.max(1, parseInt(nEl.value, 10) || 1);
+          var numGroups = mode === "groups" ? Math.min(n, items.length) : Math.ceil(items.length / n);
+          var groups = [];
+          for (var g = 0; g < numGroups; g++) groups.push([]);
+          /* round-robin deal for balanced groups */
+          items.forEach(function (item, idx) { groups[idx % numGroups].push(item); });
+
+          current = groups;
+          emptyEl.hidden = true;
+          outEl.innerHTML = groups.map(function (grp, gi) {
+            return '<div class="grp-card"><h3>group ' + (gi + 1) + " · " + grp.length + "</h3><ul>" +
+              grp.map(function (it) { return "<li>" + esc(it) + "</li>"; }).join("") + "</ul></div>";
+          }).join("");
+          copyBtn.disabled = false;
+          againBtn.disabled = false;
+        }
+
+        copyBtn.addEventListener("click", function () {
+          var text = current.map(function (grp, gi) { return "Group " + (gi + 1) + ":\n" + grp.map(function (x) { return "  " + x; }).join("\n"); }).join("\n\n");
+          var done = function () { copyBtn.textContent = "copied!"; setTimeout(function () { copyBtn.textContent = "copy"; }, 2000); };
+          if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done); else done();
+        });
+        document.getElementById("grp-go").addEventListener("click", split);
+        againBtn.addEventListener("click", split);
+      })();
+    </script>
+    <script src="../site.js"></script>
+  </body>
+</html>
