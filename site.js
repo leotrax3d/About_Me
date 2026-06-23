@@ -106,6 +106,7 @@
     "tools/contrast.html",
     "tools/gradient.html",
     "tools/shadow.html",
+    "tools/bench.html",
   ];
 
   // Record a visit to a tool page so tools.html can show a "recently used"

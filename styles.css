@@ -1231,26 +1231,71 @@ h2 {
 
 .tool-star {
   position: absolute;
-  top: 1rem;
-  right: 2.8rem;
+  top: 0.8rem;
+  right: 2.3rem;
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 15px;
-  line-height: 1;
-  padding: 3px;
+  padding: 4px;
   color: var(--muted);
   transition: color 0.15s, transform 0.15s;
   z-index: 2;
+  display: flex;
+  align-items: center;
+  line-height: 1;
+}
+
+.tool-star .material-symbols-outlined {
+  font-size: 18px;
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20;
+  transition: font-variation-settings 0.2s;
 }
 
 .tool-star:hover {
   color: var(--accent);
-  transform: scale(1.25);
+  transform: scale(1.15);
 }
 
 .tool-star.is-starred {
   color: var(--accent);
+}
+
+.tool-star.is-starred .material-symbols-outlined {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+}
+
+/* Category icon + name on same baseline row inside the card */
+.tool-name-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.tool-cat-icon {
+  font-size: 22px;
+  color: var(--accent);
+  font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24;
+  opacity: 0.5;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+  transition: opacity 0.2s, font-variation-settings 0.2s;
+  line-height: 1;
+}
+
+.tool-card:hover .tool-cat-icon {
+  opacity: 1;
+  font-variation-settings: 'FILL' 1, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+}
+
+/* Section-num variant that uses a Material icon instead of the [ 01 ] bracket pattern */
+.sec-num-icon::before,
+.sec-num-icon::after {
+  display: none;
+}
+
+.sec-num-icon .material-symbols-outlined {
+  font-size: 18px;
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20;
 }
 
 .tool-favorites-head {
@@ -1280,7 +1325,7 @@ h2 {
   color: var(--text);
   font-family: var(--mono);
   font-size: 13px;
-  padding: 0.85rem 1rem 0.85rem 2.4rem;
+  padding: 0.85rem 1rem 0.85rem 2.7rem;
   border-radius: 8px;
   transition: border-color 0.15s;
 }
@@ -1294,16 +1339,21 @@ h2 {
   color: var(--muted);
 }
 
-.tool-search-wrap::before {
-  content: "/";
+.tool-search-icon {
   position: absolute;
-  left: 1rem;
+  left: 0.7rem;
   top: 50%;
   transform: translateY(-50%);
-  color: var(--accent);
-  font-size: 14px;
-  font-weight: 700;
+  color: var(--muted);
   pointer-events: none;
+  font-size: 20px;
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20;
+  transition: color 0.15s;
+  line-height: 1;
+}
+
+.tool-search-wrap:focus-within .tool-search-icon {
+  color: var(--accent);
 }
 
 .tool-filters {

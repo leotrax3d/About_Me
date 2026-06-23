@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>benchmark — leotrax3d</title>
+    <meta name="description" content="measure CPU performance with pure-JS workloads and GPU rendering speed with a WebGL fill-rate test. all client-side." />
+    <meta name="author" content="leotrax3d" />
+    <link rel="canonical" href="https://leotrax3d.github.io/About_Me/tools/bench.html" />
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=menu"
+    />
+    <link rel="stylesheet" href="../styles.css" />
+    <style>
+      .bench-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.75rem; margin: 1.5rem 0; }
+      .bench-row { background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 0.9rem 1.1rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+      .bench-row-name { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+      .bench-row-val { font-size: 13px; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; white-space: nowrap; }
+      .bench-row-val.pending { color: var(--muted); font-weight: 400; }
+      .bench-score-wrap { text-align: center; padding: 2rem 0 1rem; }
+      .bench-score { font-size: clamp(3rem, 10vw, 5.5rem); font-weight: 700; color: var(--accent); line-height: 1; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+      .bench-score-label { font-size: 10px; color: var(--muted); letter-spacing: 0.2em; text-transform: uppercase; margin-top: 0.5rem; }
+      .bench-progress-wrap { height: 3px; background: var(--bg3); border-radius: 999px; overflow: hidden; margin: 1.5rem 0 0.4rem; }
+      .bench-progress { height: 100%; width: 0%; background: var(--accent); border-radius: 999px; transition: width 0.3s ease; }
+      .bench-status { font-size: 11px; color: var(--muted); letter-spacing: 0.06em; min-height: 1.2em; }
+      .bench-divider { border: none; border-top: 1px solid var(--border); margin: 1.8rem 0 1.5rem; }
+      .bench-section-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.18em; color: var(--accent); margin-bottom: 0.75rem; }
+      .bench-bar-wrap { position: relative; height: 6px; background: var(--bg3); border-radius: 999px; overflow: hidden; margin-top: 0.4rem; }
+      .bench-bar { position: absolute; left: 0; top: 0; height: 100%; background: var(--accent); border-radius: 999px; transition: width 0.6s ease; width: 0%; }
+      .bench-webgl-canvas { display: none; }
+      .bench-note { font-size: 11px; color: var(--muted); line-height: 1.8; margin-top: 0.6rem; }
+    </style>
+  </head>
+  <body class="page-bench custom-cursor">
+    <div class="page-header">
+      <div class="wrap">
+        <div class="page-eyebrow">leotrax3d &nbsp;·&nbsp; <span>benchmark</span></div>
+        <h1>Bench<br /><span class="dim">Mark</span></h1>
+        <p class="page-sub">
+          measure how fast your device handles real workloads — prime sieve,
+          sorting, JSON throughput, string ops on the CPU side; a WebGL
+          fill-rate test for the GPU. all local, nothing is sent anywhere.
+        </p>
+      </div>
+    </div>
+
+    <section id="bench">
+      <div class="wrap">
+        <div class="sec fade">
+          <div class="sec-head"><span class="sec-num">01</span><h2>run</h2></div>
+
+          <div class="qr-panel" style="max-width: 680px">
+
+            <button type="button" id="bench-run" class="btn btn-fill">run benchmark</button>
+
+            <div class="bench-progress-wrap" style="margin-top:1.2rem">
+              <div class="bench-progress" id="bench-progress"></div>
+            </div>
+            <div class="bench-status" id="bench-status">ready.</div>
+
+            <div class="bench-score-wrap" id="bench-score-wrap" hidden>
+              <div class="bench-score" id="bench-score">—</div>
+              <div class="bench-score-label">cpu score</div>
+            </div>
+
+            <hr class="bench-divider" />
+
+            <div class="bench-section-label">cpu tests</div>
+            <div class="bench-grid">
+              <div class="bench-row"><span class="bench-row-name">prime sieve (2M)</span><span class="bench-row-val pending" id="r-prime">—</span></div>
+              <div class="bench-row"><span class="bench-row-name">sort 500k floats</span><span class="bench-row-val pending" id="r-sort">—</span></div>
+              <div class="bench-row"><span class="bench-row-name">json round-trip ×100</span><span class="bench-row-val pending" id="r-json">—</span></div>
+              <div class="bench-row"><span class="bench-row-name">string ops ×50</span><span class="bench-row-val pending" id="r-str">—</span></div>
+              <div class="bench-row"><span class="bench-row-name">fibonacci ×100k</span><span class="bench-row-val pending" id="r-fib">—</span></div>
+            </div>
+
+            <hr class="bench-divider" />
+
+            <div class="bench-section-label">gpu / render</div>
+            <div id="bench-gpu-section">
+              <div class="bench-row" style="margin-bottom:0.75rem">
+                <span class="bench-row-name">webgl triangles / sec</span>
+                <span class="bench-row-val pending" id="r-gpu">—</span>
+              </div>
+              <div class="bench-note" id="bench-gpu-note">webgl fill-rate: draws 200 000 triangles per frame, counts frames in 2 seconds.</div>
+              <div id="bench-gpu-bars" hidden>
+                <div style="margin-top:1rem">
+                  <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.3rem">
+                    <span>vs. previous run</span><span id="r-gpu-pct"></span>
+                  </div>
+                  <div class="bench-bar-wrap"><div class="bench-bar" id="gpu-bar"></div></div>
+                </div>
+              </div>
+            </div>
+
+            <canvas class="bench-webgl-canvas" id="bench-canvas" width="1" height="1"></canvas>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <a href="../tools.html">← tools</a>
+      <a href="../index.html">leotrax3d</a>
+    </footer>
+
+    <script>
+    (function () {
+      var runBtn = document.getElementById("bench-run");
+      var progress = document.getElementById("bench-progress");
+      var status = document.getElementById("bench-status");
+      var scoreWrap = document.getElementById("bench-score-wrap");
+      var scoreEl = document.getElementById("bench-score");
+
+      /* Reference timings (ms) on a mid-range M1 MacBook Air @ Chrome 124.
+         Score = geometric mean of (ref / actual) * 1000 for each test. */
+      var REF = { prime: 38, sort: 62, json: 44, str: 28, fib: 18 };
+
+      /* ---------- CPU test functions ---------- */
+      function testPrime() {
+        var limit = 2000000;
+        var sieve = new Uint8Array(limit + 1);
+        for (var i = 2; i * i <= limit; i++) {
+          if (!sieve[i]) for (var j = i * i; j <= limit; j += i) sieve[j] = 1;
+        }
+        var count = 0;
+        for (var k = 2; k <= limit; k++) if (!sieve[k]) count++;
+        return count; /* 148 933 */
+      }
+
+      function testSort() {
+        var buf = new Float64Array(500000);
+        for (var i = 0; i < buf.length; i++) buf[i] = Math.random();
+        buf.sort();
+        return buf[0]; /* ~0 */
+      }
+
+      function testJSON() {
+        var obj = { items: [] };
+        for (var i = 0; i < 200; i++) obj.items.push({ id: i, name: "item-" + i, value: Math.random(), tags: ["a","b","c"] });
+        var s;
+        for (var j = 0; j < 100; j++) s = JSON.parse(JSON.stringify(obj));
+        return s.items.length; /* 200 */
+      }
+
+      function testString() {
+        var base = "abcdefghijklmnopqrstuvwxyz0123456789!@#$%".repeat(2500); /* ~105 KB */
+        var r;
+        for (var i = 0; i < 50; i++) r = base.split("").reverse().join("") + base.slice(0, 10);
+        return r.length;
+      }
+
+      function testFib() {
+        var result;
+        for (var iter = 0; iter < 100000; iter++) {
+          var a = 0, b = 1;
+          for (var n = 0; n < 78; n++) { var c = a + b; a = b; b = c; }
+          result = a;
+        }
+        return result; /* 8 944 394 323 791 464 */
+      }
+
+      /* ---------- GPU / WebGL test ---------- */
+      function testWebGL(canvas) {
+        var gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+        if (!gl) return null;
+
+        var vsrc = "attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}";
+        var fsrc = "precision mediump float;void main(){gl_FragColor=vec4(.77,.94,.24,1.);}";
+
+        function shader(type, src) {
+          var s = gl.createShader(type);
+          gl.shaderSource(s, src);
+          gl.compileShader(s);
+          return s;
+        }
+        var prog = gl.createProgram();
+        gl.attachShader(prog, shader(gl.VERTEX_SHADER, vsrc));
+        gl.attachShader(prog, shader(gl.FRAGMENT_SHADER, fsrc));
+        gl.linkProgram(prog);
+        gl.useProgram(prog);
+
+        var TRIS = 200000;
+        var verts = new Float32Array(TRIS * 6); /* 3 verts * 2 floats each */
+        for (var i = 0; i < verts.length; i++) verts[i] = (Math.random() * 2) - 1;
+        var buf = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+        gl.bufferData(gl.ARRAY_BUFFER, verts, gl.STATIC_DRAW);
+        var loc = gl.getAttribLocation(prog, "a");
+        gl.enableVertexAttribArray(loc);
+        gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+
+        var frames = 0;
+        var duration = 2000; /* ms */
+        var start = performance.now();
+        while (performance.now() - start < duration) {
+          gl.clear(gl.COLOR_BUFFER_BIT);
+          gl.drawArrays(gl.TRIANGLES, 0, TRIS * 3);
+          frames++;
+        }
+        var elapsed = performance.now() - start;
+        return Math.round((frames * TRIS) / (elapsed / 1000)); /* triangles/sec */
+      }
+
+      /* ---------- runner ---------- */
+      var STEPS = 6; /* 5 cpu + 1 gpu */
+      var step = 0;
+
+      function setProgress(n) {
+        progress.style.width = Math.round((n / STEPS) * 100) + "%";
+      }
+
+      function setResult(id, ms) {
+        var el = document.getElementById(id);
+        el.textContent = ms.toFixed(1) + " ms";
+        el.classList.remove("pending");
+      }
+
+      function runStep(tests, i, cpuTimes, next) {
+        if (i >= tests.length) { next(cpuTimes); return; }
+        var t = tests[i];
+        status.textContent = "running: " + t.label + "…";
+        setTimeout(function () {
+          var s = performance.now();
+          t.fn();
+          var ms = performance.now() - s;
+          cpuTimes[t.key] = ms;
+          setResult(t.id, ms);
+          step++;
+          setProgress(step);
+          runStep(tests, i + 1, cpuTimes, next);
+        }, 60);
+      }
+
+      runBtn.addEventListener("click", function () {
+        runBtn.disabled = true;
+        scoreWrap.hidden = true;
+        step = 0;
+        setProgress(0);
+        status.textContent = "warming up…";
+        ["r-prime","r-sort","r-json","r-str","r-fib","r-gpu"].forEach(function(id){
+          var el = document.getElementById(id);
+          el.textContent = "—";
+          el.classList.add("pending");
+        });
+
+        var tests = [
+          { key: "prime", id: "r-prime", label: "prime sieve", fn: testPrime },
+          { key: "sort",  id: "r-sort",  label: "sort",        fn: testSort  },
+          { key: "json",  id: "r-json",  label: "json",        fn: testJSON  },
+          { key: "str",   id: "r-str",   label: "strings",     fn: testString},
+          { key: "fib",   id: "r-fib",   label: "fibonacci",   fn: testFib   },
+        ];
+
+        setTimeout(function () {
+          runStep(tests, 0, {}, function (times) {
+            /* CPU score: geometric mean of per-test ratios vs reference */
+            var keys = Object.keys(REF);
+            var logSum = 0;
+            keys.forEach(function (k) { logSum += Math.log(REF[k] / times[k]); });
+            var score = Math.round(Math.exp(logSum / keys.length) * 1000);
+
+            scoreEl.textContent = score;
+            scoreWrap.hidden = false;
+
+            /* GPU test */
+            status.textContent = "running: webgl gpu test…";
+            setTimeout(function () {
+              var canvas = document.getElementById("bench-canvas");
+              var tris = testWebGL(canvas);
+              step++;
+              setProgress(step);
+
+              var gpuEl = document.getElementById("r-gpu");
+              if (tris === null) {
+                gpuEl.textContent = "no webgl";
+                document.getElementById("bench-gpu-note").textContent = "webgl is not available in this browser.";
+              } else {
+                gpuEl.textContent = (tris / 1e6).toFixed(2) + "M / s";
+                gpuEl.classList.remove("pending");
+                /* Show bar vs stored previous run */
+                try {
+                  var prev = parseInt(localStorage.getItem("bench-gpu-prev") || "0", 10);
+                  if (prev > 0) {
+                    var pct = Math.min(100, Math.round((tris / prev) * 100));
+                    document.getElementById("r-gpu-pct").textContent = pct + "%";
+                    document.getElementById("gpu-bar").style.width = pct + "%";
+                    document.getElementById("bench-gpu-bars").hidden = false;
+                  }
+                  localStorage.setItem("bench-gpu-prev", tris);
+                } catch(e){}
+              }
+
+              status.textContent = "done.";
+              runBtn.disabled = false;
+            }, 80);
+          });
+        }, 100);
+      });
+    })();
+    </script>
+    <script src="../site.js"></script>
+  </body>
+</html>
