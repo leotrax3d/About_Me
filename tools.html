@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>tools — leotrax3d</title>
-    <meta name="description" content="small, dependency-free browser tools by leotrax3d — qr codes, url hider, checksums, base64, regex, json, timestamps, colors, jwt, uuid. searchable, all client-side." />
+    <meta name="description" content="a kit of small, dependency-free browser tools by leotrax3d — encoding, crypto, text, converters, randomisers and design helpers. searchable, all client-side." />
     <meta name="author" content="leotrax3d" />
     <link rel="canonical" href="https://leotrax3d.github.io/About_Me/tools.html" />
     <meta property="og:type" content="website" />
@@ -70,6 +70,8 @@
               <button type="button" class="tool-filter" data-cat="crypto">crypto</button>
               <button type="button" class="tool-filter" data-cat="text">text &amp; data</button>
               <button type="button" class="tool-filter" data-cat="convert">convert</button>
+              <button type="button" class="tool-filter" data-cat="random">random</button>
+              <button type="button" class="tool-filter" data-cat="design">design</button>
             </div>
           </div>
 
@@ -198,6 +200,156 @@
                 generate up to 20 at once, click any to copy instantly.
               </div>
               <span class="tool-tag">uuid · v4 · random</span>
+            </a>
+
+            <a href="tools/random.html" class="tool-card" data-tool-id="random" data-tool-cat="random" data-tool-keywords="random number range integer decimal unique generate rng">
+              <button class="tool-star" type="button" aria-label="Star Random Number">☆</button>
+              <div class="tool-name">Random Number</div>
+              <div class="tool-desc">
+                generate random numbers in any range — choose count, decimals
+                and whether values must be unique. crypto-random.
+              </div>
+              <span class="tool-tag">random · range</span>
+            </a>
+
+            <a href="tools/dice.html" class="tool-card" data-tool-id="dice" data-tool-cat="random" data-tool-keywords="dice roll d6 d20 d100 polyhedral tabletop rpg modifier">
+              <button class="tool-star" type="button" aria-label="Star Dice Roller">☆</button>
+              <div class="tool-name">Dice Roller</div>
+              <div class="tool-desc">
+                roll polyhedral dice (d4–d100) with a modifier and see every
+                face plus the total. fair rolls via the Web Crypto API.
+              </div>
+              <span class="tool-tag">dice · d20 · rpg</span>
+            </a>
+
+            <a href="tools/coin.html" class="tool-card" data-tool-id="coin" data-tool-cat="random" data-tool-keywords="coin flip heads tails toss decision 50 50 probability">
+              <button class="tool-star" type="button" aria-label="Star Coin Flip">☆</button>
+              <div class="tool-name">Coin Flip</div>
+              <div class="tool-desc">
+                flip one coin for a quick decision, or many at once and see the
+                heads/tails tally. fair 50/50 via the Web Crypto API.
+              </div>
+              <span class="tool-tag">coin · heads · tails</span>
+            </a>
+
+            <a href="tools/shuffle.html" class="tool-card" data-tool-id="shuffle" data-tool-cat="random" data-tool-keywords="list randomizer shuffle order fisher yates draw raffle">
+              <button class="tool-star" type="button" aria-label="Star List Randomizer">☆</button>
+              <div class="tool-name">List Randomizer</div>
+              <div class="tool-desc">
+                paste a list, one item per line, and shuffle it into a random
+                order with a fair Fisher–Yates shuffle.
+              </div>
+              <span class="tool-tag">shuffle · order</span>
+            </a>
+
+            <a href="tools/groups.html" class="tool-card" data-tool-id="groups" data-tool-cat="random" data-tool-keywords="group splitter teams random split balanced names assign">
+              <button class="tool-star" type="button" aria-label="Star Group Splitter">☆</button>
+              <div class="tool-name">Group Splitter</div>
+              <div class="tool-desc">
+                split a list of names or items randomly into a set number of
+                groups, or into groups of a fixed size. balanced and fair.
+              </div>
+              <span class="tool-tag">groups · teams</span>
+            </a>
+
+            <a href="tools/count.html" class="tool-card" data-tool-id="count" data-tool-cat="text" data-tool-keywords="character counter words lines sentences paragraphs reading time length">
+              <button class="tool-star" type="button" aria-label="Star Character Counter">☆</button>
+              <div class="tool-name">Character Counter</div>
+              <div class="tool-desc">
+                live breakdown of any text — characters, words, lines,
+                sentences, paragraphs and estimated reading time.
+              </div>
+              <span class="tool-tag">count · words</span>
+            </a>
+
+            <a href="tools/diff.html" class="tool-card" data-tool-id="diff" data-tool-cat="text" data-tool-keywords="text diff compare difference changes lcs added removed">
+              <button class="tool-star" type="button" aria-label="Star Text Diff">☆</button>
+              <div class="tool-name">Text Diff</div>
+              <div class="tool-desc">
+                compare two versions of a text line by line — additions in
+                lime, removals in red. computed locally with an LCS diff.
+              </div>
+              <span class="tool-tag">diff · compare</span>
+            </a>
+
+            <a href="tools/lorem.html" class="tool-card" data-tool-id="lorem" data-tool-cat="text" data-tool-keywords="lorem ipsum placeholder dummy text filler paragraphs words">
+              <button class="tool-star" type="button" aria-label="Star Lorem Ipsum">☆</button>
+              <div class="tool-name">Lorem Ipsum</div>
+              <div class="tool-desc">
+                generate classic lorem ipsum placeholder text — by paragraphs,
+                sentences or words, with one click to copy.
+              </div>
+              <span class="tool-tag">lorem · placeholder</span>
+            </a>
+
+            <a href="tools/markdown.html" class="tool-card" data-tool-id="markdown" data-tool-cat="text" data-tool-keywords="markdown preview render md html headings lists code">
+              <button class="tool-star" type="button" aria-label="Star Markdown Preview">☆</button>
+              <div class="tool-name">Markdown Preview</div>
+              <div class="tool-desc">
+                write markdown and watch it render live, side by side.
+                supports headings, lists, code, quotes, links and emphasis.
+              </div>
+              <span class="tool-tag">markdown · render</span>
+            </a>
+
+            <a href="tools/unit.html" class="tool-card" data-tool-id="unit" data-tool-cat="convert" data-tool-keywords="unit converter length mass weight temperature volume area speed data time">
+              <button class="tool-star" type="button" aria-label="Star Unit Converter">☆</button>
+              <div class="tool-name">Unit Converter</div>
+              <div class="tool-desc">
+                convert between units of length, mass, temperature, volume,
+                area, speed, digital storage and time — instantly.
+              </div>
+              <span class="tool-tag">units · metric</span>
+            </a>
+
+            <a href="tools/base.html" class="tool-card" data-tool-id="base" data-tool-cat="convert" data-tool-keywords="base converter binary octal decimal hexadecimal radix number system bigint">
+              <button class="tool-star" type="button" aria-label="Star Base Converter">☆</button>
+              <div class="tool-name">Base Converter</div>
+              <div class="tool-desc">
+                convert whole numbers between binary, octal, decimal, hex and
+                any base 2–36. uses BigInt, so huge values work.
+              </div>
+              <span class="tool-tag">binary · hex · radix</span>
+            </a>
+
+            <a href="tools/percent.html" class="tool-card" data-tool-id="percent" data-tool-cat="convert" data-tool-keywords="percentage calculator percent of change increase decrease ratio">
+              <button class="tool-star" type="button" aria-label="Star Percentage Calculator">☆</button>
+              <div class="tool-name">Percentage Calculator</div>
+              <div class="tool-desc">
+                the three percentage questions you actually ask — X% of Y, X is
+                what % of Y, and percent change between two numbers.
+              </div>
+              <span class="tool-tag">percent · change</span>
+            </a>
+
+            <a href="tools/contrast.html" class="tool-card" data-tool-id="contrast" data-tool-cat="design" data-tool-keywords="contrast checker wcag accessibility ratio aa aaa color a11y">
+              <button class="tool-star" type="button" aria-label="Star Contrast Checker">☆</button>
+              <div class="tool-name">Contrast Checker</div>
+              <div class="tool-desc">
+                measure the WCAG contrast ratio between text and background,
+                with pass/fail marks for AA and AAA at both text sizes.
+              </div>
+              <span class="tool-tag">wcag · a11y</span>
+            </a>
+
+            <a href="tools/gradient.html" class="tool-card" data-tool-id="gradient" data-tool-cat="design" data-tool-keywords="gradient generator css linear radial color stops background">
+              <button class="tool-star" type="button" aria-label="Star Gradient Generator">☆</button>
+              <div class="tool-name">Gradient Generator</div>
+              <div class="tool-desc">
+                build a CSS gradient — linear or radial with any number of
+                colour stops — preview it live and copy the rule.
+              </div>
+              <span class="tool-tag">css · gradient</span>
+            </a>
+
+            <a href="tools/shadow.html" class="tool-card" data-tool-id="shadow" data-tool-cat="design" data-tool-keywords="box shadow generator css offset blur spread inset elevation">
+              <button class="tool-star" type="button" aria-label="Star Box Shadow Generator">☆</button>
+              <div class="tool-name">Box Shadow</div>
+              <div class="tool-desc">
+                dial in a CSS box-shadow — offset, blur, spread, colour and
+                opacity — watch it live on the box and copy the code.
+              </div>
+              <span class="tool-tag">css · box-shadow</span>
             </a>
 
           </div>

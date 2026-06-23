@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>text diff — leotrax3d</title>
+    <meta name="description" content="compare two texts line by line and see additions and removals highlighted. client-side." />
+    <meta name="author" content="leotrax3d" />
+    <link rel="canonical" href="https://leotrax3d.github.io/About_Me/tools/diff.html" />
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=menu"
+    />
+    <link rel="stylesheet" href="../styles.css" />
+    <style>
+      .diff-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+      @media (max-width: 600px) { .diff-cols { grid-template-columns: 1fr; } }
+      .diff-out { background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 0.85rem 1rem; font-size: 12px; line-height: 1.8; white-space: pre-wrap; word-break: break-word; min-height: 5rem; overflow-x: auto; }
+      .diff-out.is-empty { color: var(--muted); }
+      .diff-line { display: block; padding: 0 4px; border-radius: 2px; }
+      .diff-add { background: rgba(197, 241, 62, 0.14); color: var(--text); }
+      .diff-add::before { content: "+ "; color: var(--accent); }
+      .diff-del { background: rgba(249, 117, 131, 0.14); color: var(--text); }
+      .diff-del::before { content: "− "; color: #f97583; }
+      .diff-same { color: var(--muted); }
+      .diff-same::before { content: "  "; white-space: pre; }
+      .diff-stats { font-size: 11px; color: var(--muted); margin-top: 0.6rem; letter-spacing: 0.04em; }
+      .diff-stats b.add { color: var(--accent); }
+      .diff-stats b.del { color: #f97583; }
+    </style>
+  </head>
+  <body class="page-diff custom-cursor">
+    <div class="page-header">
+      <div class="wrap">
+        <div class="page-eyebrow">leotrax3d &nbsp;·&nbsp; <span>text diff</span></div>
+        <h1>Text<br /><span class="dim">Diff</span></h1>
+        <p class="page-sub">
+          paste two versions of a text and see what changed, line by line —
+          additions in lime, removals in red. computed locally.
+        </p>
+      </div>
+    </div>
+
+    <section id="differ">
+      <div class="wrap">
+        <div class="sec fade">
+          <div class="sec-head"><span class="sec-num">01</span><h2>compare</h2></div>
+
+          <div class="qr-panel" style="max-width: 860px">
+            <div class="diff-cols">
+              <div class="qr-field">
+                <label for="diff-a">original</label>
+                <textarea id="diff-a" class="qr-textarea" rows="8" placeholder="the first version…" spellcheck="false"></textarea>
+              </div>
+              <div class="qr-field">
+                <label for="diff-b">changed</label>
+                <textarea id="diff-b" class="qr-textarea" rows="8" placeholder="the second version…" spellcheck="false"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="qr-panel" style="max-width: 860px; margin-top: 1.5rem">
+            <span class="tool-hash-label">differences</span>
+            <div class="diff-out is-empty" id="diff-out">type in both boxes to see the diff.</div>
+            <div class="diff-stats" id="diff-stats"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <a href="../tools.html">← tools</a>
+      <a href="../index.html">leotrax3d</a>
+    </footer>
+
+    <script>
+      (function () {
+        var aEl = document.getElementById("diff-a");
+        var bEl = document.getElementById("diff-b");
+        var outEl = document.getElementById("diff-out");
+        var statsEl = document.getElementById("diff-stats");
+
+        function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+
+        /* Longest Common Subsequence over lines, then walk back to a diff. */
+        function diffLines(a, b) {
+          var n = a.length, m = b.length;
+          var dp = [];
+          for (var i = 0; i <= n; i++) { dp.push(new Array(m + 1).fill(0)); }
+          for (var i = n - 1; i >= 0; i--) {
+            for (var j = m - 1; j >= 0; j--) {
+              dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+            }
+          }
+          var res = [], i = 0, j = 0;
+          while (i < n && j < m) {
+            if (a[i] === b[j]) { res.push({ t: "same", v: a[i] }); i++; j++; }
+            else if (dp[i + 1][j] >= dp[i][j + 1]) { res.push({ t: "del", v: a[i] }); i++; }
+            else { res.push({ t: "add", v: b[j] }); j++; }
+          }
+          while (i < n) { res.push({ t: "del", v: a[i++] }); }
+          while (j < m) { res.push({ t: "add", v: b[j++] }); }
+          return res;
+        }
+
+        function update() {
+          var a = aEl.value, b = bEl.value;
+          if (!a && !b) { outEl.textContent = "type in both boxes to see the diff."; outEl.classList.add("is-empty"); statsEl.textContent = ""; return; }
+          var rows = diffLines(a.split("\n"), b.split("\n"));
+          var adds = 0, dels = 0;
+          var html = rows.map(function (r) {
+            if (r.t === "add") adds++;
+            if (r.t === "del") dels++;
+            return '<span class="diff-line diff-' + r.t + '">' + (esc(r.v) || " ") + "</span>";
+          }).join("");
+          outEl.classList.remove("is-empty");
+          outEl.innerHTML = html;
+          statsEl.innerHTML = rows.length && (adds || dels)
+            ? '<b class="add">+' + adds + " added</b> · <b class=\"del\">−" + dels + " removed</b>"
+            : "the two texts are identical.";
+        }
+
+        aEl.addEventListener("input", update);
+        bEl.addEventListener("input", update);
+        update();
+      })();
+    </script>
+    <script src="../site.js"></script>
+  </body>
+</html>

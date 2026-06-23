@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>unit converter — leotrax3d</title>
+    <meta name="description" content="convert length, mass, temperature, volume, area, speed, data and time units. client-side." />
+    <meta name="author" content="leotrax3d" />
+    <link rel="canonical" href="https://leotrax3d.github.io/About_Me/tools/unit.html" />
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=menu"
+    />
+    <link rel="stylesheet" href="../styles.css" />
+    <style>
+      .unit-row { display: grid; grid-template-columns: 1fr auto 1fr; gap: 0.75rem; align-items: end; }
+      @media (max-width: 560px) { .unit-row { grid-template-columns: 1fr; } .unit-swap-wrap { justify-self: start; } }
+      .unit-swap { background: var(--bg3); border: 1px solid var(--border2); color: var(--accent); border-radius: 8px; width: 40px; height: 40px; cursor: pointer; font-size: 16px; margin-bottom: 1px; transition: border-color 0.15s; }
+      .unit-swap:hover { border-color: var(--accent); }
+      .unit-result { background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.15rem; margin-top: 1.5rem; }
+      .unit-result .uv { font-size: clamp(1.6rem, 5vw, 2.4rem); font-weight: 700; color: var(--accent); line-height: 1.1; word-break: break-all; }
+      .unit-result .ul { font-size: 11px; color: var(--muted); margin-top: 0.3rem; }
+    </style>
+  </head>
+  <body class="page-unit custom-cursor">
+    <div class="page-header">
+      <div class="wrap">
+        <div class="page-eyebrow">leotrax3d &nbsp;·&nbsp; <span>unit converter</span></div>
+        <h1>Unit<br /><span class="dim">Converter</span></h1>
+        <p class="page-sub">
+          convert between units of length, mass, temperature, volume, area,
+          speed, digital storage and time — instantly, as you type.
+        </p>
+      </div>
+    </div>
+
+    <section id="converter">
+      <div class="wrap">
+        <div class="sec fade">
+          <div class="sec-head"><span class="sec-num">01</span><h2>convert</h2></div>
+
+          <div class="qr-panel" style="max-width: 640px">
+            <form class="qr-form" action="#" autocomplete="off">
+              <div class="qr-field">
+                <label for="unit-cat">category</label>
+                <select id="unit-cat" class="qr-select"></select>
+              </div>
+              <div class="unit-row">
+                <div class="qr-field" style="margin:0">
+                  <label for="unit-val">value</label>
+                  <input type="number" id="unit-val" class="qr-input" value="1" />
+                  <select id="unit-from" class="qr-select" style="margin-top:0.5rem"></select>
+                </div>
+                <div class="unit-swap-wrap qr-field" style="margin:0">
+                  <button type="button" class="unit-swap" id="unit-swap" title="swap units">⇄</button>
+                </div>
+                <div class="qr-field" style="margin:0">
+                  <label for="unit-to">to</label>
+                  <input type="text" id="unit-out" class="qr-input" readonly />
+                  <select id="unit-to" class="qr-select" style="margin-top:0.5rem"></select>
+                </div>
+              </div>
+            </form>
+
+            <div class="unit-result">
+              <div class="uv" id="unit-big">—</div>
+              <div class="ul" id="unit-formula"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <a href="../tools.html">← tools</a>
+      <a href="../index.html">leotrax3d</a>
+    </footer>
+
+    <script>
+      (function () {
+        /* factor = how many base units one of this unit equals */
+        var CATS = {
+          length: { label: "length", base: "m", units: { mm: 0.001, cm: 0.01, m: 1, km: 1000, in: 0.0254, ft: 0.3048, yd: 0.9144, mi: 1609.344, "nautical mi": 1852 } },
+          mass: { label: "mass", base: "kg", units: { mg: 1e-6, g: 0.001, kg: 1, t: 1000, oz: 0.0283495, lb: 0.453592, st: 6.35029 } },
+          volume: { label: "volume", base: "L", units: { ml: 0.001, L: 1, "m³": 1000, tsp: 0.00492892, tbsp: 0.0147868, "cup (US)": 0.236588, "pint (US)": 0.473176, "gal (US)": 3.78541 } },
+          area: { label: "area", base: "m²", units: { "mm²": 1e-6, "cm²": 1e-4, "m²": 1, "km²": 1e6, "ha": 1e4, "ft²": 0.092903, "acre": 4046.86 } },
+          speed: { label: "speed", base: "m/s", units: { "m/s": 1, "km/h": 0.277778, "mph": 0.44704, "knot": 0.514444, "ft/s": 0.3048 } },
+          data: { label: "digital storage", base: "byte", units: { bit: 0.125, byte: 1, KB: 1e3, MB: 1e6, GB: 1e9, TB: 1e12, KiB: 1024, MiB: 1048576, GiB: 1073741824 } },
+          time: { label: "time", base: "s", units: { ms: 0.001, s: 1, min: 60, h: 3600, day: 86400, week: 604800, year: 31557600 } },
+          temperature: { label: "temperature", base: "°C", special: true, units: { "°C": 1, "°F": 1, K: 1 } }
+        };
+
+        var catEl = document.getElementById("unit-cat");
+        var fromEl = document.getElementById("unit-from");
+        var toEl = document.getElementById("unit-to");
+        var valEl = document.getElementById("unit-val");
+        var outEl = document.getElementById("unit-out");
+        var bigEl = document.getElementById("unit-big");
+        var formulaEl = document.getElementById("unit-formula");
+
+        Object.keys(CATS).forEach(function (key) {
+          var o = document.createElement("option");
+          o.value = key; o.textContent = CATS[key].label;
+          catEl.appendChild(o);
+        });
+
+        function fillUnits() {
+          var cat = CATS[catEl.value];
+          fromEl.innerHTML = ""; toEl.innerHTML = "";
+          Object.keys(cat.units).forEach(function (u) {
+            var o1 = document.createElement("option"); o1.value = u; o1.textContent = u; fromEl.appendChild(o1);
+            var o2 = document.createElement("option"); o2.value = u; o2.textContent = u; toEl.appendChild(o2);
+          });
+          var keys = Object.keys(cat.units);
+          fromEl.selectedIndex = 0;
+          toEl.selectedIndex = Math.min(1, keys.length - 1);
+        }
+
+        function tempToC(v, u) { if (u === "°C") return v; if (u === "°F") return (v - 32) * 5 / 9; return v - 273.15; }
+        function cToTemp(c, u) { if (u === "°C") return c; if (u === "°F") return c * 9 / 5 + 32; return c + 273.15; }
+
+        function fmt(n) {
+          if (!isFinite(n)) return "—";
+          if (n !== 0 && (Math.abs(n) < 1e-4 || Math.abs(n) >= 1e15)) return n.toExponential(6);
+          return parseFloat(n.toPrecision(10)).toString();
+        }
+
+        function convert() {
+          var cat = CATS[catEl.value];
+          var v = parseFloat(valEl.value);
+          var from = fromEl.value, to = toEl.value;
+          if (!isFinite(v)) { outEl.value = ""; bigEl.textContent = "—"; formulaEl.textContent = ""; return; }
+          var result;
+          if (cat.special) { result = cToTemp(tempToC(v, from), to); }
+          else { result = v * cat.units[from] / cat.units[to]; }
+          outEl.value = fmt(result);
+          bigEl.textContent = fmt(result) + " " + to;
+          formulaEl.textContent = fmt(v) + " " + from + "  =  " + fmt(result) + " " + to;
+        }
+
+        catEl.addEventListener("change", function () { fillUnits(); convert(); });
+        [fromEl, toEl, valEl].forEach(function (el) { el.addEventListener("input", convert); el.addEventListener("change", convert); });
+        document.getElementById("unit-swap").addEventListener("click", function () {
+          var f = fromEl.value; fromEl.value = toEl.value; toEl.value = f; convert();
+        });
+
+        fillUnits();
+        convert();
+      })();
+    </script>
+    <script src="../site.js"></script>
+  </body>
+</html>

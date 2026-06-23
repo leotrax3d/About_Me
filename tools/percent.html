@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>percentage calculator — leotrax3d</title>
+    <meta name="description" content="three common percentage calculations — percent of a number, what percent, and percent change. client-side." />
+    <meta name="author" content="leotrax3d" />
+    <link rel="canonical" href="https://leotrax3d.github.io/About_Me/tools/percent.html" />
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=menu"
+    />
+    <link rel="stylesheet" href="../styles.css" />
+    <style>
+      .pct-inline { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; font-size: 14px; color: var(--muted); }
+      .pct-inline input { width: 90px; background: var(--bg3); border: 1px solid var(--border); color: var(--text); font-family: var(--mono); font-size: 13px; padding: 0.5rem 0.6rem; border-radius: 6px; }
+      .pct-big { background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.15rem; margin-top: 1.2rem; }
+      .pct-big .pv { font-size: clamp(1.6rem, 5vw, 2.4rem); font-weight: 700; color: var(--accent); line-height: 1.1; word-break: break-all; }
+      .pct-big .pl { font-size: 11px; color: var(--muted); margin-top: 0.3rem; }
+      .pct-block { margin-bottom: 2.5rem; }
+      .pct-block:last-child { margin-bottom: 0; }
+      .pct-block h3 { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.9rem; }
+    </style>
+  </head>
+  <body class="page-percent custom-cursor">
+    <div class="page-header">
+      <div class="wrap">
+        <div class="page-eyebrow">leotrax3d &nbsp;·&nbsp; <span>percentage calculator</span></div>
+        <h1>Percentage<br /><span class="dim">Calculator</span></h1>
+        <p class="page-sub">
+          the three percentage questions you actually ask — what is X% of Y,
+          X is what percent of Y, and the percent change between two numbers.
+        </p>
+      </div>
+    </div>
+
+    <section id="calc">
+      <div class="wrap">
+        <div class="sec fade">
+          <div class="sec-head"><span class="sec-num">01</span><h2>calculate</h2></div>
+
+          <div class="qr-panel" style="max-width: 600px">
+            <div class="pct-block">
+              <h3>what is X% of Y?</h3>
+              <div class="pct-inline">
+                what is <input type="number" id="p1a" value="15" /> % of
+                <input type="number" id="p1b" value="200" /> ?
+              </div>
+              <div class="pct-big"><div class="pv" id="p1out">—</div><div class="pl">result</div></div>
+            </div>
+
+            <div class="pct-block">
+              <h3>X is what percent of Y?</h3>
+              <div class="pct-inline">
+                <input type="number" id="p2a" value="30" /> is what % of
+                <input type="number" id="p2b" value="120" /> ?
+              </div>
+              <div class="pct-big"><div class="pv" id="p2out">—</div><div class="pl">percent</div></div>
+            </div>
+
+            <div class="pct-block">
+              <h3>percent change from X to Y</h3>
+              <div class="pct-inline">
+                from <input type="number" id="p3a" value="80" /> to
+                <input type="number" id="p3b" value="100" />
+              </div>
+              <div class="pct-big"><div class="pv" id="p3out">—</div><div class="pl" id="p3label">change</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <a href="../tools.html">← tools</a>
+      <a href="../index.html">leotrax3d</a>
+    </footer>
+
+    <script>
+      (function () {
+        function num(id) { var v = parseFloat(document.getElementById(id).value); return isFinite(v) ? v : null; }
+        function fmt(n) { return parseFloat(n.toPrecision(12)).toString(); }
+
+        function calc() {
+          var a1 = num("p1a"), b1 = num("p1b");
+          document.getElementById("p1out").textContent = (a1 !== null && b1 !== null) ? fmt((a1 / 100) * b1) : "—";
+
+          var a2 = num("p2a"), b2 = num("p2b");
+          document.getElementById("p2out").textContent = (a2 !== null && b2 !== null && b2 !== 0) ? fmt((a2 / b2) * 100) + " %" : "—";
+
+          var a3 = num("p3a"), b3 = num("p3b");
+          var out3 = document.getElementById("p3out"), lbl3 = document.getElementById("p3label");
+          if (a3 !== null && b3 !== null && a3 !== 0) {
+            var ch = ((b3 - a3) / Math.abs(a3)) * 100;
+            out3.textContent = (ch >= 0 ? "+" : "") + fmt(ch) + " %";
+            lbl3.textContent = ch >= 0 ? "increase" : "decrease";
+          } else { out3.textContent = "—"; lbl3.textContent = "change"; }
+        }
+
+        document.querySelectorAll("#calc input").forEach(function (el) { el.addEventListener("input", calc); });
+        calc();
+      })();
+    </script>
+    <script src="../site.js"></script>
+  </body>
+</html>

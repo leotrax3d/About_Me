@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>contrast checker — leotrax3d</title>
+    <meta name="description" content="check the WCAG contrast ratio between a text and background colour, with AA/AAA pass marks. client-side." />
+    <meta name="author" content="leotrax3d" />
+    <link rel="canonical" href="https://leotrax3d.github.io/About_Me/tools/contrast.html" />
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=menu"
+    />
+    <link rel="stylesheet" href="../styles.css" />
+    <style>
+      .ct-picker-row { display: flex; align-items: center; gap: 0.6rem; }
+      .ct-picker-row input[type=color] { width: 46px; height: 38px; padding: 2px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg3); cursor: pointer; flex-shrink: 0; }
+      .ct-preview { border-radius: 8px; border: 1px solid var(--border); padding: 2rem 1.5rem; text-align: center; margin-bottom: 1.5rem; }
+      .ct-preview .big { font-size: 1.8rem; font-weight: 700; }
+      .ct-preview .small { font-size: 0.85rem; margin-top: 0.5rem; }
+      .ct-ratio { font-size: clamp(2.4rem, 9vw, 4rem); font-weight: 700; color: var(--accent); line-height: 1; font-variant-numeric: tabular-nums; }
+      .ct-badges { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-top: 1.2rem; }
+      .ct-badge { background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 0.7rem 0.9rem; display: flex; justify-content: space-between; align-items: center; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+      .ct-badge .mark { font-weight: 700; font-size: 12px; }
+      .ct-badge .pass { color: var(--accent); }
+      .ct-badge .fail { color: #ff6b6b; }
+    </style>
+  </head>
+  <body class="page-contrast custom-cursor">
+    <div class="page-header">
+      <div class="wrap">
+        <div class="page-eyebrow">leotrax3d &nbsp;·&nbsp; <span>contrast checker</span></div>
+        <h1>Contrast<br /><span class="dim">Checker</span></h1>
+        <p class="page-sub">
+          measure the WCAG contrast ratio between a text colour and its
+          background, with pass/fail marks for AA and AAA at both text sizes.
+        </p>
+      </div>
+    </div>
+
+    <section id="checker">
+      <div class="wrap">
+        <div class="sec fade">
+          <div class="sec-head"><span class="sec-num">01</span><h2>check</h2></div>
+
+          <div class="qr-panel" style="max-width: 600px">
+            <div class="ct-preview" id="ct-preview">
+              <div class="big">Big text sample</div>
+              <div class="small">Small body text sample — the quick brown fox.</div>
+            </div>
+
+            <form class="qr-form" action="#" autocomplete="off">
+              <div class="qr-row">
+                <div class="qr-field">
+                  <label for="ct-fg">text colour</label>
+                  <div class="ct-picker-row">
+                    <input type="color" id="ct-fg-pick" value="#e8e6e0" />
+                    <input type="text" id="ct-fg" class="qr-input" value="#e8e6e0" spellcheck="false" />
+                  </div>
+                </div>
+                <div class="qr-field">
+                  <label for="ct-bg">background</label>
+                  <div class="ct-picker-row">
+                    <input type="color" id="ct-bg-pick" value="#0d0e0f" />
+                    <input type="text" id="ct-bg" class="qr-input" value="#0d0e0f" spellcheck="false" />
+                  </div>
+                </div>
+              </div>
+            </form>
+
+            <div style="text-align:center;margin-top:1rem">
+              <div class="ct-ratio" id="ct-ratio">—</div>
+              <div style="font-size:11px;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase">contrast ratio</div>
+            </div>
+
+            <div class="ct-badges">
+              <div class="ct-badge">AA · normal <span class="mark" id="ct-aa">—</span></div>
+              <div class="ct-badge">AA · large <span class="mark" id="ct-aal">—</span></div>
+              <div class="ct-badge">AAA · normal <span class="mark" id="ct-aaa">—</span></div>
+              <div class="ct-badge">AAA · large <span class="mark" id="ct-aaal">—</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <a href="../tools.html">← tools</a>
+      <a href="../index.html">leotrax3d</a>
+    </footer>
+
+    <script>
+      (function () {
+        var fgEl = document.getElementById("ct-fg"), fgPick = document.getElementById("ct-fg-pick");
+        var bgEl = document.getElementById("ct-bg"), bgPick = document.getElementById("ct-bg-pick");
+        var preview = document.getElementById("ct-preview");
+
+        function parseHex(s) {
+          s = s.trim().replace(/^#/, "");
+          if (/^[0-9a-f]{3}$/i.test(s)) s = s.split("").map(function (c) { return c + c; }).join("");
+          if (!/^[0-9a-f]{6}$/i.test(s)) return null;
+          return { r: parseInt(s.slice(0, 2), 16), g: parseInt(s.slice(2, 4), 16), b: parseInt(s.slice(4, 6), 16) };
+        }
+
+        function lum(c) {
+          var a = [c.r, c.g, c.b].map(function (v) {
+            v /= 255;
+            return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+          });
+          return 0.2126 * a[0] + 0.7152 * a[1] + 0.0722 * a[2];
+        }
+
+        function mark(el, pass) {
+          el.textContent = pass ? "✓ pass" : "✗ fail";
+          el.className = "mark " + (pass ? "pass" : "fail");
+        }
+
+        function update() {
+          var fg = parseHex(fgEl.value), bg = parseHex(bgEl.value);
+          if (!fg || !bg) {
+            document.getElementById("ct-ratio").textContent = "—";
+            ["ct-aa", "ct-aal", "ct-aaa", "ct-aaal"].forEach(function (id) { document.getElementById(id).textContent = "—"; document.getElementById(id).className = "mark"; });
+            return;
+          }
+          var l1 = lum(fg), l2 = lum(bg);
+          var ratio = (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+          document.getElementById("ct-ratio").textContent = ratio.toFixed(2) + " : 1";
+
+          mark(document.getElementById("ct-aa"), ratio >= 4.5);
+          mark(document.getElementById("ct-aal"), ratio >= 3);
+          mark(document.getElementById("ct-aaa"), ratio >= 7);
+          mark(document.getElementById("ct-aaal"), ratio >= 4.5);
+
+          preview.style.color = "#" + [fg.r, fg.g, fg.b].map(function (x) { return x.toString(16).padStart(2, "0"); }).join("");
+          preview.style.background = "#" + [bg.r, bg.g, bg.b].map(function (x) { return x.toString(16).padStart(2, "0"); }).join("");
+        }
+
+        function sync(textEl, pickEl) {
+          textEl.addEventListener("input", function () { var p = parseHex(textEl.value); if (p) pickEl.value = "#" + [p.r, p.g, p.b].map(function (x) { return x.toString(16).padStart(2, "0"); }).join(""); update(); });
+          pickEl.addEventListener("input", function () { textEl.value = pickEl.value; update(); });
+        }
+        sync(fgEl, fgPick);
+        sync(bgEl, bgPick);
+        update();
+      })();
+    </script>
+    <script src="../site.js"></script>
+  </body>
+</html>
