@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>benchmark — leotrax3d</title>
-    <meta name="description" content="measure CPU performance with pure-JS workloads and GPU rendering speed with a WebGL fill-rate test. all client-side." />
+    <meta name="description" content="stress your CPU and GPU in the browser — multi-core Web Worker workloads, memory bandwidth, SHA-256 throughput and a heavy WebGL shader test. all client-side, no cookies." />
     <meta name="author" content="leotrax3d" />
     <link rel="canonical" href="https://leotrax3d.github.io/About_Me/tools/bench.html" />
     <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
@@ -19,23 +19,76 @@
     />
     <link rel="stylesheet" href="../styles.css" />
     <style>
-      .bench-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.75rem; margin: 1.5rem 0; }
-      .bench-row { background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 0.9rem 1.1rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+      .bench-disclaimer { display: flex; gap: 0.8rem; background: rgba(197, 241, 62, 0.05); border: 1px solid rgba(197, 241, 62, 0.25); border-radius: 10px; padding: 1rem 1.15rem; margin-bottom: 1.4rem; }
+      .bench-disclaimer .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; margin-top: 0.45rem; box-shadow: 0 0 0 4px rgba(197, 241, 62, 0.12); }
+      .bench-disclaimer p { font-size: 11.5px; line-height: 1.75; color: var(--muted); }
+      .bench-disclaimer b { color: var(--text); font-weight: 500; }
+
+      .bench-device { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.6rem; margin-bottom: 1.4rem; }
+      .bench-device-item { background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 0.7rem 0.9rem; }
+      .bench-device-item .k { font-size: 9px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--muted); }
+      .bench-device-item .v { font-size: 12px; color: var(--text); margin-top: 0.2rem; word-break: break-word; line-height: 1.4; }
+
+      .bench-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+
+      .bench-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.75rem; margin: 1.2rem 0; }
+      .bench-row { background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 0.85rem 1.05rem; }
+      .bench-row-top { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
       .bench-row-name { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
       .bench-row-val { font-size: 13px; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; white-space: nowrap; }
       .bench-row-val.pending { color: var(--muted); font-weight: 400; }
-      .bench-score-wrap { text-align: center; padding: 2rem 0 1rem; }
+
+      /* per-test micro progress bar (#12) */
+      .bench-micro { height: 3px; background: var(--bg2); border-radius: 999px; overflow: hidden; margin-top: 0.6rem; }
+      .bench-micro-bar { height: 100%; width: 0; background: var(--accent); border-radius: 999px; transition: width 0.35s ease; }
+      .bench-micro.is-running { background: linear-gradient(90deg, var(--bg2) 0%, rgba(197, 241, 62, 0.55) 50%, var(--bg2) 100%); background-size: 220% 100%; animation: bench-indet 1s linear infinite; }
+      @keyframes bench-indet { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+      .bench-score-wrap { text-align: center; padding: 1.8rem 0 0.6rem; }
       .bench-score { font-size: clamp(3rem, 10vw, 5.5rem); font-weight: 700; color: var(--accent); line-height: 1; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
       .bench-score-label { font-size: 10px; color: var(--muted); letter-spacing: 0.2em; text-transform: uppercase; margin-top: 0.5rem; }
-      .bench-progress-wrap { height: 3px; background: var(--bg3); border-radius: 999px; overflow: hidden; margin: 1.5rem 0 0.4rem; }
+      .bench-rating { display: inline-block; margin-top: 0.9rem; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: #0d0e0f; background: var(--accent); border-radius: 999px; padding: 5px 14px; font-weight: 700; }
+
+      .bench-progress-wrap { height: 3px; background: var(--bg3); border-radius: 999px; overflow: hidden; margin: 1.4rem 0 0.4rem; }
       .bench-progress { height: 100%; width: 0%; background: var(--accent); border-radius: 999px; transition: width 0.3s ease; }
       .bench-status { font-size: 11px; color: var(--muted); letter-spacing: 0.06em; min-height: 1.2em; }
-      .bench-divider { border: none; border-top: 1px solid var(--border); margin: 1.8rem 0 1.5rem; }
-      .bench-section-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.18em; color: var(--accent); margin-bottom: 0.75rem; }
-      .bench-bar-wrap { position: relative; height: 6px; background: var(--bg3); border-radius: 999px; overflow: hidden; margin-top: 0.4rem; }
-      .bench-bar { position: absolute; left: 0; top: 0; height: 100%; background: var(--accent); border-radius: 999px; transition: width 0.6s ease; width: 0%; }
-      .bench-webgl-canvas { display: none; }
-      .bench-note { font-size: 11px; color: var(--muted); line-height: 1.8; margin-top: 0.6rem; }
+
+      .bench-divider { border: none; border-top: 1px solid var(--border); margin: 1.8rem 0 1.4rem; }
+      .bench-section-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.18em; color: var(--accent); margin-bottom: 0.9rem; display: flex; justify-content: space-between; align-items: baseline; }
+      .bench-section-label .hint { color: var(--muted); letter-spacing: 0.04em; text-transform: none; font-size: 10px; }
+
+      /* multi-core compare bars */
+      .bench-mc-line { margin-bottom: 0.9rem; }
+      .bench-mc-line .lbl { display: flex; justify-content: space-between; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 0.35rem; }
+      .bench-mc-line .lbl b { color: var(--accent); font-variant-numeric: tabular-nums; }
+      .bench-bar-wrap { height: 8px; background: var(--bg3); border-radius: 999px; overflow: hidden; }
+      .bench-bar { height: 100%; width: 0%; background: var(--accent); border-radius: 999px; transition: width 0.6s ease; }
+      .bench-bar.dim { background: rgba(197, 241, 62, 0.4); }
+      .bench-scaling { font-size: 12px; color: var(--text); margin-top: 0.4rem; }
+      .bench-scaling b { color: var(--accent); }
+
+      /* gpu */
+      .bench-gpu-layout { display: grid; grid-template-columns: auto 1fr; gap: 1.2rem; align-items: start; }
+      .bench-canvas { width: 100%; max-width: 240px; aspect-ratio: 1 / 1; border-radius: 10px; border: 1px solid var(--border); background: var(--bg3); display: block; }
+      .bench-gpu-stats { display: flex; flex-direction: column; gap: 0.75rem; }
+      .bench-note { font-size: 11px; color: var(--muted); line-height: 1.8; }
+
+      /* history (#3) */
+      .bench-history { margin-top: 1rem; }
+      .bench-history table { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+      .bench-history th { text-align: left; font-size: 9px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); font-weight: 400; padding: 0.4rem 0.6rem; border-bottom: 1px solid var(--border); }
+      .bench-history td { padding: 0.55rem 0.6rem; border-bottom: 1px solid var(--border); color: var(--text); font-variant-numeric: tabular-nums; }
+      .bench-history td.num { color: var(--accent); font-weight: 700; }
+      .bench-history tr:last-child td { border-bottom: none; }
+      .bench-history-clear { background: none; border: none; color: var(--muted); font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em; cursor: pointer; text-decoration: underline; padding: 0; }
+      .bench-history-clear:hover { color: var(--accent); }
+
+      .bench-shared-note { font-size: 11px; color: var(--accent); letter-spacing: 0.04em; margin-top: 0.6rem; text-align: center; }
+
+      @media (max-width: 560px) {
+        .bench-gpu-layout { grid-template-columns: 1fr; }
+        .bench-canvas { max-width: 100%; }
+      }
     </style>
   </head>
   <body class="page-bench custom-cursor">
@@ -44,9 +97,9 @@
         <div class="page-eyebrow">leotrax3d &nbsp;·&nbsp; <span>benchmark</span></div>
         <h1>Bench<br /><span class="dim">Mark</span></h1>
         <p class="page-sub">
-          measure how fast your device handles real workloads — prime sieve,
-          sorting, JSON throughput, string ops on the CPU side; a WebGL
-          fill-rate test for the GPU. all local, nothing is sent anywhere.
+          push your hardware on purpose — multi-core CPU workloads in Web
+          Workers, memory bandwidth, SHA-256 throughput and a heavy WebGL
+          shader for the GPU. runs flat-out, entirely on your device.
         </p>
       </div>
     </div>
@@ -56,9 +109,33 @@
         <div class="sec fade">
           <div class="sec-head"><span class="sec-num">01</span><h2>run</h2></div>
 
-          <div class="qr-panel" style="max-width: 680px">
+          <div class="qr-panel" style="max-width: 720px">
 
-            <button type="button" id="bench-run" class="btn btn-fill">run benchmark</button>
+            <!-- disclaimer (shown before the run) -->
+            <div class="bench-disclaimer">
+              <span class="dot"></span>
+              <p>
+                <b>Before you start:</b> this benchmark deliberately runs each
+                test flat-out — one core, then every core at once, then the GPU
+                with a heavy shader. Your device may get <b>warm</b>, fans may
+                spin up, and the page can briefly stop responding during the GPU
+                run. Everything happens locally: <b>nothing is uploaded and no
+                cookies are used</b> — your last results are kept only in this
+                browser's local storage, and you can clear them below.
+              </p>
+            </div>
+
+            <!-- device info (#4) -->
+            <div class="bench-device" id="bench-device">
+              <div class="bench-device-item"><div class="k">cpu threads</div><div class="v" id="d-cores">—</div></div>
+              <div class="bench-device-item"><div class="k">device memory</div><div class="v" id="d-mem">—</div></div>
+              <div class="bench-device-item" style="grid-column: 1 / -1"><div class="k">gpu renderer</div><div class="v" id="d-gpu">—</div></div>
+            </div>
+
+            <div class="bench-actions">
+              <button type="button" id="bench-run" class="btn btn-fill">run benchmark</button>
+              <button type="button" id="bench-share" class="btn btn-ghost" disabled>copy share link</button>
+            </div>
 
             <div class="bench-progress-wrap" style="margin-top:1.2rem">
               <div class="bench-progress" id="bench-progress"></div>
@@ -67,40 +144,96 @@
 
             <div class="bench-score-wrap" id="bench-score-wrap" hidden>
               <div class="bench-score" id="bench-score">—</div>
-              <div class="bench-score-label">cpu score</div>
+              <div class="bench-score-label">cpu single-core score</div>
+              <div><span class="bench-rating" id="bench-rating" hidden></span></div>
+              <div class="bench-shared-note" id="bench-shared-note" hidden></div>
             </div>
 
             <hr class="bench-divider" />
 
-            <div class="bench-section-label">cpu tests</div>
+            <!-- CPU breakdown -->
+            <div class="bench-section-label">cpu workloads <span class="hint">in a web worker — lower ms is faster</span></div>
             <div class="bench-grid">
-              <div class="bench-row"><span class="bench-row-name">prime sieve (2M)</span><span class="bench-row-val pending" id="r-prime">—</span></div>
-              <div class="bench-row"><span class="bench-row-name">sort 500k floats</span><span class="bench-row-val pending" id="r-sort">—</span></div>
-              <div class="bench-row"><span class="bench-row-name">json round-trip ×100</span><span class="bench-row-val pending" id="r-json">—</span></div>
-              <div class="bench-row"><span class="bench-row-name">string ops ×50</span><span class="bench-row-val pending" id="r-str">—</span></div>
-              <div class="bench-row"><span class="bench-row-name">fibonacci ×100k</span><span class="bench-row-val pending" id="r-fib">—</span></div>
+              <div class="bench-row">
+                <div class="bench-row-top"><span class="bench-row-name">prime sieve (2M)</span><span class="bench-row-val pending" id="r-prime">—</span></div>
+                <div class="bench-micro" id="track-prime"><div class="bench-micro-bar" id="m-prime"></div></div>
+              </div>
+              <div class="bench-row">
+                <div class="bench-row-top"><span class="bench-row-name">sort 500k floats</span><span class="bench-row-val pending" id="r-sort">—</span></div>
+                <div class="bench-micro" id="track-sort"><div class="bench-micro-bar" id="m-sort"></div></div>
+              </div>
+              <div class="bench-row">
+                <div class="bench-row-top"><span class="bench-row-name">json round-trip ×100</span><span class="bench-row-val pending" id="r-json">—</span></div>
+                <div class="bench-micro" id="track-json"><div class="bench-micro-bar" id="m-json"></div></div>
+              </div>
+              <div class="bench-row">
+                <div class="bench-row-top"><span class="bench-row-name">string ops ×50</span><span class="bench-row-val pending" id="r-string">—</span></div>
+                <div class="bench-micro" id="track-string"><div class="bench-micro-bar" id="m-string"></div></div>
+              </div>
+              <div class="bench-row">
+                <div class="bench-row-top"><span class="bench-row-name">fibonacci ×100k</span><span class="bench-row-val pending" id="r-fib">—</span></div>
+                <div class="bench-micro" id="track-fib"><div class="bench-micro-bar" id="m-fib"></div></div>
+              </div>
+              <div class="bench-row">
+                <div class="bench-row-top"><span class="bench-row-name">memory bandwidth</span><span class="bench-row-val pending" id="r-memory">—</span></div>
+                <div class="bench-micro" id="track-memory"><div class="bench-micro-bar" id="m-memory"></div></div>
+              </div>
+              <div class="bench-row">
+                <div class="bench-row-top"><span class="bench-row-name">sha-256 throughput</span><span class="bench-row-val pending" id="r-crypto">—</span></div>
+                <div class="bench-micro" id="track-crypto"><div class="bench-micro-bar" id="m-crypto"></div></div>
+              </div>
+              <div class="bench-row">
+                <div class="bench-row-top"><span class="bench-row-name">canvas 2d fill</span><span class="bench-row-val pending" id="r-canvas">—</span></div>
+                <div class="bench-micro" id="track-canvas"><div class="bench-micro-bar" id="m-canvas"></div></div>
+              </div>
             </div>
 
             <hr class="bench-divider" />
 
-            <div class="bench-section-label">gpu / render</div>
-            <div id="bench-gpu-section">
-              <div class="bench-row" style="margin-bottom:0.75rem">
-                <span class="bench-row-name">webgl triangles / sec</span>
-                <span class="bench-row-val pending" id="r-gpu">—</span>
+            <!-- Multi-core (#2) -->
+            <div class="bench-section-label">single vs. multi-core <span class="hint">sieves / second — higher is faster</span></div>
+            <div id="bench-mc">
+              <div class="bench-mc-line">
+                <div class="lbl"><span>single core</span><b id="mc-single">—</b></div>
+                <div class="bench-bar-wrap"><div class="bench-bar dim" id="mc-single-bar"></div></div>
               </div>
-              <div class="bench-note" id="bench-gpu-note">webgl fill-rate: draws 200 000 triangles per frame, counts frames in 2 seconds.</div>
-              <div id="bench-gpu-bars" hidden>
-                <div style="margin-top:1rem">
-                  <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.3rem">
-                    <span>vs. previous run</span><span id="r-gpu-pct"></span>
-                  </div>
-                  <div class="bench-bar-wrap"><div class="bench-bar" id="gpu-bar"></div></div>
+              <div class="bench-mc-line">
+                <div class="lbl"><span id="mc-multi-label">all cores</span><b id="mc-multi">—</b></div>
+                <div class="bench-bar-wrap"><div class="bench-bar" id="mc-multi-bar"></div></div>
+              </div>
+              <div class="bench-scaling" id="mc-scaling">—</div>
+            </div>
+
+            <hr class="bench-divider" />
+
+            <!-- GPU (#11) -->
+            <div class="bench-section-label">gpu shader <span class="hint">heavy fragment shader, max frames in 2 s</span></div>
+            <div class="bench-gpu-layout">
+              <canvas class="bench-canvas" id="bench-canvas" width="64" height="64"></canvas>
+              <div class="bench-gpu-stats">
+                <div class="bench-row">
+                  <div class="bench-row-top"><span class="bench-row-name">gpu score</span><span class="bench-row-val pending" id="r-gpuscore">—</span></div>
+                </div>
+                <div class="bench-row">
+                  <div class="bench-row-top"><span class="bench-row-name">frames / second</span><span class="bench-row-val pending" id="r-gpufps">—</span></div>
+                </div>
+                <div class="bench-note" id="bench-gpu-note">
+                  renders a Julia-set fragment shader (128 iterations / pixel) as
+                  fast as the GPU allows, with <code>gl.finish()</code> each frame.
                 </div>
               </div>
             </div>
 
-            <canvas class="bench-webgl-canvas" id="bench-canvas" width="1" height="1"></canvas>
+            <hr class="bench-divider" />
+
+            <!-- History (#3) -->
+            <div class="bench-section-label">
+              <span>recent runs</span>
+              <button type="button" class="bench-history-clear" id="bench-clear" hidden>clear history</button>
+            </div>
+            <div class="bench-history" id="bench-history">
+              <div class="bench-note" id="bench-history-empty">no runs yet — your last 5 results will appear here (stored locally).</div>
+            </div>
 
           </div>
         </div>
@@ -112,199 +245,473 @@
       <a href="../index.html">leotrax3d</a>
     </footer>
 
+    <!-- Web Worker source (not executed directly; loaded via Blob URL) -->
+    <script id="bench-worker" type="text/js-worker">
+      "use strict";
+
+      /* One 500k prime sieve = one "operation" for the burn / multi-core test. */
+      function sievePass() {
+        var L = 500000, s = new Uint8Array(L + 1), c = 0, i, j, k;
+        for (i = 2; i * i <= L; i++) { if (!s[i]) for (j = i * i; j <= L; j += i) s[j] = 1; }
+        for (k = 2; k <= L; k++) if (!s[k]) c++;
+        return c;
+      }
+
+      /* Timed one-shot workloads (return value is just to defeat dead-code elimination). */
+      var TESTS = {
+        prime: function () {
+          var L = 2000000, s = new Uint8Array(L + 1), c = 0, i, j, k;
+          for (i = 2; i * i <= L; i++) { if (!s[i]) for (j = i * i; j <= L; j += i) s[j] = 1; }
+          for (k = 2; k <= L; k++) if (!s[k]) c++;
+          return c;
+        },
+        sort: function () {
+          var b = new Float64Array(500000), i;
+          for (i = 0; i < b.length; i++) b[i] = Math.random();
+          b.sort();
+          return b[0];
+        },
+        json: function () {
+          var o = { items: [] }, i, j, s;
+          for (i = 0; i < 200; i++) o.items.push({ id: i, name: "item-" + i, value: Math.random(), tags: ["a", "b", "c"] });
+          for (j = 0; j < 100; j++) s = JSON.parse(JSON.stringify(o));
+          return s.items.length;
+        },
+        string: function () {
+          var base = "abcdefghijklmnopqrstuvwxyz0123456789!@#$%".repeat(2500), r, i;
+          for (i = 0; i < 50; i++) r = base.split("").reverse().join("") + base.slice(0, 10);
+          return r.length;
+        },
+        fib: function () {
+          var res, iter, n, a, b, c;
+          for (iter = 0; iter < 100000; iter++) { a = 0; b = 1; for (n = 0; n < 78; n++) { c = a + b; a = b; b = c; } res = a; }
+          return res;
+        }
+      };
+
+      /* Memory bandwidth: sequential write + read over a 64 MB buffer, 4 passes. */
+      function memTest() {
+        var N = 8000000, a = new Float64Array(N), passes = 4, i, j, p, sum = 0;
+        var t0 = performance.now();
+        for (p = 0; p < passes; p++) {
+          for (i = 0; i < N; i++) a[i] = i * 1.000001;
+          for (j = 0; j < N; j++) sum += a[j];
+        }
+        var t = performance.now() - t0;
+        if (sum < 0) self.postMessage({ type: "noop", x: sum });
+        var bytes = passes * N * 8 * 2; /* read + write */
+        return (bytes / 1e9) / (t / 1000); /* GB/s */
+      }
+
+      /* Canvas 2D fill on an OffscreenCanvas (CPU paint path). */
+      function canvasTest() {
+        if (typeof OffscreenCanvas === "undefined") return null;
+        try {
+          var cv = new OffscreenCanvas(400, 400), ctx = cv.getContext("2d");
+          if (!ctx) return null;
+          var COUNT = 10000, reps = 5, r, i;
+          var t0 = performance.now();
+          for (r = 0; r < reps; r++) {
+            ctx.clearRect(0, 0, 400, 400);
+            for (i = 0; i < COUNT; i++) {
+              ctx.beginPath();
+              ctx.arc((i * 53) % 400, (i * 97) % 400, 5, 0, 6.283185);
+              ctx.fillStyle = i % 2 ? "#c5f13e" : "#1a1d20";
+              ctx.fill();
+            }
+          }
+          var t = performance.now() - t0;
+          return (COUNT * reps) / (t / 1000); /* circles / s */
+        } catch (e) { return null; }
+      }
+
+      /* SHA-256 over 10 MB × 10 via the native WebCrypto path. */
+      function cryptoTest() {
+        if (!(self.crypto && self.crypto.subtle)) return Promise.resolve(null);
+        var MB = 10, buf = new Uint8Array(MB * 1048576), reps = 10;
+        return (async function () {
+          try {
+            var t0 = performance.now();
+            for (var i = 0; i < reps; i++) await self.crypto.subtle.digest("SHA-256", buf);
+            var t = performance.now() - t0;
+            return (MB * reps) / (t / 1000); /* MB/s */
+          } catch (e) { return null; }
+        })();
+      }
+
+      /* Flat-out burn for the multi-core test: count completed sieves in `ms`. */
+      function burn(ms) {
+        var end = performance.now() + ms, ops = 0;
+        while (performance.now() < end) { sievePass(); ops++; }
+        return ops;
+      }
+
+      self.onmessage = async function (e) {
+        var d = e.data;
+        if (d.type === "run") {
+          var name = d.name, t0, ms, value, unit;
+          if (TESTS[name]) {
+            t0 = performance.now(); TESTS[name](); ms = performance.now() - t0;
+            value = ms; unit = "ms";
+          } else if (name === "memory") {
+            t0 = performance.now(); value = memTest(); ms = performance.now() - t0; unit = "GB/s";
+          } else if (name === "canvas") {
+            t0 = performance.now(); value = canvasTest(); ms = performance.now() - t0; unit = "k/s";
+          } else if (name === "crypto") {
+            t0 = performance.now(); value = await cryptoTest(); ms = performance.now() - t0; unit = "MB/s";
+          }
+          self.postMessage({ type: "result", name: name, ms: ms, value: value, unit: unit });
+        } else if (d.type === "burn") {
+          self.postMessage({ type: "burn", ops: burn(d.ms) });
+        }
+      };
+    </script>
+
     <script>
     (function () {
       var runBtn = document.getElementById("bench-run");
+      var shareBtn = document.getElementById("bench-share");
       var progress = document.getElementById("bench-progress");
-      var status = document.getElementById("bench-status");
+      var statusEl = document.getElementById("bench-status");
       var scoreWrap = document.getElementById("bench-score-wrap");
       var scoreEl = document.getElementById("bench-score");
+      var ratingEl = document.getElementById("bench-rating");
+      var sharedNote = document.getElementById("bench-shared-note");
 
-      /* Reference timings (ms) on a mid-range M1 MacBook Air @ Chrome 124.
-         Score = geometric mean of (ref / actual) * 1000 for each test. */
-      var REF = { prime: 38, sort: 62, json: 44, str: 28, fib: 18 };
+      var HISTORY_KEY = "bench-history";
 
-      /* ---------- CPU test functions ---------- */
-      function testPrime() {
-        var limit = 2000000;
-        var sieve = new Uint8Array(limit + 1);
-        for (var i = 2; i * i <= limit; i++) {
-          if (!sieve[i]) for (var j = i * i; j <= limit; j += i) sieve[j] = 1;
+      /* Reference timings (ms) on a mid-range M1 MacBook Air @ Chrome.
+         Single-core CPU score = geometric mean of (ref / actual) × 1000. */
+      var REF = { prime: 38, sort: 62, json: 44, string: 28, fib: 18 };
+
+      /* Build the worker from the inline <script type="text/js-worker"> block. */
+      var workerSrc = document.getElementById("bench-worker").textContent;
+      var workerUrl = URL.createObjectURL(new Blob([workerSrc], { type: "text/javascript" }));
+
+      var TOTAL_STEPS = 8 /* named tests */ + 1 /* single burn */ + 1 /* multi burn */ + 1 /* gpu */;
+      var step = 0;
+      function bumpProgress() { step++; progress.style.width = Math.round((step / TOTAL_STEPS) * 100) + "%"; }
+
+      /* ---------- device info (#4) ---------- */
+      function fillDevice() {
+        document.getElementById("d-cores").textContent = navigator.hardwareConcurrency
+          ? navigator.hardwareConcurrency + " threads" : "unknown";
+        document.getElementById("d-mem").textContent = navigator.deviceMemory
+          ? "≈ " + navigator.deviceMemory + " GB" : "not reported";
+        var gpu = "unknown";
+        try {
+          var c = document.createElement("canvas");
+          var gl = c.getContext("webgl") || c.getContext("experimental-webgl");
+          if (gl) {
+            var ext = gl.getExtension("WEBGL_debug_renderer_info");
+            gpu = ext ? (gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) || "available")
+                      : (gl.getParameter(gl.VERSION) || "available");
+          } else { gpu = "no webgl"; }
+        } catch (e) { gpu = "unknown"; }
+        document.getElementById("d-gpu").textContent = gpu;
+      }
+
+      /* ---------- per-row helpers (#12) ---------- */
+      function rowStart(key) {
+        document.getElementById("track-" + key).classList.add("is-running");
+      }
+      function rowDone(key, text) {
+        var track = document.getElementById("track-" + key);
+        track.classList.remove("is-running");
+        document.getElementById("m-" + key).style.width = "100%";
+        var v = document.getElementById("r-" + key);
+        v.textContent = text;
+        v.classList.remove("pending");
+      }
+      function resetRows() {
+        ["prime", "sort", "json", "string", "fib", "memory", "crypto", "canvas"].forEach(function (k) {
+          var v = document.getElementById("r-" + k);
+          v.textContent = "—"; v.classList.add("pending");
+          document.getElementById("m-" + k).style.width = "0%";
+          document.getElementById("track-" + k).classList.remove("is-running");
+        });
+        ["r-gpuscore", "r-gpufps"].forEach(function (id) {
+          var el = document.getElementById(id); el.textContent = "—"; el.classList.add("pending");
+        });
+        document.getElementById("mc-single-bar").style.width = "0%";
+        document.getElementById("mc-multi-bar").style.width = "0%";
+        document.getElementById("mc-single").textContent = "—";
+        document.getElementById("mc-multi").textContent = "—";
+        document.getElementById("mc-scaling").textContent = "—";
+      }
+
+      /* ---------- worker promise wrappers ---------- */
+      function runTest(w, name) {
+        return new Promise(function (resolve) {
+          w.onmessage = function (e) {
+            if (e.data.type === "result" && e.data.name === name) resolve(e.data);
+          };
+          w.postMessage({ type: "run", name: name });
+        });
+      }
+      function burnWorker(w, ms) {
+        return new Promise(function (resolve) {
+          w.onmessage = function (e) { if (e.data.type === "burn") resolve(e.data.ops); };
+          w.postMessage({ type: "burn", ms: ms });
+        });
+      }
+      function multiBurn(n, ms) {
+        var workers = [], promises = [], i;
+        for (i = 0; i < n; i++) {
+          var w = new Worker(workerUrl);
+          workers.push(w);
+          promises.push(burnWorker(w, ms));
         }
-        var count = 0;
-        for (var k = 2; k <= limit; k++) if (!sieve[k]) count++;
-        return count; /* 148 933 */
+        return Promise.all(promises).then(function (opsArr) {
+          workers.forEach(function (w) { w.terminate(); });
+          return opsArr.reduce(function (a, b) { return a + b; }, 0);
+        });
       }
 
-      function testSort() {
-        var buf = new Float64Array(500000);
-        for (var i = 0; i < buf.length; i++) buf[i] = Math.random();
-        buf.sort();
-        return buf[0]; /* ~0 */
-      }
-
-      function testJSON() {
-        var obj = { items: [] };
-        for (var i = 0; i < 200; i++) obj.items.push({ id: i, name: "item-" + i, value: Math.random(), tags: ["a","b","c"] });
-        var s;
-        for (var j = 0; j < 100; j++) s = JSON.parse(JSON.stringify(obj));
-        return s.items.length; /* 200 */
-      }
-
-      function testString() {
-        var base = "abcdefghijklmnopqrstuvwxyz0123456789!@#$%".repeat(2500); /* ~105 KB */
-        var r;
-        for (var i = 0; i < 50; i++) r = base.split("").reverse().join("") + base.slice(0, 10);
-        return r.length;
-      }
-
-      function testFib() {
-        var result;
-        for (var iter = 0; iter < 100000; iter++) {
-          var a = 0, b = 1;
-          for (var n = 0; n < 78; n++) { var c = a + b; a = b; b = c; }
-          result = a;
-        }
-        return result; /* 8 944 394 323 791 464 */
-      }
-
-      /* ---------- GPU / WebGL test ---------- */
-      function testWebGL(canvas) {
+      /* ---------- GPU heavy shader (#11), full-load chunked loop ---------- */
+      function gpuTest(canvas, totalMs) {
         var gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
-        if (!gl) return null;
+        if (!gl) return Promise.resolve(null);
+
+        canvas.width = 768; canvas.height = 768;
+        gl.viewport(0, 0, 768, 768);
 
         var vsrc = "attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}";
-        var fsrc = "precision mediump float;void main(){gl_FragColor=vec4(.77,.94,.24,1.);}";
+        var fsrc =
+          "precision highp float;uniform vec2 u_res;uniform float u_t;" +
+          "void main(){" +
+          "vec2 uv=(gl_FragCoord.xy/u_res-0.5)*3.0;" +
+          "vec2 c=vec2(0.355+0.05*cos(u_t),0.355+0.05*sin(u_t));" +
+          "vec2 z=uv;float n=0.0;" +
+          "for(int i=0;i<128;i++){z=vec2(z.x*z.x-z.y*z.y,2.0*z.x*z.y)+c;if(dot(z,z)>4.0)break;n+=1.0;}" +
+          "float v=n/128.0;" +
+          "gl_FragColor=vec4(v*0.77,v*0.95,v*0.24+0.04,1.0);}";
 
-        function shader(type, src) {
-          var s = gl.createShader(type);
-          gl.shaderSource(s, src);
-          gl.compileShader(s);
-          return s;
-        }
+        function sh(type, src) { var s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; }
         var prog = gl.createProgram();
-        gl.attachShader(prog, shader(gl.VERTEX_SHADER, vsrc));
-        gl.attachShader(prog, shader(gl.FRAGMENT_SHADER, fsrc));
+        gl.attachShader(prog, sh(gl.VERTEX_SHADER, vsrc));
+        gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, fsrc));
         gl.linkProgram(prog);
+        if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return Promise.resolve(null);
         gl.useProgram(prog);
 
-        var TRIS = 200000;
-        var verts = new Float32Array(TRIS * 6); /* 3 verts * 2 floats each */
-        for (var i = 0; i < verts.length; i++) verts[i] = (Math.random() * 2) - 1;
+        /* fullscreen triangle */
         var buf = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-        gl.bufferData(gl.ARRAY_BUFFER, verts, gl.STATIC_DRAW);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
         var loc = gl.getAttribLocation(prog, "a");
         gl.enableVertexAttribArray(loc);
         gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+        gl.uniform2f(gl.getUniformLocation(prog, "u_res"), 768, 768);
+        var uT = gl.getUniformLocation(prog, "u_t");
 
-        var frames = 0;
-        var duration = 2000; /* ms */
-        var start = performance.now();
-        while (performance.now() - start < duration) {
-          gl.clear(gl.COLOR_BUFFER_BIT);
-          gl.drawArrays(gl.TRIANGLES, 0, TRIS * 3);
-          frames++;
-        }
-        var elapsed = performance.now() - start;
-        return Math.round((frames * TRIS) / (elapsed / 1000)); /* triangles/sec */
-      }
-
-      /* ---------- runner ---------- */
-      var STEPS = 6; /* 5 cpu + 1 gpu */
-      var step = 0;
-
-      function setProgress(n) {
-        progress.style.width = Math.round((n / STEPS) * 100) + "%";
-      }
-
-      function setResult(id, ms) {
-        var el = document.getElementById(id);
-        el.textContent = ms.toFixed(1) + " ms";
-        el.classList.remove("pending");
-      }
-
-      function runStep(tests, i, cpuTimes, next) {
-        if (i >= tests.length) { next(cpuTimes); return; }
-        var t = tests[i];
-        status.textContent = "running: " + t.label + "…";
-        setTimeout(function () {
-          var s = performance.now();
-          t.fn();
-          var ms = performance.now() - s;
-          cpuTimes[t.key] = ms;
-          setResult(t.id, ms);
-          step++;
-          setProgress(step);
-          runStep(tests, i + 1, cpuTimes, next);
-        }, 60);
-      }
-
-      runBtn.addEventListener("click", function () {
-        runBtn.disabled = true;
-        scoreWrap.hidden = true;
-        step = 0;
-        setProgress(0);
-        status.textContent = "warming up…";
-        ["r-prime","r-sort","r-json","r-str","r-fib","r-gpu"].forEach(function(id){
-          var el = document.getElementById(id);
-          el.textContent = "—";
-          el.classList.add("pending");
+        var ITER = 128, PIX = 768 * 768;
+        return new Promise(function (resolve) {
+          var frames = 0, started = performance.now(), chunkMs = 350;
+          function chunk() {
+            var cEnd = performance.now() + chunkMs;
+            while (performance.now() < cEnd) {
+              gl.uniform1f(uT, (performance.now() - started) / 1000);
+              gl.drawArrays(gl.TRIANGLES, 0, 3);
+              gl.finish();
+              frames++;
+            }
+            var elapsed = performance.now() - started;
+            if (elapsed < totalMs) { setTimeout(chunk, 0); }
+            else {
+              var fps = frames / (elapsed / 1000);
+              var gpuScore = Math.round((fps * PIX * ITER) / 1e7);
+              resolve({ fps: fps, score: gpuScore });
+            }
+          }
+          chunk();
         });
+      }
 
-        var tests = [
-          { key: "prime", id: "r-prime", label: "prime sieve", fn: testPrime },
-          { key: "sort",  id: "r-sort",  label: "sort",        fn: testSort  },
-          { key: "json",  id: "r-json",  label: "json",        fn: testJSON  },
-          { key: "str",   id: "r-str",   label: "strings",     fn: testString},
-          { key: "fib",   id: "r-fib",   label: "fibonacci",   fn: testFib   },
+      /* ---------- score helpers ---------- */
+      function rating(score) {
+        if (score < 400) return "slow";
+        if (score < 900) return "average";
+        if (score < 1400) return "fast";
+        return "very fast";
+      }
+      function countUp(el, target, ms) {
+        var start = performance.now();
+        function frame(now) {
+          var p = Math.min(1, (now - start) / ms);
+          var eased = 1 - Math.pow(1 - p, 3);
+          el.textContent = Math.round(target * eased);
+          if (p < 1) requestAnimationFrame(frame); else el.textContent = target;
+        }
+        requestAnimationFrame(frame);
+      }
+      function fmtInt(n) { return Math.round(n).toLocaleString("en-US"); }
+
+      /* ---------- history (#3) ---------- */
+      function loadHistory() {
+        try { return JSON.parse(localStorage.getItem(HISTORY_KEY)) || []; } catch (e) { return []; }
+      }
+      function saveHistory(arr) {
+        try { localStorage.setItem(HISTORY_KEY, JSON.stringify(arr.slice(0, 5))); } catch (e) {}
+      }
+      function renderHistory() {
+        var hist = loadHistory();
+        var wrap = document.getElementById("bench-history");
+        var clearBtn = document.getElementById("bench-clear");
+        if (!hist.length) {
+          wrap.innerHTML = '<div class="bench-note">no runs yet — your last 5 results will appear here (stored locally).</div>';
+          clearBtn.hidden = true;
+          return;
+        }
+        clearBtn.hidden = false;
+        var rows = hist.map(function (h) {
+          var d = new Date(h.ts);
+          var when = d.toLocaleDateString() + " " + d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+          return "<tr><td>" + when + "</td><td class='num'>" + h.cpu + "</td><td class='num'>" + h.gpu +
+            "</td><td>" + (h.scaling ? h.scaling.toFixed(1) + "×" : "—") + "</td></tr>";
+        }).join("");
+        wrap.innerHTML =
+          "<table><thead><tr><th>when</th><th>cpu</th><th>gpu</th><th>multi</th></tr></thead><tbody>" +
+          rows + "</tbody></table>";
+      }
+      document.getElementById("bench-clear").addEventListener("click", function () {
+        try { localStorage.removeItem(HISTORY_KEY); } catch (e) {}
+        renderHistory();
+      });
+
+      /* ---------- shareable hash (#5) ---------- */
+      function writeHash(cpu, gpu, scaling) {
+        var h = "#cpu:" + cpu + ",gpu:" + gpu + ",multi:" + scaling.toFixed(1);
+        history.replaceState(null, "", location.pathname + location.search + h);
+        shareBtn.disabled = false;
+      }
+      function readHash() {
+        var h = location.hash.slice(1);
+        if (!h) return null;
+        var o = {};
+        h.split(",").forEach(function (p) { var kv = p.split(":"); if (kv.length === 2) o[kv[0]] = kv[1]; });
+        return o.cpu ? o : null;
+      }
+      shareBtn.addEventListener("click", function () {
+        var done = function () { shareBtn.textContent = "link copied!"; setTimeout(function () { shareBtn.textContent = "copy share link"; }, 2000); };
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(location.href).then(done, done);
+        else done();
+      });
+
+      /* ---------- main run ---------- */
+      var running = false;
+      async function run() {
+        if (running) return;
+        running = true;
+        runBtn.disabled = true;
+        shareBtn.disabled = true;
+        sharedNote.hidden = true;
+        scoreWrap.hidden = true;
+        ratingEl.hidden = true;
+        step = 0; progress.style.width = "0%";
+        resetRows();
+
+        var w = new Worker(workerUrl);
+        var named = [
+          { key: "prime", fmt: function (r) { return r.value.toFixed(1) + " ms"; } },
+          { key: "sort", fmt: function (r) { return r.value.toFixed(1) + " ms"; } },
+          { key: "json", fmt: function (r) { return r.value.toFixed(1) + " ms"; } },
+          { key: "string", fmt: function (r) { return r.value.toFixed(1) + " ms"; } },
+          { key: "fib", fmt: function (r) { return r.value.toFixed(1) + " ms"; } },
+          { key: "memory", fmt: function (r) { return r.value == null ? "n/a" : r.value.toFixed(1) + " GB/s"; } },
+          { key: "crypto", fmt: function (r) { return r.value == null ? "n/a" : fmtInt(r.value) + " MB/s"; } },
+          { key: "canvas", fmt: function (r) { return r.value == null ? "n/a" : fmtInt(r.value / 1000) + "k /s"; } }
         ];
 
-        setTimeout(function () {
-          runStep(tests, 0, {}, function (times) {
-            /* CPU score: geometric mean of per-test ratios vs reference */
-            var keys = Object.keys(REF);
-            var logSum = 0;
-            keys.forEach(function (k) { logSum += Math.log(REF[k] / times[k]); });
-            var score = Math.round(Math.exp(logSum / keys.length) * 1000);
+        var coreMs = {};
+        for (var i = 0; i < named.length; i++) {
+          var t = named[i];
+          statusEl.textContent = "running: " + t.key + " …";
+          rowStart(t.key);
+          var res = await runTest(w, t.key);
+          if (REF[t.key] !== undefined) coreMs[t.key] = res.value;
+          rowDone(t.key, t.fmt(res));
+          bumpProgress();
+        }
 
-            scoreEl.textContent = score;
-            scoreWrap.hidden = false;
+        /* CPU single-core score from the 5 calibrated workloads */
+        var keys = Object.keys(REF), logSum = 0;
+        keys.forEach(function (k) { logSum += Math.log(REF[k] / coreMs[k]); });
+        var cpuScore = Math.round(Math.exp(logSum / keys.length) * 1000);
+        scoreWrap.hidden = false;
+        countUp(scoreEl, cpuScore, 800);
+        ratingEl.textContent = rating(cpuScore);
+        ratingEl.hidden = false;
 
-            /* GPU test */
-            status.textContent = "running: webgl gpu test…";
-            setTimeout(function () {
-              var canvas = document.getElementById("bench-canvas");
-              var tris = testWebGL(canvas);
-              step++;
-              setProgress(step);
+        /* single-core burn (reuse worker) */
+        statusEl.textContent = "running: single-core burn …";
+        var singleOps = await burnWorker(w, 1200);
+        var singlePerSec = singleOps / 1.2;
+        w.terminate();
+        bumpProgress();
 
-              var gpuEl = document.getElementById("r-gpu");
-              if (tris === null) {
-                gpuEl.textContent = "no webgl";
-                document.getElementById("bench-gpu-note").textContent = "webgl is not available in this browser.";
-              } else {
-                gpuEl.textContent = (tris / 1e6).toFixed(2) + "M / s";
-                gpuEl.classList.remove("pending");
-                /* Show bar vs stored previous run */
-                try {
-                  var prev = parseInt(localStorage.getItem("bench-gpu-prev") || "0", 10);
-                  if (prev > 0) {
-                    var pct = Math.min(100, Math.round((tris / prev) * 100));
-                    document.getElementById("r-gpu-pct").textContent = pct + "%";
-                    document.getElementById("gpu-bar").style.width = pct + "%";
-                    document.getElementById("bench-gpu-bars").hidden = false;
-                  }
-                  localStorage.setItem("bench-gpu-prev", tris);
-                } catch(e){}
-              }
+        /* multi-core burn (all threads at once) */
+        var cores = navigator.hardwareConcurrency || 4;
+        document.getElementById("mc-multi-label").textContent = "all cores (" + cores + ")";
+        statusEl.textContent = "running: multi-core burn across " + cores + " threads …";
+        var multiOps = await multiBurn(cores, 1200);
+        var multiPerSec = multiOps / 1.2;
+        bumpProgress();
 
-              status.textContent = "done.";
-              runBtn.disabled = false;
-            }, 80);
-          });
-        }, 100);
-      });
+        var scaling = singlePerSec > 0 ? (multiPerSec / singlePerSec) : 1;
+        document.getElementById("mc-single").textContent = fmtInt(singlePerSec) + " /s";
+        document.getElementById("mc-multi").textContent = fmtInt(multiPerSec) + " /s";
+        document.getElementById("mc-single-bar").style.width = Math.max(4, (singlePerSec / multiPerSec) * 100) + "%";
+        document.getElementById("mc-multi-bar").style.width = "100%";
+        document.getElementById("mc-scaling").innerHTML =
+          "<b>" + scaling.toFixed(1) + "×</b> faster across <b>" + cores + "</b> threads";
+
+        /* GPU */
+        statusEl.textContent = "running: gpu shader test …";
+        var gpu = await gpuTest(document.getElementById("bench-canvas"), 2000);
+        bumpProgress();
+        var gpuScore = 0;
+        if (gpu) {
+          gpuScore = gpu.score;
+          var gs = document.getElementById("r-gpuscore"); gs.textContent = fmtInt(gpu.score); gs.classList.remove("pending");
+          var gf = document.getElementById("r-gpufps"); gf.textContent = gpu.fps.toFixed(0) + " fps"; gf.classList.remove("pending");
+        } else {
+          document.getElementById("r-gpuscore").textContent = "no webgl";
+          document.getElementById("r-gpufps").textContent = "n/a";
+          document.getElementById("bench-gpu-note").textContent = "webgl is not available in this browser.";
+        }
+
+        /* save + render history, write share hash */
+        var hist = loadHistory();
+        hist.unshift({ ts: Date.now(), cpu: cpuScore, gpu: gpuScore, scaling: scaling });
+        saveHistory(hist);
+        renderHistory();
+        writeHash(cpuScore, gpuScore, scaling);
+
+        statusEl.textContent = "done — share your score or run again.";
+        progress.style.width = "100%";
+        runBtn.disabled = false;
+        running = false;
+      }
+
+      runBtn.addEventListener("click", run);
+
+      /* ---------- init ---------- */
+      fillDevice();
+      renderHistory();
+
+      /* If opened with a shared score in the hash, show it read-only. */
+      var shared = readHash();
+      if (shared) {
+        scoreWrap.hidden = false;
+        scoreEl.textContent = shared.cpu;
+        ratingEl.textContent = rating(parseInt(shared.cpu, 10));
+        ratingEl.hidden = false;
+        sharedNote.hidden = false;
+        sharedNote.textContent = "shared result · gpu " + (shared.gpu || "—") +
+          " · multi " + (shared.multi || "—") + "× — run your own to compare";
+        shareBtn.disabled = false;
+      }
     })();
     </script>
     <script src="../site.js"></script>
