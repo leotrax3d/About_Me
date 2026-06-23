@@ -221,6 +221,9 @@
 
           previewEl.style.background = hex;
           try { pickerEl.value = hex; } catch (e) {}
+
+          /* reflect the colour in the URL hash so it can be shared */
+          history.replaceState(null, "", location.pathname + location.search + "#" + hex.slice(1));
         }
 
         function clearOutputs() {
@@ -240,7 +243,14 @@
         inputEl.addEventListener("input", function () { convert(inputEl.value); });
         pickerEl.addEventListener("input", function () { inputEl.value = pickerEl.value; convert(pickerEl.value); });
 
-        convert("#c5f13e");
+        /* restore a shared colour from the URL hash (#rrggbb), else default */
+        var initial = "#c5f13e";
+        var fromHash = location.hash.slice(1);
+        if (/^[0-9a-fA-F]{3}([0-9a-fA-F]{3})?$/.test(fromHash)) {
+          initial = "#" + fromHash;
+          inputEl.value = initial;
+        }
+        convert(initial);
       })();
     </script>
     <script src="../site.js"></script>

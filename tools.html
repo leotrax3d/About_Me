@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>tools — leotrax3d</title>
-    <meta name="description" content="small, dependency-free browser tools by leotrax3d — qr codes, url hider, checksums, base64, passwords, regex, json, timestamps, colors, jwt, uuid. all client-side." />
+    <meta name="description" content="small, dependency-free browser tools by leotrax3d — qr codes, url hider, checksums, base64, regex, json, timestamps, colors, jwt, uuid. searchable, all client-side." />
     <meta name="author" content="leotrax3d" />
     <link rel="canonical" href="https://leotrax3d.github.io/About_Me/tools.html" />
     <meta property="og:type" content="website" />
@@ -41,7 +41,8 @@
         <h1>Tools</h1>
         <p class="page-sub">
           small, single-purpose browser tools — no build step, no server,
-          nothing leaves your machine. click ★ to star your favourites.
+          nothing leaves your machine. search below, filter by category, or
+          click ★ to keep your favourites at the top.
         </p>
       </div>
     </div>
@@ -50,13 +51,44 @@
       <div class="wrap">
         <div class="sec fade">
 
-          <!-- Favorites section — shown only when at least one tool is starred -->
+          <!-- Search + category filter -->
+          <div class="tool-controls">
+            <div class="tool-search-wrap">
+              <input
+                type="search"
+                id="tool-search"
+                class="tool-search"
+                placeholder="search tools by name or keyword…  (press / to focus)"
+                spellcheck="false"
+                autocomplete="off"
+                aria-label="Search tools"
+              />
+            </div>
+            <div class="tool-filters" id="tool-filters" role="group" aria-label="Filter by category">
+              <button type="button" class="tool-filter is-active" data-cat="all">all</button>
+              <button type="button" class="tool-filter" data-cat="encoding">encoding</button>
+              <button type="button" class="tool-filter" data-cat="crypto">crypto</button>
+              <button type="button" class="tool-filter" data-cat="text">text &amp; data</button>
+              <button type="button" class="tool-filter" data-cat="convert">convert</button>
+            </div>
+          </div>
+
+          <!-- Favourites — shown only when at least one tool is starred -->
           <div id="fav-section" hidden>
             <div class="sec-head">
               <span class="sec-num">★</span>
               <h2>favourites</h2>
             </div>
             <div class="tool-grid" id="fav-grid"></div>
+          </div>
+
+          <!-- Recently used — shown only when there is history -->
+          <div id="recent-section" hidden>
+            <div class="sec-head" style="margin-top: 3.5rem">
+              <span class="sec-num">↺</span>
+              <h2>recently used</h2>
+            </div>
+            <div class="tool-grid" id="recent-grid"></div>
           </div>
 
           <div class="sec-head" style="margin-top: 3.5rem" id="all-head">
@@ -66,7 +98,7 @@
 
           <div class="tool-grid" id="tool-grid">
 
-            <a href="tools/qr.html" class="tool-card" data-tool-id="qr">
+            <a href="tools/qr.html" class="tool-card" data-tool-id="qr" data-tool-cat="encoding" data-tool-keywords="qr code png svg image generator scan barcode">
               <button class="tool-star" type="button" aria-label="Star QR Generator">☆</button>
               <div class="tool-name">QR Generator</div>
               <div class="tool-desc">
@@ -76,7 +108,7 @@
               <span class="tool-tag">qr · png · svg</span>
             </a>
 
-            <a href="tools/urlhider.html" class="tool-card" data-tool-id="urlhider">
+            <a href="tools/urlhider.html" class="tool-card" data-tool-id="urlhider" data-tool-cat="encoding" data-tool-keywords="url redirect link obfuscate hide forward shorten base64">
               <button class="tool-star" type="button" aria-label="Star URL Hider">☆</button>
               <div class="tool-name">URL Hider</div>
               <div class="tool-desc">
@@ -87,7 +119,7 @@
               <span class="tool-tag">redirect · base64</span>
             </a>
 
-            <a href="tools/checksum.html" class="tool-card" data-tool-id="checksum">
+            <a href="tools/checksum.html" class="tool-card" data-tool-id="checksum" data-tool-cat="crypto" data-tool-keywords="sha hash checksum sha1 sha256 sha384 sha512 verify integrity digest">
               <button class="tool-star" type="button" aria-label="Star Checksum">☆</button>
               <div class="tool-name">Checksum</div>
               <div class="tool-desc">
@@ -98,7 +130,7 @@
               <span class="tool-tag">sha · verify</span>
             </a>
 
-            <a href="tools/base64.html" class="tool-card" data-tool-id="base64">
+            <a href="tools/base64.html" class="tool-card" data-tool-id="base64" data-tool-cat="encoding" data-tool-keywords="base64 encode decode utf8 url-safe alphabet">
               <button class="tool-star" type="button" aria-label="Star Base64">☆</button>
               <div class="tool-name">Base64</div>
               <div class="tool-desc">
@@ -108,17 +140,7 @@
               <span class="tool-tag">encode · decode</span>
             </a>
 
-            <a href="tools/password.html" class="tool-card" data-tool-id="password">
-              <button class="tool-star" type="button" aria-label="Star Password Generator">☆</button>
-              <div class="tool-name">Password Generator</div>
-              <div class="tool-desc">
-                generate cryptographically random passwords with configurable
-                length and character sets. includes a strength indicator.
-              </div>
-              <span class="tool-tag">crypto · random</span>
-            </a>
-
-            <a href="tools/regex.html" class="tool-card" data-tool-id="regex">
+            <a href="tools/regex.html" class="tool-card" data-tool-id="regex" data-tool-cat="text" data-tool-keywords="regex regular expression match replace pattern test flags capture group">
               <button class="tool-star" type="button" aria-label="Star Regex Tester">☆</button>
               <div class="tool-name">Regex Tester</div>
               <div class="tool-desc">
@@ -128,7 +150,7 @@
               <span class="tool-tag">regexp · match · replace</span>
             </a>
 
-            <a href="tools/json.html" class="tool-card" data-tool-id="json">
+            <a href="tools/json.html" class="tool-card" data-tool-id="json" data-tool-cat="text" data-tool-keywords="json format validate minify pretty beautify sort keys">
               <button class="tool-star" type="button" aria-label="Star JSON Formatter">☆</button>
               <div class="tool-name">JSON Formatter</div>
               <div class="tool-desc">
@@ -138,7 +160,7 @@
               <span class="tool-tag">format · validate · minify</span>
             </a>
 
-            <a href="tools/timestamp.html" class="tool-card" data-tool-id="timestamp">
+            <a href="tools/timestamp.html" class="tool-card" data-tool-id="timestamp" data-tool-cat="convert" data-tool-keywords="timestamp unix epoch date time convert utc iso milliseconds">
               <button class="tool-star" type="button" aria-label="Star Timestamp Converter">☆</button>
               <div class="tool-name">Timestamp Converter</div>
               <div class="tool-desc">
@@ -148,7 +170,7 @@
               <span class="tool-tag">unix · utc · date</span>
             </a>
 
-            <a href="tools/color.html" class="tool-card" data-tool-id="color">
+            <a href="tools/color.html" class="tool-card" data-tool-id="color" data-tool-cat="convert" data-tool-keywords="color colour hex rgb hsl converter picker css swatch">
               <button class="tool-star" type="button" aria-label="Star Color Converter">☆</button>
               <div class="tool-name">Color Converter</div>
               <div class="tool-desc">
@@ -158,7 +180,7 @@
               <span class="tool-tag">hex · rgb · hsl</span>
             </a>
 
-            <a href="tools/jwt.html" class="tool-card" data-tool-id="jwt">
+            <a href="tools/jwt.html" class="tool-card" data-tool-id="jwt" data-tool-cat="encoding" data-tool-keywords="jwt token decode json web token claims jose header payload">
               <button class="tool-star" type="button" aria-label="Star JWT Inspector">☆</button>
               <div class="tool-name">JWT Inspector</div>
               <div class="tool-desc">
@@ -168,7 +190,7 @@
               <span class="tool-tag">jwt · decode · claims</span>
             </a>
 
-            <a href="tools/uuid.html" class="tool-card" data-tool-id="uuid">
+            <a href="tools/uuid.html" class="tool-card" data-tool-id="uuid" data-tool-cat="crypto" data-tool-keywords="uuid guid v4 identifier random generate unique">
               <button class="tool-star" type="button" aria-label="Star UUID Generator">☆</button>
               <div class="tool-name">UUID Generator</div>
               <div class="tool-desc">
@@ -178,6 +200,10 @@
               <span class="tool-tag">uuid · v4 · random</span>
             </a>
 
+          </div>
+
+          <div class="tool-noresults" id="tool-noresults" hidden>
+            no tools match your search. try a different term or category.
           </div>
         </div>
       </div>
@@ -190,82 +216,158 @@
 
     <script>
       (function () {
-        var STORE_KEY = "tool-stars";
+        var STARS_KEY = "tool-stars";
+        var RECENT_KEY = "tool-recent";
 
-        function loadStars() {
-          try { return JSON.parse(localStorage.getItem(STORE_KEY)) || []; }
+        function load(key) {
+          try { return JSON.parse(localStorage.getItem(key)) || []; }
           catch (e) { return []; }
         }
-
-        function saveStars(arr) {
-          try { localStorage.setItem(STORE_KEY, JSON.stringify(arr)); } catch (e) {}
+        function save(key, arr) {
+          try { localStorage.setItem(key, JSON.stringify(arr)); } catch (e) {}
         }
 
-        var stars = loadStars();
+        var stars = load(STARS_KEY);
+        var recent = load(RECENT_KEY);
 
-        /* ---- star buttons ---- */
-        document.querySelectorAll(".tool-star").forEach(function (btn) {
-          var card = btn.closest(".tool-card");
+        var grid = document.getElementById("tool-grid");
+        var cards = Array.prototype.slice.call(grid.querySelectorAll(".tool-card"));
+        var favSection = document.getElementById("fav-section");
+        var favGrid = document.getElementById("fav-grid");
+        var recentSection = document.getElementById("recent-section");
+        var recentGrid = document.getElementById("recent-grid");
+        var allHead = document.getElementById("all-head");
+        var noResults = document.getElementById("tool-noresults");
+        var searchInput = document.getElementById("tool-search");
+
+        var activeCat = "all";
+        var query = "";
+
+        /* ---- star state ---- */
+        function syncStar(btn, id) {
+          var starred = stars.indexOf(id) !== -1;
+          btn.textContent = starred ? "★" : "☆";
+          btn.classList.toggle("is-starred", starred);
+        }
+
+        cards.forEach(function (card) {
           var id = card.dataset.toolId;
-
-          function sync() {
-            var starred = stars.indexOf(id) !== -1;
-            btn.textContent = starred ? "★" : "☆";
-            btn.classList.toggle("is-starred", starred);
-          }
-
-          sync();
-
+          var btn = card.querySelector(".tool-star");
+          syncStar(btn, id);
           btn.addEventListener("click", function (e) {
             e.preventDefault();
             e.stopPropagation();
             var idx = stars.indexOf(id);
             if (idx === -1) stars.push(id);
             else stars.splice(idx, 1);
-            saveStars(stars);
-            sync();
-            renderFavorites();
+            save(STARS_KEY, stars);
+            syncStar(btn, id);
+            applyFilter();
           });
         });
 
-        /* ---- favorites section ---- */
-        var favSection = document.getElementById("fav-section");
-        var favGrid = document.getElementById("fav-grid");
-        var allHead = document.getElementById("all-head");
-
-        function renderFavorites() {
-          if (stars.length === 0) {
-            favSection.hidden = true;
-            allHead.style.marginTop = "";
-            return;
+        /* ---- clone a card for the favourites / recent rows. The cloned
+                star delegates back to the real button so state stays in sync. */
+        function cloneCard(id) {
+          var orig = grid.querySelector('[data-tool-id="' + id + '"]');
+          if (!orig) return null;
+          var clone = orig.cloneNode(true);
+          clone.style.display = "";
+          var star = clone.querySelector(".tool-star");
+          if (star) {
+            var starred = stars.indexOf(id) !== -1;
+            star.textContent = starred ? "★" : "☆";
+            star.classList.toggle("is-starred", starred);
+            star.addEventListener("click", function (e) {
+              e.preventDefault();
+              e.stopPropagation();
+              var real = grid.querySelector('[data-tool-id="' + id + '"] .tool-star');
+              if (real) real.click();
+            });
           }
-
-          favGrid.innerHTML = "";
-          stars.forEach(function (id) {
-            var orig = document.querySelector('[data-tool-id="' + id + '"]');
-            if (!orig) return;
-            var clone = orig.cloneNode(true);
-            /* The cloned star is purely decorative in the fav section */
-            var clonedStar = clone.querySelector(".tool-star");
-            if (clonedStar) {
-              clonedStar.textContent = "★";
-              clonedStar.classList.add("is-starred");
-              clonedStar.addEventListener("click", function (e) {
-                e.preventDefault();
-                e.stopPropagation();
-                /* Delegate to the real button */
-                var real = document.querySelector('[data-tool-id="' + id + '"] .tool-star');
-                if (real) real.click();
-              });
-            }
-            favGrid.appendChild(clone);
-          });
-
-          favSection.hidden = false;
-          allHead.style.marginTop = "5rem";
+          return clone;
         }
 
-        renderFavorites();
+        function renderFavorites() {
+          favGrid.innerHTML = "";
+          if (stars.length === 0) { favSection.hidden = true; return; }
+          stars.forEach(function (id) {
+            var c = cloneCard(id);
+            if (c) favGrid.appendChild(c);
+          });
+          favSection.hidden = false;
+        }
+
+        function renderRecent() {
+          recentGrid.innerHTML = "";
+          /* show up to 4 most-recent, skipping ones already pinned as favourites */
+          var list = recent.filter(function (id) {
+            return stars.indexOf(id) === -1 && grid.querySelector('[data-tool-id="' + id + '"]');
+          }).slice(0, 4);
+          if (list.length === 0) { recentSection.hidden = true; return; }
+          list.forEach(function (id) {
+            var c = cloneCard(id);
+            if (c) recentGrid.appendChild(c);
+          });
+          recentSection.hidden = false;
+        }
+
+        /* ---- search + category filter ---- */
+        function applyFilter() {
+          var browsing = query === "" && activeCat === "all";
+
+          if (browsing) {
+            renderFavorites();
+            renderRecent();
+          } else {
+            favSection.hidden = true;
+            recentSection.hidden = true;
+          }
+          allHead.querySelector("h2").textContent = browsing ? "all tools" : "results";
+
+          var visible = 0;
+          cards.forEach(function (card) {
+            var name = card.querySelector(".tool-name").textContent.toLowerCase();
+            var kw = (card.dataset.toolKeywords || "").toLowerCase();
+            var cat = card.dataset.toolCat || "";
+            var matchesCat = activeCat === "all" || cat === activeCat;
+            var matchesQuery =
+              query === "" || name.indexOf(query) !== -1 || kw.indexOf(query) !== -1;
+            var show = matchesCat && matchesQuery;
+            card.style.display = show ? "" : "none";
+            if (show) visible++;
+          });
+
+          noResults.hidden = visible !== 0;
+          allHead.hidden = visible === 0;
+        }
+
+        searchInput.addEventListener("input", function () {
+          query = this.value.trim().toLowerCase();
+          applyFilter();
+        });
+
+        document.querySelectorAll(".tool-filter").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            document.querySelectorAll(".tool-filter").forEach(function (b) {
+              b.classList.remove("is-active");
+            });
+            this.classList.add("is-active");
+            activeCat = this.dataset.cat;
+            applyFilter();
+          });
+        });
+
+        /* "/" focuses the search box, like a command palette. */
+        document.addEventListener("keydown", function (e) {
+          if (e.key !== "/") return;
+          var tag = (document.activeElement && document.activeElement.tagName) || "";
+          if (tag === "INPUT" || tag === "TEXTAREA") return;
+          e.preventDefault();
+          searchInput.focus();
+        });
+
+        applyFilter();
       })();
     </script>
 

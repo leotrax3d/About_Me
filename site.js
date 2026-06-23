@@ -85,7 +85,6 @@
     "tools/urlhider.html",
     "tools/checksum.html",
     "tools/base64.html",
-    "tools/password.html",
     "tools/regex.html",
     "tools/json.html",
     "tools/timestamp.html",
@@ -93,6 +92,25 @@
     "tools/jwt.html",
     "tools/uuid.html",
   ];
+
+  // Record a visit to a tool page so tools.html can show a "recently used"
+  // section. Most-recent-first, de-duplicated, capped. The tool id is the
+  // bare filename (e.g. tools/base64.html -> "base64"), matching the
+  // data-tool-id on the hub cards.
+  function recordRecentTool() {
+    const file = currentFile();
+    if (file.indexOf("tools/") !== 0) return;
+    const id = file.replace("tools/", "").replace(/\.html$/, "");
+    if (!id) return;
+    try {
+      let recent = JSON.parse(localStorage.getItem("tool-recent")) || [];
+      recent = recent.filter((x) => x !== id);
+      recent.unshift(id);
+      localStorage.setItem("tool-recent", JSON.stringify(recent.slice(0, 8)));
+    } catch (e) {
+      /* localStorage unavailable — recents are a nicety, ignore. */
+    }
+  }
 
   function buildNav() {
     const file = currentFile();
@@ -837,6 +855,7 @@
     initScramble();
     initFade();
     initXpToggle();
+    recordRecentTool();
     if (!mobile) initBgField();
   }
 
