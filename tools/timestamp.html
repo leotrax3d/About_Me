@@ -235,16 +235,25 @@
           });
         }
 
+        function writeHash() {
+          /* only the timestamp→date direction has a shareable single value */
+          var raw = tsInput.value.trim();
+          var url = location.pathname + location.search;
+          if (direction === "ts2dt" && raw) url += "#" + encodeURIComponent(raw + (unit === "ms" ? "ms" : ""));
+          history.replaceState(null, "", url);
+        }
+
         function convert() {
           tsError.textContent = "";
           if (direction === "ts2dt") {
             var raw = tsInput.value.trim();
-            if (!raw) { clearOutputs(); return; }
+            if (!raw) { clearOutputs(); writeHash(); return; }
             var n = Number(raw);
             if (!isFinite(n)) { tsError.textContent = "not a valid number"; clearOutputs(); return; }
             var ms = unit === "ms" ? n : n * 1000;
             if (ms < -8640000000000000 || ms > 8640000000000000) { tsError.textContent = "timestamp out of range"; clearOutputs(); return; }
             setOutputs(ms);
+            writeHash();
           } else {
             var val = dtInput.value;
             if (!val) { clearOutputs(); return; }
@@ -261,6 +270,24 @@
         var now = new Date();
         now.setSeconds(0, 0);
         dtInput.value = now.toISOString().slice(0, 16);
+
+        /* restore a shared timestamp from the URL hash (#<seconds> or #<ms>ms) */
+        var fromHash = location.hash.slice(1);
+        if (fromHash) {
+          try { fromHash = decodeURIComponent(fromHash); } catch (e) {}
+          var msMatch = /^(\d+)(ms)?$/.exec(fromHash);
+          if (msMatch) {
+            if (msMatch[2] === "ms") {
+              unit = "ms";
+              document.querySelector('#unit-toggle .btn[data-unit="ms"]').classList.add("is-active");
+              document.querySelector('#unit-toggle .btn[data-unit="s"]').classList.remove("is-active");
+              tsInput.value = msMatch[1];
+            } else {
+              tsInput.value = msMatch[1];
+            }
+            convert();
+          }
+        }
       })();
     </script>
     <script src="../site.js"></script>

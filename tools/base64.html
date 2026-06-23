@@ -86,6 +86,7 @@
             <div class="b64-actions">
               <button type="button" id="b64-copy" class="btn btn-ghost" disabled>copy</button>
               <button type="button" id="b64-swap" class="btn btn-ghost" disabled>use as input ↺</button>
+              <button type="button" id="b64-share" class="btn btn-ghost" disabled>copy share link</button>
               <button type="button" id="b64-clear" class="btn btn-ghost">clear</button>
             </div>
           </div>
@@ -110,6 +111,7 @@
         var clearBtn = document.getElementById("b64-clear");
         var inputLabel = document.getElementById("input-label");
         var outputLabel = document.getElementById("output-label");
+        var shareBtn = document.getElementById("b64-share");
         var currentOut = "";
 
         function encode(str) {
@@ -137,7 +139,32 @@
           swapBtn.disabled = !!isPlaceholder;
         }
 
+        /* ---- shareable URL hash: #<mode>:<urlencoded input> ---- */
+        function writeHash() {
+          var val = inputEl.value;
+          shareBtn.disabled = !val;
+          var url = location.pathname + location.search;
+          if (val) url += "#" + mode + ":" + encodeURIComponent(val);
+          history.replaceState(null, "", url);
+        }
+
+        function readHash() {
+          var h = location.hash.slice(1);
+          if (!h) return;
+          var ci = h.indexOf(":");
+          if (ci === -1) return;
+          var m = h.slice(0, ci);
+          if (m !== "encode" && m !== "decode") return;
+          var text;
+          try { text = decodeURIComponent(h.slice(ci + 1)); } catch (e) { return; }
+          inputEl.value = text;
+          var btn = document.querySelector('#mode-toggle .btn[data-mode="' + m + '"]');
+          if (btn) btn.click();
+          else convert();
+        }
+
         function convert() {
+          writeHash();
           errorEl.textContent = "";
           var input = inputEl.value;
           if (!input) { setOutput("output appears here as you type.", true); return; }
@@ -175,9 +202,16 @@
           inputEl.value = currentOut;
           document.querySelector('#mode-toggle .btn[data-mode="' + (mode === "encode" ? "decode" : "encode") + '"]').click();
         });
+        shareBtn.addEventListener("click", function () {
+          var done = function () { shareBtn.textContent = "link copied!"; setTimeout(function () { shareBtn.textContent = "copy share link"; }, 2000); };
+          if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(location.href).then(done); else done();
+        });
         clearBtn.addEventListener("click", function () { inputEl.value = ""; convert(); inputEl.focus(); });
         inputEl.addEventListener("input", convert);
         urlsafeEl.addEventListener("change", convert);
+
+        /* restore state from a shared link, if any */
+        readHash();
       })();
     </script>
     <script src="../site.js"></script>
